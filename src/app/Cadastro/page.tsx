@@ -2,8 +2,9 @@ import React from "react";
 
 const CadastroLogin: React.FC = () => {
   return (
-    <div className="flex h-screen"
-      /* Lado esquerdo - Login */
+    <div className="flex h-screen">
+
+      {/* Lado esquerdo - Login */}
       <div className="w-1/2 bg-blue-600 text-white flex flex-col justify-center items-center p-8">
         <h1 className="text-4xl font-bold mb-4">Logo FHO</h1>
         <p className="text-lg mb-6 text-center">
@@ -14,7 +15,7 @@ const CadastroLogin: React.FC = () => {
         </button>
       </div>
 
-      /* Lado direito - Cadastro */
+      {/* Lado direito - Cadastro */}
       <div className="w-1/2 bg-white flex flex-col justify-center items-center p-8">
         <h2 className="text-3xl font-bold text-blue-600 mb-6">Crie sua conta</h2>
         <form className="w-full max-w-sm">

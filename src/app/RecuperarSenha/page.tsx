@@ -1,7 +1,7 @@
 export default function RedefinirSenha() {
     return (
       <div className="flex h-screen">
-        /* Lado esquerdo */
+        {/* Lado esquerdo */}
         <div className="w-1/2 bg-blue-600 text-white flex flex-col items-center justify-center p-10">
           <h1 className="text-4xl font-bold mb-6">Logo FHO</h1>
           <p className="text-lg text-center mb-4">
@@ -12,7 +12,7 @@ export default function RedefinirSenha() {
           </button>
         </div>
         
-        /* Lado direito */
+       { /* Lado direito */}
         <div className="w-1/2 bg-white flex flex-col items-center justify-center p-10">
           <h2 className="text-3xl font-bold text-blue-600 mb-4">Redefinição de senha</h2>
           <p className="text-gray-600 mb-6 text-center">

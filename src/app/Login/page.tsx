@@ -2,7 +2,7 @@ import React from "react";
 
 const Login: React.FC = () => {
   return (
-    <div className="flex h-screen">
+    <div className=" flex h-screen">
       {/* Seção da esquerda (Login) */}
       <div className="w-1/2 flex flex-col justify-center items-center p-10">
         <h1 className="text-3xl font-bold mb-8">LOGIN</h1>
