@@ -60,12 +60,13 @@ const Cadastro: React.FC = () => {
 						<Controller
 							name="name"
 							control={control}
-							render={({ field }) => (
+							render={({ field, fieldState }) => (
 								<Input
 									type="text"
 									icon={<User className="text-gray-500 mr-2" size={20} />}
 									placeholder="Digite seu nome"
 									label="Nome"
+									error={fieldState.error}
 									{...field}
 								/>
 							)}
@@ -75,12 +76,13 @@ const Cadastro: React.FC = () => {
 						<Controller
 							name="RA"
 							control={control}
-							render={({ field }) => (
+							render={({ field, fieldState }) => (
 								<Input
 									type="email"
 									icon={<IdCard className="text-gray-500 mr-2" size={20} />}
 									placeholder="Digite seu RA"
 									label="RA do aluno"
+									error={fieldState.error}
 									{...field}
 								/>
 							)}
@@ -90,11 +92,12 @@ const Cadastro: React.FC = () => {
 						<Controller
 							name="email"
 							control={control}
-							render={({ field }) => (
+							render={({ field, fieldState }) => (
 								<Input
 									type="email"
 									placeholder="Digite seu e-mail"
 									label="E-mail Institucional"
+									error={fieldState.error}
 									icon={<Mail className="text-gray-500 mr-2" size={20} />}
 									{...field}
 								/>
@@ -105,11 +108,12 @@ const Cadastro: React.FC = () => {
 						<Controller
 							name="password"
 							control={control}
-							render={({ field }) => (
+							render={({ field, fieldState }) => (
 								<Input
 									type="password"
 									placeholder="Digite sua senha"
 									label="Senha"
+									error={fieldState.error}
 									icon={<Lock className="text-gray-500 mr-2" size={20} />}
 									{...field}
 								/>
@@ -117,27 +121,15 @@ const Cadastro: React.FC = () => {
 						/>
 
 						{/* Ano de Ingresso */}
-						<div className="mb-4">
-							<label className="block text-gray-700">Ano de Ingresso</label>
-							<div className="flex items-center border rounded-lg p-2 focus-within:ring-2 focus-within:ring-[#4F85A6]">
-								<Layers className="text-gray-500 mr-2" size={20} />
-								<input
-									type="text"
-									placeholder="Digite o ano de ingresso"
-									className="w-full outline-none bg-transparent"
-								/>
-							</div>
-						</div>
-
-						{/* Ano de Ingresso */}
 						<Controller
 							name="joinYear"
 							control={control}
-							render={({ field }) => (
+							render={({ field, fieldState }) => (
 								<Input
 									type="text"
 									placeholder="Digite o ano de ingresso"
 									label="Ano de Ingresso"
+									error={fieldState.error}
 									icon={<Layers className="text-gray-500 mr-2" size={20} />}
 									{...field}
 								/>

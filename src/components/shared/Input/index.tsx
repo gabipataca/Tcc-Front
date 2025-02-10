@@ -16,6 +16,7 @@ const Input: React.FC<InputProps> = ({
     name,
     disabled,
     ref,
+    error,
     ...otherProps
 }) => {
     return (

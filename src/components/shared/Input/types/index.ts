@@ -1,4 +1,5 @@
 import React, { FocusEvent } from "react";
+import { FieldError } from "react-hook-form";
 
 /**
  * Props for the Input component.
@@ -58,4 +59,9 @@ export interface InputProps {
      * Ref callback for the input element.
      */
     ref?: React.RefCallback<HTMLInputElement>;
+
+    /**
+     * Error propertie, with type of the error and message
+     */
+    error?: FieldError
 }
