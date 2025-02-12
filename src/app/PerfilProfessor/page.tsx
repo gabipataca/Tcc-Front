@@ -10,7 +10,7 @@ const PerfilProfessor: React.FC = () => {
           <FaUserCircle size={140} className="text-white mb-4" />
           <h2 className="text-white text-2xl font-semibold mb-1">Nome</h2>
           <p className="text-white text-lg mb-1">RA: xxxxx</p>
-          <p className="text-white text-lg mb-3">Data de Nascimento: xx/xx/xxxx</p>
+          <p className="text-white text-lg mb-3">Data Nasc: xx/xx/xxxx</p>
         </div>
         <div className="mt-auto mb-3">
           <img src="/falcon.png" alt="FHO Logo" className="h-28" />
