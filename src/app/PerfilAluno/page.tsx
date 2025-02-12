@@ -3,7 +3,7 @@ import { FaSignOutAlt, FaUserCircle } from "react-icons/fa";
 
 const PerfilAluno: React.FC = () => {
   return (
-    <div className="flex h-screen mx-auto max-w-[100%]">
+    <div className="flex h-screen max-w[100%]">
       {/* Navbar Lateral */}
       <div className="w-[220px] bg-[#4F85A6] flex flex-col items-center py-8 relative">
         <div className="absolute top-24 flex flex-col items-center">
