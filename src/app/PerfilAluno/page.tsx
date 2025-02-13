@@ -60,9 +60,14 @@ const PerfilAluno: React.FC = () => {
               <p className="text-2xl ml-2">Nome do grupo: xxxxxx</p>
               <p className="text-2xl ml-2">Lista de integrantes: xxxxxx</p>
             </div>
-            <button className="bg-[#4F85A6] text-white px-3 py-2 text-lg rounded-lg hover:bg-[#3C6B88] transition absolute bottom-4 right-4">
-              Editar
-            </button>
+            <div className="absolute bottom-4 right-4 flex space-x-2">
+              <button className="bg-[#4F85A6] text-white px-3 py-2 text-lg rounded-lg hover:bg-[#3C6B88] transition">
+                Adicionar
+              </button>
+              <button className="bg-[#4F85A6] text-white px-3 py-2 text-lg rounded-lg hover:bg-[#3C6B88] transition">
+                Editar
+              </button>
+            </div>
           </div>
         </div>
 

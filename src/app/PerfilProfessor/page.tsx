@@ -39,6 +39,9 @@ const PerfilProfessor: React.FC = () => {
               <p className="text-2xl ml-2">Nome: xxxxxx</p>
               <p className="text-2xl ml-2">E-mail: xxxxxxxxxxxxxx</p>
             </div>
+            <button className="bg-[#4F85A6] text-white px-3 py-2 text-lg rounded-lg hover:bg-[#3C6B88] transition absolute bottom-4 right-4">
+              Editar
+            </button>
           </div>
 
           <div className="bg-white p-6 shadow-md rounded-lg flex flex-col relative">
@@ -57,50 +60,58 @@ const PerfilProfessor: React.FC = () => {
             </div>
           </div>
         </div>
-
+               
         {/* Lista de Grupos e Enviar Exercícios */}
         <div className="grid grid-cols-2 gap-8 px-20">
-          <div className="bg-white shadow-md rounded-lg flex flex-col relative p-4">
-            <h3 className="text-3xl font-semibold text-[#4F85A6] mb-4 text-center">Lista de grupos</h3>
-            <div className="pl-10"> 
-              <ul className="text-2xl ml-2">
-                <li>1º Algoritmicamente Perigosos</li>
-                <li>2º Bit Busters</li>
-                <li>3º Bug Hunters</li>
-                <li>4º Compiladores Selvagens</li>
-                <li>5º Debuggers Anônimos</li>
-                <li>6º Error 404</li>
-                <li>7º Full Stack Ninjas</li>
-              </ul>
-              <button className="bg-[#4F85A6] text-white px-3 py-2 text-lg rounded-lg hover:bg-[#3C6B88] transition absolute bottom-4 right-4">
-                Deletar Grupo
-              </button>
-            </div>
-          </div>
+  <div className="bg-white shadow-md rounded-lg flex flex-col relative p-4">
+    <h3 className="text-3xl font-semibold text-[#4F85A6] py-3 mb-4 text-center">
+      Lista de grupos
+    </h3>
+    
+    <div className="pl-14">
+      <div className="max-h-48 overflow-y-auto pr-4">
+        <ul className="text-2xl ml-2">
+          <li>1º Algoritmicamente Perigosos</li>
+          <li>2º Bit Busters</li>
+          <li>3º Bug Hunters</li>
+          <li>4º Compiladores Selvagens</li>
+          <li>5º Debuggers Anônimos</li>
+          <li>6º Error 404</li>
+          <li>7º Full Stack Ninjas</li>
+          <li>8º Code Warriors</li>
+          <li>9º Runtime Terrors</li>
+          <li>10º Stack Overflowers</li>
+        </ul>
+      </div>
+      <button className="bg-[#4F85A6] text-white px-3 py-2 text-lg rounded-lg hover:bg-[#3C6B88] transition absolute bottom-4 right-4">
+        Deletar Grupo
+      </button>
+    </div>
+  </div>
+
+
+
 
           <div className="bg-white shadow-md rounded-lg flex flex-col relative p-4">
             <h3 className="text-3xl font-semibold text-[#4F85A6] mb-4 text-center">Enviar modelos de exercícios</h3>
             <div className="flex justify-center">
-            <input
-             type="text"
-              placeholder="Digite o Título do Exercício"
-               className="w-3/4 p-2 border border-gray-300 rounded-lg mb-4"
-                />
-              </div>
+              <input
+                type="text"
+                placeholder="Digite o Título do Exercício"
+                className="w-3/4 p-2 border border-gray-300 rounded-lg mb-4"
+              />
+            </div>
 
             <div className="space-y-4"> 
-
-                <label className="text-2xl pl-24">Descrição:</label>
-                <button className="bg-gray-300 px-4 py-2 rounded-lg ml-20">Anexar arquivo</button>
-             
-              
-                <label className="text-2xl pl-16">Valores de entrada:</label>
-                <button className="bg-gray-300 px-4 py-2 rounded-lg ml-5">Anexar arquivo</button>
-              
-             
-                <label className="text-2xl pl-16">Valores de saída:</label>
-                <button className="bg-gray-300 px-4 py-2 rounded-lg ml-10">Anexar arquivo</button>
-              
+              <label className="text-2xl pl-24">Descrição:</label>
+              <button className="bg-gray-300 px-4 py-2 rounded-lg ml-20">Anexar arquivo</button>
+            
+              <label className="text-2xl pl-16">Valores de entrada:</label>
+              <button className="bg-gray-300 px-4 py-2 rounded-lg ml-5">Anexar arquivo</button>
+            
+              <label className="text-2xl pl-16">Valores de saída:</label>
+              <button className="bg-gray-300 px-4 py-2 rounded-lg ml-10">Anexar arquivo</button>
+            
               <div className="flex justify-center mt-4">
                 <button className="bg-[#4F85A6] text-white px-3 py-2 text-lg rounded-lg hover:bg-[#3C6B88] transition ">
                   Enviar
