@@ -27,12 +27,13 @@ const Cadastro: React.FC = () => {
 			name: "",
 			email: "",
 			password: "",
-			RA: ""
+			RA: "",
+			joinYear: ""
 		}
 	});
 
 	const onSubmit: SubmitHandler<RegisterInputs> = (data) => {
-
+		
 	}
 
 	return (
@@ -66,6 +67,7 @@ const Cadastro: React.FC = () => {
 									icon={<User className="text-gray-500 mr-2" size={20} />}
 									placeholder="Digite seu nome"
 									label="Nome"
+									autocomplete="name"
 									error={fieldState.error}
 									{...field}
 								/>
@@ -78,7 +80,7 @@ const Cadastro: React.FC = () => {
 							control={control}
 							render={({ field, fieldState }) => (
 								<Input
-									type="email"
+									type="text"
 									icon={<IdCard className="text-gray-500 mr-2" size={20} />}
 									placeholder="Digite seu RA"
 									label="RA do aluno"
@@ -95,10 +97,11 @@ const Cadastro: React.FC = () => {
 							render={({ field, fieldState }) => (
 								<Input
 									type="email"
+									icon={<Mail className="text-gray-500 mr-2" size={20} />}
 									placeholder="Digite seu e-mail"
 									label="E-mail Institucional"
+									autocomplete="email"
 									error={fieldState.error}
-									icon={<Mail className="text-gray-500 mr-2" size={20} />}
 									{...field}
 								/>
 							)}
@@ -111,10 +114,11 @@ const Cadastro: React.FC = () => {
 							render={({ field, fieldState }) => (
 								<Input
 									type="password"
+									icon={<Lock className="text-gray-500 mr-2" size={20} />}
 									placeholder="Digite sua senha"
 									label="Senha"
+									autocomplete="new-password"
 									error={fieldState.error}
-									icon={<Lock className="text-gray-500 mr-2" size={20} />}
 									{...field}
 								/>
 							)}
@@ -126,11 +130,11 @@ const Cadastro: React.FC = () => {
 							control={control}
 							render={({ field, fieldState }) => (
 								<Input
-									type="text"
+									type="number"
+									icon={<Layers className="text-gray-500 mr-2" size={20} />}
 									placeholder="Digite o ano de ingresso"
 									label="Ano de Ingresso"
 									error={fieldState.error}
-									icon={<Layers className="text-gray-500 mr-2" size={20} />}
 									{...field}
 								/>
 							)}

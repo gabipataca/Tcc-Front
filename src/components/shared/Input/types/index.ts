@@ -1,4 +1,4 @@
-import React, { FocusEvent } from "react";
+import React, { FocusEvent, HTMLInputAutoCompleteAttribute } from "react";
 import { FieldError } from "react-hook-form";
 
 /**
@@ -56,12 +56,17 @@ export interface InputProps {
     disabled?: boolean;
 
     /**
+     * The autocomplete attribute for the input element.
+     */
+    autocomplete?: HTMLInputAutoCompleteAttribute;
+
+    /**
      * Ref callback for the input element.
      */
     ref?: React.RefCallback<HTMLInputElement>;
 
     /**
-     * Error propertie, with type of the error and message
+     * Error property, with type of the error and message.
      */
-    error?: FieldError
+    error?: FieldError;
 }
