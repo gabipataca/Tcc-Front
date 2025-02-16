@@ -31,7 +31,7 @@ export default function RedefinirSenha() {
               <input
                 type="email"
                 placeholder="Digite seu e-mail"
-                className="w-full outline-hidden bg-transparent"
+                className="w-full outline-none bg-transparent"
               />
             </div>
           </div>

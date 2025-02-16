@@ -14,7 +14,7 @@ const Login: React.FC = () => {
             <input
               type="text"
               placeholder="Digite o RA do aluno"
-              className="w-full p-2 border rounded-lg focus:outline-hidden focus:ring-2 focus:ring-[#4f85a0]"
+              className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4f85a0]"
             />
           </div>
 
@@ -24,7 +24,7 @@ const Login: React.FC = () => {
             <input
               type="password"
               placeholder="Digite a senha do usuário"
-              className="w-full p-2 border rounded-lg focus:outline-hidden focus:ring-2 focus:ring-[#4f85a0]"
+              className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4f85a0]"
             />
           </div>
 
