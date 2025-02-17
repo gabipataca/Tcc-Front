@@ -27,6 +27,8 @@
   --secondary-hover-border-color: #FFF;
   
   
+  --link-color: #4F85A6;
+
 }
 
 @media (prefers-color-scheme: white) {

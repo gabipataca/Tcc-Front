@@ -1,6 +1,36 @@
+"use client"
+
+import Button from "@/components/_ui/Button";
+import Input from "@/components/_ui/Input";
+import PageLink from "@/components/_ui/PageLink";
 import React from "react";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
+
+interface LoginInputs {
+  RA: string;
+  password: string;
+}
 
 const Login: React.FC = () => {
+
+  const {
+      register,
+      handleSubmit,
+      control,
+      reset,
+      watch,
+      formState: { errors }
+    } = useForm<LoginInputs>({
+      defaultValues: {
+        RA: "",
+        password: ""
+      }
+    });
+  
+    const onSubmit: SubmitHandler<LoginInputs> = (data) => {
+      console.log(data);
+    }
+
   return (
     <div className="flex h-screen">
       {/* Seção da esquerda (Login) */}
@@ -8,25 +38,36 @@ const Login: React.FC = () => {
         <h1 className="text-3xl font-bold mb-8 text-[#4f85a0]">LOGIN</h1>
 
         <div className="w-full max-w-sm">
-          {/* Campo Usuário */}
-          <div className="mb-4">
-            <label className="block text-gray-700">Usuário</label>
-            <input
-              type="text"
-              placeholder="Digite o RA do aluno"
-              className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4f85a0]"
-            />
-          </div>
+          {/* Campo RA */}
+          <Controller
+            name="RA"
+            control={control}
+            render={({field, fieldState}) => (
+              <Input
+                type="text"
+                placeholder="Digite o RA do aluno"
+                label="RA"
+                error={fieldState.error}
+                {...field}
+              />
+            )}
+          />
 
           {/* Campo Senha */}
-          <div className="mb-4">
-            <label className="block text-gray-700">Senha</label>
-            <input
-              type="password"
-              placeholder="Digite a senha do usuário"
-              className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4f85a0]"
-            />
-          </div>
+          <Controller
+            name="password"
+            control={control}
+            render={({field, fieldState}) => (
+              <Input
+                type="password"
+                placeholder="Digite a senha do usuário"
+                label="Senha"
+                autocomplete="current-password"
+                error={fieldState.error}
+                {...field}
+              />
+            )}
+          />
 
           {/* Opções adicionais */}
           <div className="flex justify-between items-center mb-6">
@@ -38,13 +79,13 @@ const Login: React.FC = () => {
           </div>
 
           {/* Botão Entrar */}
-          <button className="w-full bg-[#4f85a0] text-white p-2 rounded-lg hover:bg-[#42738e]">
+          <Button rounded={true} fullWidth={true}>
             Entrar
-          </button>
+          </Button>
 
           {/* Link para inscrição */}
           <p className="mt-4 text-sm text-center">
-            Não tem uma conta? <a href="#" className="text-[#4f85a0]">Inscreva-se</a>
+            Não tem uma conta? <PageLink href="/cadastro">Inscreva-se</PageLink>
           </p>
         </div>
       </div>
