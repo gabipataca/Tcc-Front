@@ -40,6 +40,9 @@ const Input: React.FC<InputProps> = ({
                     {...otherProps}
                 />
             </div>
+            {error && (
+                <span>{error.message}</span>
+            )}
         </div>
     );
 };

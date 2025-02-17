@@ -12,7 +12,11 @@
         input {
             @apply w-full outline-none bg-transparent;
         }
-    }   
+    }
+
+    span {
+        @apply text-red-700 text-sm;
+    }
 
     
 }

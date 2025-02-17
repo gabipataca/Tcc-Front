@@ -5,6 +5,28 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+
+  /* Cores primarias */
+
+  --primary-text-color: #FFF;
+  --primary-bg-color: #4F85A6;
+  /*--secondary-border-color: #FFF;*/
+  --primary-hover-text-color: #FFF;
+  --primary-hover-bg-color: #3C6B88;
+  
+
+
+  /* Cores secondarias */
+
+  --secondary-text-color: #FFF;
+  --secondary-bg-color: #4F85A6;
+  --secondary-border-color: #FFF;
+  --secondary-hover-text-color: #4F85A6;
+  --secondary-hover-bg-color: #FFF;
+  --secondary-hover-border-color: #FFF;
+  
+  
 }
 
 @media (prefers-color-scheme: white) {

@@ -2,8 +2,9 @@
 
 import React from "react";
 import { User, IdCard, Mail, Lock, Layers } from "lucide-react";
-import Input from "@/components/shared/Input";
+import Input from "@/components/_ui/Input";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import Button from "@/components/_ui/Button";
 
 interface RegisterInputs {
 	joinYear: string;
@@ -33,7 +34,7 @@ const Cadastro: React.FC = () => {
 	});
 
 	const onSubmit: SubmitHandler<RegisterInputs> = (data) => {
-		
+		console.log(data);
 	}
 
 	return (
@@ -45,9 +46,15 @@ const Cadastro: React.FC = () => {
 				<p className="text-lg text-center mb-6">
 					Para acessar sua conta da Maratona de Programação
 				</p>
-				<button className="px-6 py-2 border border-white rounded-lg text-white hover:bg-white hover:text-[#4F85A6] transition">
+				<Button
+					type="link"
+					linkHref="/login"
+					style="secondary"
+					rounded={true}
+				>
 					Login
-				</button>
+				</Button>
+				
 			</div>
 
 			{/* Seção da direita (Formulário de Cadastro) */}
@@ -141,9 +148,12 @@ const Cadastro: React.FC = () => {
 						/>
 
 						{/* Botão Criar Conta */}
-						<button className="w-full bg-[#4F85A6] text-white p-2 rounded-lg hover:bg-[#3C6B88] transition">
+						<Button
+							rounded={true}
+							fullWidth={true}
+						>
 							Criar
-						</button>
+						</Button>
 
 					</form>
 				</div>
