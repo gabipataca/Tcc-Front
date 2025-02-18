@@ -75,7 +75,7 @@ const Login: React.FC = () => {
               <input type="checkbox" className="mr-2" />
               Lembre-me
             </label>
-            <a href="#" className="text-[#4f85a0] text-sm">Esqueceu a senha?</a>
+            <PageLink href="/recuperarSenha">Esqueceu a senha?</PageLink>
           </div>
 
           {/* Botão Entrar */}
