@@ -26,23 +26,33 @@ const AdminDashboard: React.FC = () => {
             <FaSignOutAlt size={24} />
           </button>
         </div>
-
-        {/* Conteúdo */}
-        <div className="grid grid-cols-2 gap-8 py-6 px-20 mt-6">
-          {/* Lista de Grupos */}
-          <div className="bg-white p-6 shadow-md rounded-lg">
-            <h3 className="text-2xl font-semibold text-[#4F85A6] mb-4">Lista de grupos</h3>
-            <ul className="text-lg">
+        {/* Lista de Grupos e Enviar Exercícios */}
+        <div className="grid grid-cols-2 gap-8 px-20 py-10">
+  <div className="bg-white shadow-md rounded-lg flex flex-col relative p-4">
+    <h3 className="text-3xl font-semibold text-[#4F85A6] py-3 mb-4 text-center">
+      Lista de grupos
+    </h3>
+    
+    <div className="pl-12">
+      <div className="max-h-48 overflow-y-auto pr-4">
+        <ul className="text-2xl ml-2">
               <li>1º Algoritmicamente Perigosos</li>
               <li>2º Bit Busters</li>
               <li>3º Bug Hunters</li>
               <li>4º Compiladores Selvagens</li>
+              <li>5º Debuggers Anônimos</li>
+              <li>6º Error 404</li>
+              <li>7º Full Stack Ninjas</li>
+              <li>8º Code Warriors</li>
+              <li>9º Runtime Terrors</li>
+              <li>10º Stack Overflowers</li>
             </ul>
-            <div className="flex gap-2 mt-4">
-              <button className="bg-[#4F85A6] text-white px-4 py-2 rounded-lg">Editar Grupo</button>
-              <button className="bg-[#4F85A6] text-white px-4 py-2 rounded-lg">Deletar Grupo</button>
-            </div>
-          </div>
+           </div>
+            <button className="bg-[#4F85A6] text-white px-3 py-2 text-lg rounded-lg hover:bg-[#3C6B88] transition absolute bottom-4 right-4">
+              Deletar Grupo
+           </button>
+         </div>
+       </div>
 
           {/* Enviar Exercícios */}
           <div className="bg-white shadow-md rounded-lg flex flex-col relative p-4">
@@ -74,36 +84,92 @@ const AdminDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Buscar e Criar Maratona */}
-        <div className="grid grid-cols-2 gap-8 px-20">
-          <div className="bg-white p-6 shadow-md rounded-lg">
-            <h3 className="text-2xl font-semibold text-[#4F85A6] mb-4">Buscar Professores</h3>
-            <input type="text" placeholder="Digite o nome do professor" className="w-full p-2 border border-gray-300 rounded-lg mb-4" />
-            <button className="bg-[#4F85A6] text-white px-4 py-2 rounded-lg">Deletar Professor</button>
-          </div>
 
-          <div className="bg-white p-6 shadow-md rounded-lg">
-            <h3 className="text-2xl font-semibold text-[#4F85A6] mb-4">Criar Maratona</h3>
-            <select className="w-full p-2 border border-gray-300 rounded-lg mb-4">
-              <option>O surfista</option>
-              <option>O Estacionamento</option>
-              <option>Maior número</option>
-            </select>
-            <button className="bg-[#4F85A6] text-white px-4 py-2 rounded-lg">Adicionar</button>
-            <h4 className="text-lg mt-4">Lista de exercícios Aprovados</h4>
-            <ul className="text-lg">
-              <li>1. O surfista</li>
-              <li>2. O Estacionamento</li>
-              <li>3. Maior número</li>
-            </ul>
-            <div className="flex gap-2 mt-4">
-              <button className="bg-[#4F85A6] text-white px-4 py-2 rounded-lg">Iniciar Maratona</button>
-              <button className="bg-[#4F85A6] text-white px-4 py-2 rounded-lg">Deletar Exercício</button>
-            </div>
-          </div>
-        </div>
+
+        <div className="flex gap-8 px-20 items-start">
+  {/* Coluna Esquerda - Mesma largura da Direita */}
+  <div className="flex flex-col gap-6 w-1/2">
+    <div className="bg-white p-6 shadow-md rounded-lg w-full">
+      <h3 className="text-2xl font-semibold text-[#4F85A6] mb-4  text-center">Buscar Professores</h3>
+      <input 
+        type="text" 
+        placeholder="Digite o nome do professor" 
+        className="w-full p-2 border border-gray-300 rounded-lg mb-4" 
+      />
+         <div className="flex justify-center">
+           <button className="bg-[#4F85A6] text-white px-3 py-2 text-lg rounded-lg hover:bg-[#3C6B88] transition">
+          Deletar Professor
+      </button>
       </div>
     </div>
+
+    <div className="bg-white p-6 shadow-md rounded-lg w-full">
+      <h3 className="text-2xl font-semibold text-[#4F85A6] mb-4 text-center">Buscar Grupo</h3>
+      <input 
+        type="text" 
+        placeholder="Digite o nome do grupo" 
+        className="w-full p-2 border border-gray-300 rounded-lg mb-4" 
+      />
+        <div className="flex justify-center">
+          <button className="bg-[#4F85A6] text-white px-3 py-2 text-lg rounded-lg hover:bg-[#3C6B88] transition">
+          Deletar Grupo
+         </button>
+      </div>
+    </div>
+
+    <div className="bg-white p-6 shadow-md rounded-lg w-full">
+      <h3 className="text-2xl font-semibold text-[#4F85A6] mb-4  text-center">Buscar Aluno</h3>
+      <input 
+        type="text" 
+        placeholder="Digite o nome do aluno" 
+        className="w-full p-2 border border-gray-300 rounded-lg mb-4" 
+      />
+         <div className="flex justify-center">
+          <button className="bg-[#4F85A6] text-white px-3 py-2 text-lg rounded-lg hover:bg-[#3C6B88] transition">
+          Deletar Aluno
+        </button>
+      </div>
+    </div>
+  </div>
+
+  {/* Coluna Direita - Mesma largura da Esquerda */}
+  <div className="w-1/2 bg-white p-6 shadow-md rounded-lg">
+    <h3 className="text-2xl font-semibold text-[#4F85A6] mb-4  text-center">Criar Maratona</h3>
+    <select className="w-full p-2 border border-gray-300 rounded-lg mb-4">
+      <option>O surfista</option>
+      <option>O Estacionamento</option>
+      <option>Maior número</option>
+    </select>
+    <div className="flex justify-center">
+          <button className="bg-[#4F85A6] text-white px-3 py-2 text-lg rounded-lg hover:bg-[#3C6B88] transition">
+          Deletar Aluno
+        </button>
+        </div>
+        <div className="pl-12">
+    <h4 className="text-lg mt-4">Lista de exercícios Aprovados</h4>
+    <ul className="text-lg">
+      <li>1. O surfista</li>
+      <li>2. O Estacionamento</li>
+      <li>3. Maior número</li>
+    </ul>
+    </div>
+       <div className="flex gap-2 mt-4 justify-center">
+         <button className="bg-[#4F85A6] text-white px-3 py-2 text-lg rounded-lg hover:bg-[#3C6B88] transition">
+           Iniciar Maratona
+           </button>
+               <button className="bg-[#4F85A6] text-white px-3 py-2 text-lg rounded-lg hover:bg-[#3C6B88] transition">
+           Deletar Exercício
+       </button>
+      </div>
+
+
+  </div>
+</div>
+</div>
+</div>
+
+
+
   );
 };
 

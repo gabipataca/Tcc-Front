@@ -68,6 +68,7 @@ const Cadastro: React.FC = () => {
 									label="Nome"
 									error={fieldState.error}
 									{...field}
+									
 								/>
 							)}
 						/>
