@@ -1,0 +1,15 @@
+.bodyLarge {
+    @apply text-lg font-normal;
+
+    .centered {
+        @apply text-center;
+    }
+
+    .white {
+        @apply text-white;
+    }
+
+    .slate {
+        @apply text-slate-800;
+    }
+}
