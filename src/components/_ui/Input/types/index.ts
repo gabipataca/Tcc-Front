@@ -56,6 +56,11 @@ export interface InputProps {
     disabled?: boolean;
 
     /**
+     * If true, the input will be required.
+     */
+    required?: boolean;
+
+    /**
      * The autocomplete attribute for the input element.
      */
     autocomplete?: HTMLInputAutoCompleteAttribute;

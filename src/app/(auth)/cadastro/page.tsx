@@ -5,6 +5,9 @@ import { User, IdCard, Mail, Lock, Layers } from "lucide-react";
 import Input from "@/components/_ui/Input";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import Button from "@/components/_ui/Button";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import ScreenContainer from "@/components/_ui/ScreenContainer";
 
 interface RegisterInputs {
 	joinYear: string;
@@ -13,6 +16,14 @@ interface RegisterInputs {
 	email: string;
 	password: string;
 }
+
+const schema = z.object({
+	joinYear: z.coerce.number().min(new Date().getFullYear() - 6, "Ano inválido!").max(new Date().getFullYear(), "Ano inválido!"),
+	name: z.string(),
+	RA: z.string().min(6, { message: "RA deve ter no mínimo 6 digitos!" }).max(7, { message: "RA deve ter no máximo 7 digitos!" }),
+	email: z.string().email("Formato de e-mail inválido!"),
+	password: z.string()
+});
 
 const Cadastro: React.FC = () => {
 
@@ -30,7 +41,9 @@ const Cadastro: React.FC = () => {
 			password: "",
 			RA: "",
 			joinYear: ""
-		}
+		},
+		mode: "onTouched",
+		resolver: zodResolver(schema)
 	});
 
 	const onSubmit: SubmitHandler<RegisterInputs> = (data) => {
@@ -38,7 +51,7 @@ const Cadastro: React.FC = () => {
 	}
 
 	return (
-		<div className="flex h-screen">
+		<ScreenContainer>
 			{/* Seção da esquerda (Logo e Texto) */}
 			<div className="w-1/2 bg-[#4F85A6] flex flex-col justify-center items-center text-white p-10">
 				<img src="/falcon.png" alt="Logo FHO" className="max-w-md object-contain mb-4" />
@@ -158,7 +171,7 @@ const Cadastro: React.FC = () => {
 					</form>
 				</div>
 			</div>
-		</div>
+		</ScreenContainer>
 	);
 };
 

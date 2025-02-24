@@ -15,6 +15,7 @@ const Input: React.FC<InputProps> = ({
     readOnly,
     name,
     disabled,
+    required,
     autocomplete,
     ref,
     error,
@@ -35,6 +36,7 @@ const Input: React.FC<InputProps> = ({
                     onBlur={onBlur}
                     readOnly={readOnly}
                     disabled={disabled}
+                    required={required}
                     ref={ref}
                     autoComplete={autocomplete}
                     {...otherProps}

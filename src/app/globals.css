@@ -14,6 +14,7 @@
   /*--secondary-border-color: #FFF;*/
   --primary-hover-text-color: #FFF;
   --primary-hover-bg-color: #3C6B88;
+  --primary-title-text-color: #4F85A0;
   
 
 
@@ -31,6 +32,11 @@
 
 }
 
+@font-face {
+  font-family: "Roboto";
+  src: url("/fonts/Roboto-VariableFont_wdth,wght.ttf") format('ttf');
+}
+
 @media (prefers-color-scheme: white) {
   :root {
     --background: #0a0a0a;
@@ -41,7 +47,8 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Roboto", Arial;
+  font-display: swap;
   display: flex;
   flex-direction: column;
 }
