@@ -3,9 +3,9 @@ import { FaSignOutAlt, FaUserCircle } from "react-icons/fa";
 
 const PerfilAluno: React.FC = () => {
   return (
-    <div className="flex h-screen max-w[100%]">
+    <div className="flex h-full mx-auto w-full">
       {/* Navbar Lateral */}
-      <div className="w-[220px] bg-[#4F85A6] flex flex-col items-center py-8 relative">
+      <div className="w-[250px] bg-[#4F85A6] flex flex-col items-center py-8 relative">
         <div className="absolute top-24 flex flex-col items-center">
           <FaUserCircle size={140} className="text-white mb-4" />
           <h2 className="text-white text-2xl font-semibold mb-1">Nome</h2>
@@ -17,10 +17,16 @@ const PerfilAluno: React.FC = () => {
         </div>
       </div>
 
-      {/* Conteúdo Principal */}
-      <div className="flex-1 flex flex-col bg-gray-200">
+  {/* Conteúdo Principal */}
+  <div className="flex-1 flex flex-col bg-gray-200">
         {/* Navbar Superior */}
-        <div className="bg-[#4F85A6] text-white flex justify-between items-center p-3">
+        <div className="bg-[#4F85A6] text-white flex justify-between items-center p-3 px-6">
+  
+          <nav className="flex space-x-6 text-lg">
+            <a href="#" className="hover:underline">Home</a>
+            <span>|</span>
+            <a href="#" className="hover:underline">Inscreva-se</a>
+          </nav>
           <button className="text-white ml-auto">
             <FaSignOutAlt size={24} />
           </button>
