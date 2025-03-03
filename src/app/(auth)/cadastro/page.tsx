@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { User, IdCard, Mail, Lock, Layers, Key } from "lucide-react";
 import Input from "@/components/_ui/Input";
+import Falcon from "@/components/_ui/icons/Falcon";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import Button from "@/components/_ui/Button";
 import { z } from "zod";
@@ -58,7 +59,7 @@ const Cadastro: React.FC = () => {
 	return (
 		<ScreenContainer>
 			<div className="w-1/2 bg-[#4F85A6] flex flex-col justify-center items-center text-white p-10">
-				<img src="/falcon.png" alt="Logo FHO" className="max-w-md object-contain mb-4" />
+				<Falcon className="max-w-md fill-white border-none object-contain mb-4 w-64 h-auto" />
 				<h1 className="text-5xl font-bold mt-4">FHO</h1>
 				<p className="text-lg text-center mb-6">Para acessar sua conta da Maratona de Programação</p>
 				<Button type="link" linkHref="/login" style="secondary" rounded={true}>Login</Button>

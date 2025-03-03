@@ -1,0 +1,13 @@
+.falconIcon {
+
+
+    &.stroke {
+        polygon {
+            stroke: black;
+        }
+    }
+
+    polygon {
+        stroke: none;
+    }
+}
