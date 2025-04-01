@@ -85,19 +85,19 @@ const AdminDashboard: React.FC = () => {
 
           {/* Coluna Direita */}
           <div className="flex flex-col gap-6 w-full">
-            {["Professor", "Grupo"].map((tipo, index) => (
+            {["Professor", "Grupo"].map((type, index) => (
               <div key={index} className="bg-white p-6 shadow-md rounded-lg w-full">
                 <h3 className="text-2xl font-semibold text-[#4F85A6] mb-4 text-center">
-                  Buscar {tipo}
+                  Buscar {type}
                 </h3>
                 <input 
                   type="text" 
-                  placeholder={`Digite o nome do ${tipo.toLowerCase()}`} 
+                  placeholder={`Digite o nome do ${type.toLowerCase()}`} 
                   className="w-full p-2 border border-gray-300 rounded-lg mb-4" 
                 />
                 <div className="flex justify-center">
                   <button className="bg-[#4F85A6] text-white px-3 py-2 text-lg rounded-lg hover:bg-[#3C6B88] transition">
-                    Deletar {tipo}
+                    Deletar {type}
                   </button>
                 </div>
               </div>
