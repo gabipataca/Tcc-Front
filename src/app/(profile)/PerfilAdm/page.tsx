@@ -1,41 +1,15 @@
+import Navbar from "@/components/_ui/Navbar";
+import SideMenu from "@/components/_ui/SideMenu";
 import React from "react";
-import { FaSignOutAlt, FaUserCircle } from "react-icons/fa";
 
 const AdminDashboard: React.FC = () => {
   return (
     <div className="flex h-full mx-auto w-full">
-      {/* Navbar Lateral */}
-      <div className="w-[250px] bg-[#4F85A6] flex flex-col items-center py-8 relative">
-        <div className="mt-20 h-full top-24 flex flex-col items-center">
-          <FaUserCircle size={140} className="text-white mb-4" />
-          <h2 className="text-white text-2xl font-semibold mb-1">Perfil ADM</h2>
-          <p className="text-white text-lg">E-mail Institucional</p>
-          <div className="mt-auto mb-3">
-            <img src="/falcon.png" alt="FHO Logo" className="h-28" />
-          </div>
-        </div>
-      </div>
+      <SideMenu />
 
       {/* Conteúdo Principal */}
       <div className="flex-1 flex flex-col bg-gray-200">
-        {/* Navbar Superior */}
-        <div className="bg-[#4F85A6] text-white flex justify-between items-center p-3 px-6">
-          <nav className="flex space-x-6 text-lg">
-            <a href="#" className="hover:underline">Home</a>
-            <span>|</span>
-            <a href="#" className="hover:underline">Inscrições</a>
-            <span>|</span>
-            <a href="#" className="hover:underline">Criar Maratona</a>
-            <span>|</span>
-            <a href="#" className="hover:underline">Estatísticas</a>
-            <span>|</span>
-            <a href="#" className="hover:underline">Ranking</a>
-            <span>|</span>
-          </nav>
-          <button className="text-white ml-auto">
-            <FaSignOutAlt size={24} />
-          </button>
-        </div>
+        <Navbar />
 
         {/* Seção Principal */}
         <div className="grid grid-cols-2 gap-8 px-20 py-10">
