@@ -3,7 +3,7 @@ import { FaSignOutAlt, FaUserCircle } from "react-icons/fa";
 
 const PerfilProfessor: React.FC = () => {
   return (
-    <div className="flex h-screen w-full mx-auto">
+    <div className="flex min-h-screen w-full mx-auto">
       {/* Navbar Lateral */}
       <aside className="w-[250px] bg-[#4F85A6] flex flex-col items-center py-8 relative">
         <div className="mt-20 flex flex-col items-center">
@@ -16,6 +16,8 @@ const PerfilProfessor: React.FC = () => {
           <img src="/falcon.png" alt="FHO Logo" className="h-28" />
         </div>
       </aside>
+
+      
 
       {/* Conteúdo Principal */}
       <main className="flex-1 flex flex-col bg-gray-200">

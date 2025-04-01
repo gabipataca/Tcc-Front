@@ -4,37 +4,37 @@ import React, { useState, useEffect } from "react";
 import { FaSignOutAlt, FaUserCircle } from "react-icons/fa";
 
 const Inscricao: React.FC = () => {
-  const [nomeMaratona, setNomeMaratona] = useState("");
-  const [quantidadeAlunos, setQuantidadeAlunos] = useState(1);
-  const [integrantes, setIntegrantes] = useState<string[]>([""]);
-  const [inscricaoInicio, setInscricaoInicio] = useState("");
-  const [inscricaoFim, setInscricaoFim] = useState("");
-  const [maxIntegrantes, setMaxIntegrantes] = useState(3);
+  const [competitionName, setCompetitionName,] = useState("");
+  const [quantityStudents, setQuantityStudents] = useState(1);
+  const [members, setMembers] = useState<string[]>([""]);
+  const [initialRegistration, setInitialRegistration] = useState("");
+  const [registrationEnd, setRegistrationEnd] = useState("");
+  const [maxMembers, setMaxMember] = useState(3);
 
   useEffect(() => {
     const fetchMaratonaConfig = async () => {
       const response = await fetch("/api/maratona");
       const data = await response.json();
-      setNomeMaratona(data.nome);
-      setInscricaoInicio(data.inscricaoInicio);
-      setInscricaoFim(data.inscricaoFim);
-      setMaxIntegrantes(data.maxIntegrantes);
-      setQuantidadeAlunos(1);
-      setIntegrantes([""]);
+      setCompetitionName(data.nome);
+      setInitialRegistration(data.initialRegistration);
+      setRegistrationEnd(data.registrationEnd);
+      setMaxIntegrantes(data.maxMembers);
+      setQuantityStudents(1);
+      setMembers([""]);
     };
     fetchMaratonaConfig();
   }, []);
 
   const handleQuantidadeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const quantidade = parseInt(e.target.value);
-    setQuantidadeAlunos(quantidade);
-    setIntegrantes(Array(quantidade).fill(""));
+    const quantity = parseInt(e.target.value);
+    setQuantityStudents quantity);
+    setMembers(Array quantity).fill(""));
   };
 
   const handleIntegranteChange = (index: number, value: string) => {
-    const novosIntegrantes = [...integrantes];
-    novosIntegrantes[index] = value;
-    setIntegrantes(novosIntegrantes);
+    const newMembers = [...members];
+    newMembers[index] = value;
+    setMembers(newMembers);
   };
 
   return (
@@ -75,7 +75,7 @@ const Inscricao: React.FC = () => {
             <label className="block text-xl font-medium text-gray-700">Nome da Maratona</label>
             <input 
               type="text" 
-              value={nomeMaratona} 
+              value={competitionName} 
               readOnly 
               className="mt-2 block w-full border border-gray-300 rounded-lg p-3 text-lg bg-gray-200 cursor-not-allowed" 
             />
@@ -89,22 +89,22 @@ const Inscricao: React.FC = () => {
           <div className="mb-6">
             <label className="block text-xl font-medium text-gray-700">Quantidade de Alunos</label>
             <select 
-              value={quantidadeAlunos} 
+              value={quantityStudents} 
               onChange={handleQuantidadeChange} 
               className="mt-2 block w-full border border-gray-300 rounded-lg p-3 text-lg"
             >
-              {[...Array(maxIntegrantes)].map((_, num) => (
+              {[...Array(maxMembers)].map((_, num) => (
                 <option key={num + 1} value={num + 1}>{num + 1}</option>
               ))}
             </select>
           </div>
 
-          {integrantes.map((_, index) => (
+          {members.map((_, index) => (
             <div key={index} className="mb-6">
               <label className="block text-xl font-medium text-gray-700">Nome do Integrante {index + 1}</label>
               <input 
                 type="text" 
-                value={integrantes[index]} 
+                value={members[index]} 
                 onChange={(e) => handleIntegranteChange(index, e.target.value)} 
                 className="mt-2 block w-full border border-gray-300 rounded-lg p-3 text-lg" 
                 required 
@@ -115,12 +115,12 @@ const Inscricao: React.FC = () => {
           <div className="grid grid-cols-2 gap-6">
             <div>
               <label className="block text-xl font-medium text-gray-700">Início das Inscrições</label>
-              <input type="date" value={inscricaoInicio} readOnly className="mt-2 block w-full border border-gray-300 rounded-lg p-3 text-lg bg-gray-200" />
+              <input type="date" value={initialRegistration} readOnly className="mt-2 block w-full border border-gray-300 rounded-lg p-3 text-lg bg-gray-200" />
             </div>
 
             <div>
               <label className="block text-xl font-medium text-gray-700">Fim das Inscrições</label>
-              <input type="date" value={inscricaoFim} readOnly className="mt-2 block w-full border border-gray-300 rounded-lg p-3 text-lg bg-gray-200" />
+              <input type="date" value={registrationEnd} readOnly className="mt-2 block w-full border border-gray-300 rounded-lg p-3 text-lg bg-gray-200" />
             </div>
           </div>
 

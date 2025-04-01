@@ -3,19 +3,19 @@
 import { useState } from "react";
 import { FaSignOutAlt, FaUserCircle } from "react-icons/fa";
 
-export default function AdminMaratonaForm() {
-  const [nome, setNome] = useState("");
-  const [descricao, setDescricao] = useState("");
-  const [maxIntegrantes, setMaxIntegrantes] = useState(3);
-  const [dataInicio, setDataInicio] = useState("");
-  const [inscricaoInicio, setInscricaoInicio] = useState("");
-  const [inscricaoFim, setInscricaoFim] = useState("");
+export default function AdminCompetitionForm() {
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [maxMembers, setMaxMembers] = useState(3);
+  const [initialDate, setInitialDate] = useState("");
+  const [initialRegistration, setInitialRegistration] = useState("");
+  const [endRegistration, setEndRegistration] = useState("");
   const [status, setStatus] = useState("Fechado");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const dadosMaratona = { nome, descricao, maxIntegrantes, dataInicio, inscricaoInicio, inscricaoFim, status };
-    console.log(dadosMaratona);
+    const dataCompetition = { name, description, maxMembers, initialDate, initialResgistration, endResgistration, status };
+    console.log(dataCompetition);
     alert("Maratona criada com sucesso!");
   };
 
@@ -61,19 +61,19 @@ export default function AdminMaratonaForm() {
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
                 <label className="block text-xl font-medium text-gray-700">Nome da Maratona</label>
-                <input type="text" value={nome} onChange={(e) => setNome(e.target.value)} 
+                <input type="text" value={name} onChange={(e) => setName(e.target.value)} 
                   className="mt-2 block w-full border border-gray-300 rounded-lg p-3 text-lg" required />
               </div>
               
               <div className="mb-4">
                 <label className="block text-xl font-medium text-gray-700">Descrição</label>
-                <textarea value={descricao} onChange={(e) => setDescricao(e.target.value)}
+                <textarea value={description} onChange={(e) => setDescription(e.target.value)}
                   className="mt-2 block w-full border border-gray-300 rounded-lg p-3 text-lg" required />
               </div>
 
               <div className="mb-4">
                 <label className="block text-xl font-medium text-gray-700">Número Máximo de Integrantes por Grupo</label>
-                <select value={maxIntegrantes} onChange={(e) => setMaxIntegrantes(Number(e.target.value))}
+                <select value={maxMembers} onChange={(e) => setMaxMembers(Number(e.target.value))}
                   className="mt-2 block w-full border border-gray-300 rounded-lg p-3 text-lg">
                   {[1, 2, 3].map(num => <option key={num} value={num}>{num}</option>)}
                 </select>
@@ -82,12 +82,12 @@ export default function AdminMaratonaForm() {
               <div className="grid grid-cols-2 gap-6">
                 <div>
                   <label className="block text-xl font-medium text-gray-700">Início das Inscrições</label>
-                  <input type="date" value={inscricaoInicio} onChange={(e) => setInscricaoInicio(e.target.value)}
+                  <input type="date" value={initialRegistration} onChange={(e) => setInitialRegistration(e.target.value)}
                     className="mt-2 block w-full border border-gray-300 rounded-lg p-3 text-lg" required />
                 </div>
                 <div>
                   <label className="block text-xl font-medium text-gray-700">Fim das Inscrições</label>
-                  <input type="date" value={inscricaoFim} onChange={(e) => setInscricaoFim(e.target.value)}
+                  <input type="date" value={endRegistration} onChange={(e) => setEndRegistration(e.target.value)}
                     className="mt-2 block w-full border border-gray-300 rounded-lg p-3 text-lg" required />
                 </div>
               </div>
@@ -95,7 +95,7 @@ export default function AdminMaratonaForm() {
               <div className="grid grid-cols-1 gap-6 mt-4">
                 <div>
                   <label className="block text-xl font-medium text-gray-700 text-center">Data da Maratona</label>
-                  <input type="date" value={dataInicio} onChange={(e) => setDataInicio(e.target.value)}
+                  <input type="date" value={initialDate} onChange={(e) => setInitialDate(e.target.value)}
                     className="mt-2 block mx-auto w-1/2 border border-gray-300 rounded-lg p-3 text-lg" required />
                 </div>
               </div>

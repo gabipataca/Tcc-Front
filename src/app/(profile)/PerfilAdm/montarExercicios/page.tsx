@@ -4,25 +4,25 @@ import React, { useState } from "react";
 import { FaSignOutAlt, FaUserCircle, FaEdit, FaTrash } from "react-icons/fa";
 
 const AdminDashboard: React.FC = () => {
-  const [exercicios, setExercicios] = useState<{ titulo: string; tipo: string }[]>([
-    { titulo: "Exemplo de Exercício", tipo: "Lógico" }
+  const [exercises, setExercises] = useState<{ title: string; type: string }[]>([
+    { title: "Exemplo de Exercício", type: "Lógico" }
   ]);
-  const [titulo, setTitulo] = useState("");
-  const [tipo, setTipo] = useState("Lógico");
-  const [filtro, setFiltro] = useState("Todos");
+  const [title, setTitle] = useState("");
+  const [type, setType] = useState("Lógico");
+  const [filter, setFilter] = useState("Todos");
 
-  const adicionarExercicio = () => {
-    if (titulo.trim()) {
-      setExercicios([...exercicios, { titulo, tipo }]);
-      setTitulo("");
+  const addExercises = () => {
+    if (title.trim()) {
+      setExercises([...exercises, { title, type }]);
+      setTitle("");
     }
   };
 
-  const removerExercicio = (index: number) => {
-    setExercicios(exercicios.filter((_, i) => i !== index));
+  const removeExercise = (index: number) => {
+    setExercises(exercises.filter((_, i) => i !== index));
   };
 
-  const exerciciosFiltrados = filtro === "Todos" ? exercicios : exercicios.filter(ex => ex.tipo === filtro);
+  const exercisesFilter = filter === "Todos" ? exercises : exercises.filter(ex => ex.type === filter);
 
   return (
     <div className="flex h-screen w-screen bg-gray-200">
@@ -66,7 +66,7 @@ const AdminDashboard: React.FC = () => {
             {/* Lista de Exercícios */}
             <div className="bg-white shadow-md rounded-lg flex flex-col p-6 relative">
               <h3 className="text-3xl font-semibold text-[#4F85A6] text-center mb-4">Lista de exercícios</h3>
-              <select className="w-full p-2 border border-gray-300 rounded-lg mb-4" value={filtro} onChange={(e) => setFiltro(e.target.value)}>
+              <select className="w-full p-2 border border-gray-300 rounded-lg mb-4" value={filter} onChange={(e) => setFilter(e.target.value)}>
                 <option value="Todos">Todos</option>
                 <option value="Lógico">Lógico</option>
                 <option value="Sequenciais">Sequenciais</option>
@@ -77,12 +77,12 @@ const AdminDashboard: React.FC = () => {
               </select>
               <div className="max-h-48 overflow-y-auto px-4">
                 <ul className="text-lg space-y-2">
-                  {exerciciosFiltrados.map((ex, index) => (
+                  {exercisesFilter.map((ex, index) => (
                     <li key={index} className="flex justify-between items-center border-b py-2">
-                      {ex.titulo} ({ex.tipo})
+                      {ex.title} ({ex.type})
                       <div className="flex space-x-2">
                         <button className="text-blue-500 hover:text-blue-700"><FaEdit /></button>
-                        <button className="text-red-500 hover:text-red-700" onClick={() => removerExercicio(index)}><FaTrash /></button>
+                        <button className="text-red-500 hover:text-red-700" onClick={() => removeExercise(index)}><FaTrash /></button>
                       </div>
                     </li>
                   ))}
@@ -97,13 +97,13 @@ const AdminDashboard: React.FC = () => {
                 type="text"
                 placeholder="Digite o Título do Exercício"
                 className="w-full p-2 border border-gray-300 rounded-lg mb-4"
-                value={titulo}
-                onChange={(e) => setTitulo(e.target.value)}
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
               />
               <select
                 className="w-full p-2 border border-gray-300 rounded-lg mb-4"
-                value={tipo}
-                onChange={(e) => setTipo(e.target.value)}
+                value={type}
+                onChange={(e) => setType(e.target.value)}
               >
                 <option value="Lógico">Lógico</option>
                 <option value="Sequenciais">Sequenciais</option>
@@ -127,7 +127,7 @@ const AdminDashboard: React.FC = () => {
                 </div>
               </div>
               <div className="flex justify-center mt-6">
-                <button onClick={adicionarExercicio} className="bg-[#4F85A6] text-white px-6 py-2 text-lg rounded-lg hover:bg-[#3C6B88] transition">
+                <button onClick={addExercises} className="bg-[#4F85A6] text-white px-6 py-2 text-lg rounded-lg hover:bg-[#3C6B88] transition">
                   Enviar
                 </button>
               </div>
