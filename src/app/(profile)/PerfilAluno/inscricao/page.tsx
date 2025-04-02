@@ -18,7 +18,7 @@ const Inscricao: React.FC = () => {
       setCompetitionName(data.nome);
       setInitialRegistration(data.initialRegistration);
       setRegistrationEnd(data.registrationEnd);
-      setMaxIntegrantes(data.maxMembers);
+      setMaxMember(data.maxMembers);
       setQuantityStudents(1);
       setMembers([""]);
     };
@@ -27,9 +27,9 @@ const Inscricao: React.FC = () => {
 
   const handleQuantidadeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const quantity = parseInt(e.target.value);
-    setQuantityStudents quantity);
-    setMembers(Array quantity).fill(""));
-  };
+    setQuantityStudents (quantity);
+    setMembers(Array (quantity).fill(""));
+  }; 
 
   const handleIntegranteChange = (index: number, value: string) => {
     const newMembers = [...members];

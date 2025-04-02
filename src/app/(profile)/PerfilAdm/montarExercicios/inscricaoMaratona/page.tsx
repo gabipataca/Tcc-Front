@@ -14,7 +14,7 @@ export default function AdminCompetitionForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const dataCompetition = { name, description, maxMembers, initialDate, initialResgistration, endResgistration, status };
+    const dataCompetition = { name, description, maxMembers, initialDate, initialRegistration, endRegistration, status };
     console.log(dataCompetition);
     alert("Maratona criada com sucesso!");
   };
