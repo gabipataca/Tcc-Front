@@ -9,7 +9,7 @@ const Inscricao: React.FC = () => {
   const [members, setMembers] = useState<string[]>([""]);
   const [initialRegistration, setInitialRegistration] = useState("");
   const [registrationEnd, setRegistrationEnd] = useState("");
-  const [maxMembers, setMaxMember] = useState(3);
+  const [maxMembers, setMaxMembers] = useState(3);
 
   useEffect(() => {
     const fetchMaratonaConfig = async () => {
@@ -18,7 +18,7 @@ const Inscricao: React.FC = () => {
       setCompetitionName(data.nome);
       setInitialRegistration(data.initialRegistration);
       setRegistrationEnd(data.registrationEnd);
-      setMaxIntegrantes(data.maxMembers);
+      setMaxMembers(data.maxMembers);
       setQuantityStudents(1);
       setMembers([""]);
     };
@@ -26,10 +26,10 @@ const Inscricao: React.FC = () => {
   }, []);
 
   const handleQuantidadeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const quantity = parseInt(e.target.value);
-    setQuantityStudents quantity);
-    setMembers(Array quantity).fill(""));
-  };
+    const quantity = parseInt(e.target.value, 10);
+    setQuantityStudents(quantity);
+    setMembers(Array(quantity).fill(""));
+};
 
   const handleIntegranteChange = (index: number, value: string) => {
     const newMembers = [...members];
