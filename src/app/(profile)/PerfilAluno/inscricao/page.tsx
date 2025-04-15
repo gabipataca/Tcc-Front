@@ -9,7 +9,8 @@ const Inscricao: React.FC = () => {
   const [members, setMembers] = useState<string[]>([""]);
   const [initialRegistration, setInitialRegistration] = useState("");
   const [registrationEnd, setRegistrationEnd] = useState("");
-  const [maxMembers, setMaxMember] = useState(3);
+  const [maxMembers, setMaxMembers] = useState(3);
+  
 
   useEffect(() => {
     const fetchMaratonaConfig = async () => {
@@ -18,7 +19,7 @@ const Inscricao: React.FC = () => {
       setCompetitionName(data.nome);
       setInitialRegistration(data.initialRegistration);
       setRegistrationEnd(data.registrationEnd);
-      setMaxMember(data.maxMembers);
+      setMaxMembers(data.maxMembers);
       setQuantityStudents(1);
       setMembers([""]);
     };
@@ -26,10 +27,10 @@ const Inscricao: React.FC = () => {
   }, []);
 
   const handleQuantidadeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const quantity = parseInt(e.target.value);
-    setQuantityStudents (quantity);
-    setMembers(Array (quantity).fill(""));
-  }; 
+    const quantity = parseInt(e.target.value, 10);
+    setQuantityStudents(quantity);
+    setMembers(Array(quantity).fill(""));
+};
 
   const handleIntegranteChange = (index: number, value: string) => {
     const newMembers = [...members];
@@ -37,10 +38,15 @@ const Inscricao: React.FC = () => {
     setMembers(newMembers);
   };
 
+
+  
   return (
     <div className="flex h-full mx-auto w-full">
       {/* Navbar Lateral */}
       <div className="w-[250px] bg-[#4F85A6] flex flex-col items-center py-8 relative">
+      <div className="mt-[-30px] mb-2">
+          <img src="/fhologo.png" alt="" className="h-20" />
+        </div>
         <div className=" mt-20 h-full top-24 flex flex-col items-center">
           <FaUserCircle size={140} className="text-white mb-4" />
           <h2 className="text-white text-2xl font-semibold mb-1">Nome</h2>

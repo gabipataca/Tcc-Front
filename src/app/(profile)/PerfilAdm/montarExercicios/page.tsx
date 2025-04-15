@@ -1,7 +1,10 @@
 'use client'
 
+import StyledButton from "@/components/_ui/Button";
+import Navbar from "@/components/_ui/Navbar";
+import SideMenu from "@/components/_ui/SideMenu";
 import React, { useState } from "react";
-import { FaSignOutAlt, FaUserCircle, FaEdit, FaTrash } from "react-icons/fa";
+import { FaEdit, FaTrash } from "react-icons/fa";
 
 const AdminDashboard: React.FC = () => {
   const [exercises, setExercises] = useState<{ title: string; type: string }[]>([
@@ -27,39 +30,12 @@ const AdminDashboard: React.FC = () => {
   return (
     <div className="flex h-screen w-screen bg-gray-200">
             {/* Navbar Lateral */}
-         <div className="w-[250px] bg-[#4F85A6] flex flex-col items-center py-8 relative">
-         <div className="mt-20 h-full top-24 flex flex-col items-center">
-        <FaUserCircle size={140} className="text-white mb-4" />
-        <h2 className="text-white text-2xl font-semibold mb-1">Usuário ADM</h2>
-          <p className="text-white text-lg">E-mail Institucional</p>
-
-        <div className="mt-auto mb-6">
-          <img src="/falcon.png" alt="FHO Logo" className="h-28" />
-        </div>
-      </div>
-      </div>
+            <SideMenu />
 
    {/* Conteúdo Principal */}
    <div className="flex-1 flex flex-col bg-gray-200">
         {/* Navbar Superior */}
-        <div className="bg-[#4F85A6] text-white flex justify-between items-center p-3 px-6">
-  
-          <nav className="flex space-x-6 text-lg">
-            <a href="#" className="hover:underline">Home</a>
-            <span>|</span>
-            <a href="#" className="hover:underline">Inscrições</a>
-            <span>|</span>
-            <a href="#" className="hover:underline">Criar Maratona</a>
-            <span>|</span>
-            <a href="#" className="hover:underline">Estatísticas</a>
-            <span>|</span>
-            <a href="#" className="hover:underline">Ranking</a>
-            <span>|</span>
-          </nav>
-          <button className="text-white ml-auto">
-            <FaSignOutAlt size={24} />
-          </button>
-        </div>
+        <Navbar />
         
         <div className="mt-10 p-5">
           <div className="grid grid-cols-2 gap-8 px-20 py-1">
@@ -127,9 +103,9 @@ const AdminDashboard: React.FC = () => {
                 </div>
               </div>
               <div className="flex justify-center mt-6">
-                <button onClick={addExercises} className="bg-[#4F85A6] text-white px-6 py-2 text-lg rounded-lg hover:bg-[#3C6B88] transition">
-                  Enviar
-                </button>
+              <StyledButton onClick={addExercises} $rounded $fullWidth>
+              Enviar
+              </StyledButton>
               </div>
             </div>
           </div>

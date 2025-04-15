@@ -34,6 +34,7 @@ export const WebSocketContextProvider = ({ children }: { children: React.ReactNo
 
     useEffect(() => {
         ConfigureWebSocket();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [webSocketConnection]);
 
     return(

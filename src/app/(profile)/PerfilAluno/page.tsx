@@ -6,6 +6,9 @@ const PerfilAluno: React.FC = () => {
     <div className="flex h-full mx-auto w-full">
       {/* Navbar Lateral */}
       <div className="w-[250px] bg-[#4F85A6] flex flex-col items-center py-8 relative">
+      <div className="mt-[-30px] mb-2">
+          <img src="/fhologo.png" alt="" className="h-20" />
+        </div>
         <div className="absolute top-24 flex flex-col items-center">
           <FaUserCircle size={140} className="text-white mb-4" />
           <h2 className="text-white text-2xl font-semibold mb-1">Nome</h2>

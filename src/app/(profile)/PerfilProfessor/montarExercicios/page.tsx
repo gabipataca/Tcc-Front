@@ -28,9 +28,12 @@ const AdminDashboard: React.FC = () => {
     <div className="flex h-screen w-screen bg-gray-200">
       {/* Navbar Lateral */}
       <div className="w-[250px] bg-[#4F85A6] flex flex-col items-center py-8 relative">
+        <div className="mt-[-30px] mb-2">
+          <img src="/fhologo.png" alt="" className="h-20" />
+        </div>
         <div className="mt-20 h-full top-24 flex flex-col items-center">
           <FaUserCircle size={140} className="text-white mb-4" />
-          <h2 className="text-white text-2xl font-semibold mb-1">Usuário ADM</h2>
+          <h2 className="text-white text-2xl font-semibold mb-1">Perfil Do Professor</h2>
           <p className="text-white text-lg">E-mail Institucional</p>
           <div className="mt-auto mb-6">
             <img src="/falcon.png" alt="FHO Logo" className="h-28" />
@@ -105,6 +108,22 @@ const AdminDashboard: React.FC = () => {
                 <option value="Grafos">Grafos</option>
                 <option value="Matriz">Matriz</option>
               </select>
+
+              <div className="space-y-4">
+                <div className="flex flex-col">
+                  <label className="text-lg font-medium">Descrição:</label>
+                  <button className="bg-gray-300 px-4 py-2 rounded-lg mt-2">Anexar arquivo</button>
+                </div>
+                <div className="flex flex-col">
+                  <label className="text-lg font-medium">Valores de entrada:</label>
+                  <button className="bg-gray-300 px-4 py-2 rounded-lg mt-2">Anexar arquivo</button>
+                </div>
+                <div className="flex flex-col">
+                  <label className="text-lg font-medium">Valores de saída:</label>
+                  <button className="bg-gray-300 px-4 py-2 rounded-lg mt-2">Anexar arquivo</button>
+                </div>
+              </div>
+
               <div className="flex justify-center mt-6">
                 <button onClick={addExercise} className="bg-[#4F85A6] text-white px-6 py-2 text-lg rounded-lg hover:bg-[#3C6B88] transition">
                   Enviar
