@@ -1,5 +1,6 @@
 'use client'
 
+import SideMenu from "@/components/_ui/SideMenu";
 import React, { useState } from "react";
 import { FaSignOutAlt, FaUserCircle, FaEdit, FaTrash } from "react-icons/fa";
 
@@ -27,20 +28,7 @@ const AdminDashboard: React.FC = () => {
   return (
     <div className="flex h-screen w-screen bg-gray-200">
       {/* Navbar Lateral */}
-      <div className="w-[250px] bg-[#4F85A6] flex flex-col items-center py-8 relative">
-        <div className="mt-[-30px] mb-2">
-          <img src="/fhologo.png" alt="" className="h-20" />
-        </div>
-        <div className="mt-20 h-full top-24 flex flex-col items-center">
-          <FaUserCircle size={140} className="text-white mb-4" />
-          <h2 className="text-white text-2xl font-semibold mb-1">Perfil Do Professor</h2>
-          <p className="text-white text-lg">E-mail Institucional</p>
-          <div className="mt-auto mb-6">
-            <img src="/falcon.png" alt="FHO Logo" className="h-28" />
-          </div>
-        </div>
-      </div>
-
+      <SideMenu />
       {/* Conteúdo Principal */}
       <div className="flex-1 flex flex-col bg-gray-200">
         {/* Navbar Superior */}
