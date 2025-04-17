@@ -1,6 +1,6 @@
 'use client'
 
-import StyledButton from "@/components/_ui/Button";
+import Button from "@/components/_ui/Button";
 import Navbar from "@/components/_ui/Navbar";
 import SideMenu from "@/components/_ui/SideMenu";
 import React, { useState } from "react";
@@ -103,9 +103,9 @@ const AdminDashboard: React.FC = () => {
                 </div>
               </div>
               <div className="flex justify-center mt-6">
-              <StyledButton onClick={addExercises} $rounded $fullWidth>
+              <Button onClick={addExercises} $rounded $fullWidth>
               Enviar
-              </StyledButton>
+              </Button>
               </div>
             </div>
           </div>

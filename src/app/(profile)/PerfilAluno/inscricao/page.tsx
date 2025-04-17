@@ -1,5 +1,8 @@
 'use client';
 
+
+
+import SideMenu from "@/components/_ui/SideMenu";
 import React, { useState, useEffect } from "react";
 import { FaSignOutAlt, FaUserCircle } from "react-icons/fa";
 
@@ -23,7 +26,7 @@ const Inscricao: React.FC = () => {
       setQuantityStudents(1);
       setMembers([""]);
     };
-    fetchMaratonaConfig();
+    //fetchMaratonaConfig();
   }, []);
 
   const handleQuantidadeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -39,25 +42,10 @@ const Inscricao: React.FC = () => {
   };
 
 
-  
   return (
     <div className="flex h-full mx-auto w-full">
       {/* Navbar Lateral */}
-      <div className="w-[250px] bg-[#4F85A6] flex flex-col items-center py-8 relative">
-      <div className="mt-[-30px] mb-2">
-          <img src="/fhologo.png" alt="" className="h-20" />
-        </div>
-        <div className=" mt-20 h-full top-24 flex flex-col items-center">
-          <FaUserCircle size={140} className="text-white mb-4" />
-          <h2 className="text-white text-2xl font-semibold mb-1">Nome</h2>
-          <p className="text-white text-lg mb-1">RA: xxxxx</p>
-          <p className="text-white text-lg mb-3">Ano de ingresso: XXXX</p>
-        </div>
-        <div className="mt-auto mb-3">
-          <img src="/falcon.png" alt="FHO Logo" className="h-28" />
-        </div>
-      </div>
-
+      <SideMenu />
       {/* Conteúdo Principal */}
       <div className="flex-1 flex flex-col bg-gray-200 items-center">
         {/* Navbar Superior */}
