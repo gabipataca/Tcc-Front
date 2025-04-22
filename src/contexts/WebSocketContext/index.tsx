@@ -1,3 +1,5 @@
+"use client"
+
 import React, { createContext, useEffect, useState } from "react";
 import { WebSocketContextProps } from "./types";
 import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr"
@@ -23,8 +25,8 @@ export const WebSocketContextProvider = ({ children }: { children: React.ReactNo
 
     useEffect(() => {
         const newConnection = new HubConnectionBuilder()
-            .withUrl("", {
-
+            .withUrl(`${process.env.NEXT_PUBLIC_URL}/hub/competition`, {
+                
             })
             .withAutomaticReconnect()
             .build();

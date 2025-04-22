@@ -1,7 +1,7 @@
 "use client"
 
 import { User } from "@/types/User";
-import React, { createContext, useState } from "react";
+import React, { createContext, useContext, useState } from "react";
 
 
 
@@ -28,4 +28,15 @@ export const UserContextProvider: React.FC<UserContextProviderProps> = ({ childr
             {children}
         </UserContext.Provider>
     )
+}
+
+
+export const useUser = () => {
+    const context = useContext(UserContext);
+
+    if(context == null) {
+        throw new Error("You are not inside the context scope");
+    }
+
+    return context;
 }
