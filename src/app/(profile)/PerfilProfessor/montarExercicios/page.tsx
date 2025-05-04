@@ -2,7 +2,7 @@
 
 import SideMenu from "@/components/_ui/SideMenu";
 import React, { useState } from "react";
-import { FaSignOutAlt, FaUserCircle, FaEdit, FaTrash } from "react-icons/fa";
+import { FaSignOutAlt, FaEdit, FaTrash } from "react-icons/fa";
 
 const AdminDashboard: React.FC = () => {
   const [exercises, setExercises] = useState<{ title: string; type: string }[]>([

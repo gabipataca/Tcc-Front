@@ -22,20 +22,23 @@ export default function AnaliseJuiz() {
       {/* Card Principal */}
       <div className="flex justify-center items-center flex-grow">
         <div className="bg-white p-16 rounded-xl shadow-lg w-[700px] text-center">
-          <h2 className="text-4xl font-bold text-[#4F85A6] mb-6 tracking-wide">Submeter a análise do Juíz</h2>
-          
+          <h2 className="text-4xl font-bold text-[#4F85A6] mb-6 tracking-wide">
+            Retire suas dúvidas sobre o exercício
+          </h2>
+
+          {/* Escolha do exercício */}
           <div className="mb-8">
             <label className="block text-gray-700 text-lg mb-2">Escolha o exercício:</label>
-            <div className="flex justify-center gap-4 mt-2">
+            <div className="flex justify-center mt-2">
               <select className="border rounded px-3 py-2 w-40">
                 {[...'ABCDEFGHIJ'].map((letter) => (
                   <option key={letter}>{letter}</option>
                 ))}
               </select>
-              <button className="bg-gray-300 text-black px-4 py-2 rounded">Anexar arquivo</button>
             </div>
           </div>
 
+          {/* Escolha da linguagem */}
           <div className="mb-8">
             <label className="block text-gray-700 text-lg mb-2">Escolha a Linguagem:</label>
             <select className="border rounded px-3 py-2 mt-2 w-40">
@@ -44,8 +47,21 @@ export default function AnaliseJuiz() {
               ))}
             </select>
           </div>
-          
-          <button className="bg-[#4F85A6] text-white px-6 py-3 rounded text-lg">Enviar</button>
+
+          {/* Campo de dúvidas */}
+          <div className="mb-8">
+            <label className="block text-gray-700 text-lg mb-2">Escreva suas dúvidas:</label>
+            <textarea
+              rows={4}
+              className="w-full border rounded px-3 py-2 resize-none"
+              placeholder="Digite aqui sua dúvida sobre o exercício..."
+            />
+          </div>
+
+          {/* Botão de envio */}
+          <button className="bg-[#4F85A6] text-white px-6 py-3 rounded text-lg">
+            Enviar
+          </button>
         </div>
       </div>
     </div>
