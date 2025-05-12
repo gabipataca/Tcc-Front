@@ -9,8 +9,8 @@ import balaoVinho from "../balaoList/balao-vinho.svg";
 import balaoVerdeAgua from "../balaoList/balao-verdeAgua.svg";
 import balaoMarrom from "../balaoList/balao-marrom.svg";
 import balaoPreto from "../balaoList/balao-preto.svg";
-import { FaSignOutAlt } from "react-icons/fa";
 import { ReactNode } from "react";
+import NavbarRanking from "@/components/_ui/NavbarRanking";
 
 const letras = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
 
@@ -63,22 +63,8 @@ const data = [
 function NavRanking({ children }: { children: ReactNode }) {
   return (
     <div className="flex flex-col bg-gray-200 min-h-screen">
-      {/* Navbar Superior */}
-      <div className="bg-[#4F85A6] text-white flex justify-between items-center p-4 px-6">
-        <nav className="flex space-x-6 text-lg">
-          <a href="#" className="hover:border-b-2 hover:border-white">Home</a>
-          <span>|</span>
-          <a href="#" className="hover:border-b-2 hover:border-white">Enviar Exercício</a>
-          <span>|</span>
-          <a href="#" className="hover:border-b-2 hover:border-white">Ranking</a>
-          <span>|</span>
-          <a href="#" className="hover:border-b-2 hover:border-white">Dúvidas</a>
-        </nav>
-        <button className="text-white">
-          <FaSignOutAlt size={24} />
-        </button>
-      </div>
-
+      <NavbarRanking/>
+  
       {/* Conteúdo abaixo da navbar */}
       <main className="flex-1 p-4 overflow-auto">{children}</main>
     </div>

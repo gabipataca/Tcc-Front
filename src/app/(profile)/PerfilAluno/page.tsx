@@ -1,30 +1,19 @@
+"use client";
+
 import React from "react";
-import { FaSignOutAlt, FaUserCircle } from "react-icons/fa";
+import { FaSignOutAlt } from "react-icons/fa";
+import SideMenu from "@/components/_ui/SideMenu"; 
 
 const PerfilAluno: React.FC = () => {
   return (
     <div className="flex h-full mx-auto w-full">
       {/* Navbar Lateral */}
-      <div className="w-[250px] bg-[#4F85A6] flex flex-col items-center py-8 relative">
-      <div className="mt-[-30px] mb-2">
-          <img src="/fhologo.png" alt="" className="h-20" />
-        </div>
-        <div className="absolute top-24 flex flex-col items-center">
-          <FaUserCircle size={140} className="text-white mb-4" />
-          <h2 className="text-white text-2xl font-semibold mb-1">Nome</h2>
-          <p className="text-white text-lg mb-1">RA: xxxxx</p>
-          <p className="text-white text-lg mb-3">Ano de ingresso: XXXX</p>
-        </div>
-        <div className="mt-auto mb-3">
-          <img src="/falcon.png" alt="FHO Logo" className="h-28" />
-        </div>
-      </div>
+      <SideMenu />
 
-  {/* Conteúdo Principal */}
-  <div className="flex-1 flex flex-col bg-gray-200">
+      {/* Conteúdo Principal */}
+      <div className="flex-1 flex flex-col bg-gray-200">
         {/* Navbar Superior */}
         <div className="bg-[#4F85A6] text-white flex justify-between items-center p-3 px-6">
-  
           <nav className="flex space-x-6 text-lg">
             <a href="#" className="hover:underline">Home</a>
             <span>|</span>
@@ -52,7 +41,7 @@ const PerfilAluno: React.FC = () => {
         <div className="grid grid-cols-2 gap-8 py-6 px-20 mt-6">
           <div className="bg-white p-6 shadow-md rounded-lg flex flex-col relative">
             <h3 className="text-3xl font-semibold text-[#4F85A6] mb-4 text-center">Informações do Aluno</h3>
-            <div className="pl-6"> 
+            <div className="pl-6">
               <p className="text-2xl ml-2">Nome: xxxxxx</p>
               <p className="text-2xl ml-2">Data de nascimento: xx/xx/xxxx</p>
               <p className="text-2xl ml-2">E-mail: xxxxxxxxxxxxxx</p>
@@ -81,7 +70,7 @@ const PerfilAluno: React.FC = () => {
         </div>
 
         {/* Tabelas */}
-        <div className="grid grid-cols-2 gap-8 px-20">
+        <div className="grid grid-cols-2 gap-8 px-20 mb-10">
           <div className="bg-white shadow-md rounded-lg flex flex-col relative p-4">
             <h3 className="text-3xl font-semibold text-[#4F85A6] mb-4 text-center">Histórico de Competição</h3>
             <table className="w-full mt-2 border-collapse border border-gray-300 text-2xl">

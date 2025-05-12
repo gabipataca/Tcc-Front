@@ -8,7 +8,7 @@ type Props = {
 
 export default function NavRanking({ children }: Props) {
   return (
-    <div className="flex flex-col min-h-screen bg-gray-200">
+    <div className="flex flex-col max-h-screen bg-gray-200">
       {/* Navbar fixa no topo */}
       <div className="bg-[#4F85A6] text-white flex justify-between items-center p-4 px-6">
         <nav className="flex space-x-6 text-lg">
