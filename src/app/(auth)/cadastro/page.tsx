@@ -1,60 +1,17 @@
 "use client"
 
-import React, { useState } from "react";
+import React from "react";
 import { User, IdCard, Mail, Lock, Layers, Key } from "lucide-react";
 import Input from "@/components/_ui/Input";
 import Falcon from "@/components/_ui/icons/Falcon";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { Controller } from "react-hook-form";
 import Button from "@/components/_ui/Button";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import ScreenContainer from "@/components/_ui/ScreenContainer";
-
-interface RegisterInputs {
-	role: string;
-	name: string;
-	RA: string;
-	email: string;
-	password: string;
-	joinYear?: string;
-	accessCode?: string;
-}
-
-const schema = z.object({
-	role: z.enum(["Aluno", "Professor"]),
-	name: z.string(),
-	RA: z.string().min(6, { message: "RA deve ter no mínimo 6 dígitos!" }).max(7, { message: "RA deve ter no máximo 7 dígitos!" }),
-	email: z.string().email("Formato de e-mail inválido!"),
-	password: z.string(),
-	joinYear: z.coerce.number().min(new Date().getFullYear() - 6, "Ano inválido!").max(new Date().getFullYear(), "Ano inválido!").optional(),
-	accessCode: z.string().optional()
-});
+import useRegister from "@/components/pages/register/hooks/useRegister";
+import Dropdown from "@/components/_ui/Dropdown";
 
 const Cadastro: React.FC = () => {
-	const {
-		register,
-		handleSubmit,
-		control,
-		watch,
-		formState: { errors }
-	} = useForm<RegisterInputs>({
-		defaultValues: {
-			role: "Aluno",
-			name: "",
-			email: "",
-			password: "",
-			RA: "",
-			joinYear: ""
-		},
-		mode: "onTouched",
-		resolver: zodResolver(schema)
-	});
-
-	const role = watch("role");
-
-	const onSubmit: SubmitHandler<RegisterInputs> = (data) => {
-		console.log(data);
-	};
+	const { control, handleSubmit, handleFormSubmit, formData, roleOptions } = useRegister();
 
 	return (
 		<ScreenContainer>
@@ -69,11 +26,11 @@ const Cadastro: React.FC = () => {
 				<h2 className="text-3xl font-bold text-[#4F85A6] mb-6">Crie sua conta</h2>
 
 				<div className="w-full max-w-sm space-y-4">
-					<form onSubmit={handleSubmit(onSubmit)}>
+					<form className="flex flex-col gap-2" onSubmit={handleSubmit(handleFormSubmit, (d) => console.log(d))}>
 
 						{/* Nome */}
 						<Controller
-							name="name"
+							name="username"
 							control={control}
 							render={({ field, fieldState }) => (
 								<Input type="text" icon={<User className="text-gray-500 mr-2" size={20} />} placeholder="Digite seu nome" label="Nome" error={fieldState.error} {...field} />
@@ -81,15 +38,27 @@ const Cadastro: React.FC = () => {
 						/>
 
 						{/* Seleção de Tipo */}
-						<label className="text-gray-700 text-base font-normal">Tipo</label>
-						<select {...register("role")} className="w-full p-2 border rounded mb-4">
-							<option value="Aluno">Aluno</option>
-							<option value="Professor">Professor</option>
-						</select>
+						<Controller
+							control={control}
+							name="role"
+							render={({ field, fieldState }) => (
+								<Dropdown
+									grow={true}
+									label="Tipo"
+									options={roleOptions}
+									type="normalDropdown"
+									value={field.value}
+									onChange={field.onChange}
+									onBlur={field.onBlur}
+									errored={fieldState.error !== undefined}
+									errorMessage={fieldState.error?.message}
+								/>
+							)}
+						/>
 
 						{/* RA */}
 						<Controller
-							name="RA"
+							name="ra"
 							control={control}
 							render={({ field, fieldState }) => (
 								<Input type="text" icon={<IdCard className="text-gray-500 mr-2" size={20} />} placeholder="Digite seu RA" label="RA do Usuário" error={fieldState.error} {...field} />
@@ -115,7 +84,7 @@ const Cadastro: React.FC = () => {
 						/>
 
 						{/* Ano de Ingresso (Alunos) */}
-						{role === "Aluno" && (
+						{formData.role === "student" && (
 							<Controller
 								name="joinYear"
 								control={control}
@@ -126,7 +95,7 @@ const Cadastro: React.FC = () => {
 						)}
 
 						{/* Código de Acesso (Professores) */}
-						{role === "Professor" && (
+						{formData.role === "teacher" && (
 							<Controller
 								name="accessCode"
 								control={control}

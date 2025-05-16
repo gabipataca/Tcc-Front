@@ -1,7 +1,7 @@
 "use client";
 
 import styles from "./Input.module.scss";
-import React, { FocusEvent } from "react";
+import React from "react";
 import { InputProps } from "./types";
 
 const Input: React.FC<InputProps> = ({
@@ -22,9 +22,9 @@ const Input: React.FC<InputProps> = ({
     ...otherProps
 }) => {
     return (
-        <div className={styles.inputContainer}>
+        <div className={`${styles.inputContainer}`}>
             {label && <label htmlFor={name}>{label}</label>}
-            <div>
+            <div className={`${(error) && styles.errored}`}>
                 {icon}
                 <input
                     type={type}
