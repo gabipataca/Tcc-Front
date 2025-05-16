@@ -1,10 +1,8 @@
 'use client';
 
-
-
 import SideMenu from "@/components/_ui/SideMenu";
 import React, { useState, useEffect } from "react";
-import { FaSignOutAlt, FaUserCircle } from "react-icons/fa";
+import { FaSignOutAlt} from "react-icons/fa";
 
 const Inscricao: React.FC = () => {
   const [competitionName, setCompetitionName,] = useState("");
@@ -26,7 +24,7 @@ const Inscricao: React.FC = () => {
       setQuantityStudents(1);
       setMembers([""]);
     };
-    //fetchMaratonaConfig();
+    fetchMaratonaConfig();
   }, []);
 
   const handleQuantidadeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {

@@ -13,7 +13,7 @@ const SideMenu: React.FC = () => {
         </div>
             <div className="mt-20 h-full top-24 flex flex-col items-center">
                 <FaUserCircle size={140} className="text-white mb-4" />
-                <h2 className="text-white text-2xl font-semibold mb-1">Perfil ADM</h2>
+                <h2 className="text-white text-2xl font-semibold mb-1">Perfil Usuário</h2>
                 <p className="text-white text-lg">E-mail Institucional</p>
                 <div className="mt-auto mb-3">
                     <Falcon className="w-32 h-auto" />
