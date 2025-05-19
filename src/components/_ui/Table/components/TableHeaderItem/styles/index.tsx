@@ -6,5 +6,5 @@ interface StyledTableHeaderItemProps {
 }
 
 export const StyledTableHeaderItem = styled(TableCell)<StyledTableHeaderItemProps>`
-    
+    color: var(--primary-text-color) !important;
 `;
