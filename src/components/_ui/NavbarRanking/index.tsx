@@ -26,7 +26,7 @@ export default function NavRanking({ children }: Props) {
       </div>
 
       {/* Conteúdo da página */}
-      <main className="flex-1 p-4 overflow-auto">
+      <main className="flex-1 p-4 flex overflow-auto">
         {children}
       </main>
     </div>

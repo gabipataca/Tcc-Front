@@ -1,3 +1,5 @@
+"use client";
+
 import Balao from "@/components/_ui/Balao";
 import balaoVermelho from "../balaoList/balao-vermelho.svg";
 import balaoLilas from "../balaoList/balao-lilas.svg";
@@ -9,108 +11,114 @@ import balaoVinho from "../balaoList/balao-vinho.svg";
 import balaoVerdeAgua from "../balaoList/balao-verdeAgua.svg";
 import balaoMarrom from "../balaoList/balao-marrom.svg";
 import balaoPreto from "../balaoList/balao-preto.svg";
-import { ReactNode } from "react";
+import React from "react";
 import NavbarRanking from "@/components/_ui/NavbarRanking";
+import Table from "@/components/_ui/Table";
+import TableHeader from "@/components/_ui/Table/components/TableHeader";
+import TableBody from "@/components/_ui/Table/components/TableBody";
+import TableHeaderItem from "@/components/_ui/Table/components/TableHeaderItem";
+import TableRow from "@/components/_ui/Table/components/TableRow";
+import TableCell from "@/components/_ui/Table/components/TableCell";
+import { TableContainer as TableContainerMui } from "@mui/material";
+import TableContainer from "@/components/_ui/Table/components/TableContainer";
 
 const letras = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
 
 const balaoPorLetra: Record<string, string> = {
-  A: balaoVermelho,
-  B: balaoLilas,
-  C: balaoVerde,
-  D: balaoLaranja,
-  E: balaoMarrom,
-  F: balaoRosa,
-  G: balaoPreto,
-  H: balaoCinza,
-  I: balaoVerdeAgua,
-  J: balaoVinho,
+    A: balaoVermelho,
+    B: balaoLilas,
+    C: balaoVerde,
+    D: balaoLaranja,
+    E: balaoMarrom,
+    F: balaoRosa,
+    G: balaoPreto,
+    H: balaoCinza,
+    I: balaoVerdeAgua,
+    J: balaoVinho,
 };
 
-const data = [
-  {
-    user: "Equipe 1",
-    acertos: ["A", "B", "C", "E", "F", "G", "I", "J"],
-    tempos: {
-      A: "2/64",
-      B: "1/16",
-      C: "1/99",
-      E: "1/31",
-      F: "1/7",
-      G: "1/162",
-      I: "1/88",
-      J: "2/47",
+interface GroupRankingData {
+    group: string;
+    exercisesAccepteds: string[];
+    times: { [key: string]: string };
+    total: number;
+}
+
+const data: GroupRankingData[] = [
+    {
+        group: "Equipe 1",
+        exercisesAccepteds: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
+        times: {
+            A: "2/64",
+            B: "1/16",
+            C: "1/99",
+            D: "2/80",
+            E: "1/31",
+            F: "1/7",
+            G: "1/162",
+            H: "3/120",
+            I: "1/88",
+            J: "2/47",
+        },
+        total: 100,
     },
-    total: 100,
-  },
-  {
-    user: "Equipe 2",
-    acertos: ["A", "B", "C", "D", "F", "H", "I", "J"],
-    tempos: {
-      A: "1/152",
-      B: "1/113",
-      C: "2/91",
-      D: "1/185",
-      F: "2/76",
-      H: "1/77",
-      I: "1/54",
-      J: "1/39",
+    {
+        group: "Equipe 2",
+        exercisesAccepteds: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
+        times: {
+            A: "1/152",
+            B: "1/113",
+            C: "2/91",
+            D: "1/185",
+            E: "1/89",
+            F: "2/76",
+            G: "1/90",
+            H: "1/77",
+            I: "1/54",
+            J: "1/39",
+        },
+        total: 90,
     },
-    total: 90,
-  },
 ];
 
-function NavRanking({ children }: { children: ReactNode }) {
-  return (
-    <div className="flex flex-col bg-gray-200 min-h-screen">
-      <NavbarRanking/>
-  
-      {/* Conteúdo abaixo da navbar */}
-      <main className="flex-1 p-4 overflow-auto">{children}</main>
-    </div>
-  );
+const tableHeaderColumns = ["Equipe", ...letras, "Total"];
+
+const RankingPage: React.FC = () => {
+    return (
+        <TableContainerMui component={TableContainer}>
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        {tableHeaderColumns.map((column, idx) => (
+                            <TableHeaderItem
+                                key={`${column}-${idx}`}
+                                item={{ content: column, space: 1 }}
+                            />
+                        ))}
+                    </TableRow>
+                </TableHeader>
+
+                <TableBody>
+                    {data.map((data, idx) => (
+                        <TableRow key={`${data.group}-${idx}`}>
+                            <TableCell>{data.group}</TableCell>
+
+                            {letras.map((l, index) => (
+                                <TableCell key={`${l}-${index}`}>
+                                    {data.exercisesAccepteds.includes(l)
+                                        ? `${data.exercisesAccepteds[index]} ${data.times[l]}`
+                                        : "T"}
+                                </TableCell>
+                            ))}
+                            <TableCell key={`${data.total}-${idx}`}>
+                                {data.total}
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+        </TableContainerMui>
+    );
 }
 
-export default function RankingPage() {
-  return (
-    <NavRanking>
-      <table className="w-full text-center border border-[#4F85A6] border-collapse">
-        <thead className="bg-[#4F85A6] text-white text-lg">
-          <tr>
-            <th className="border border-[#4F85A6]">#</th>
-            <th className="border border-[#4F85A6]">Equipe</th>
-            {letras.map((letra) => (
-              <th key={letra} className="border border-[#4F85A6]">
-                {letra}
-              </th>
-            ))}
-            <th className="border border-[#4F85A6]">Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((equipe, index) => (
-            <tr key={index} className="text-base">
-              <td className="border border-[#4F85A6]">{index + 1}</td>
-              <td className="border border-[#4F85A6]">{equipe.user}</td>
-              {letras.map((letra) => {
-                const acertou = equipe.acertos.includes(letra);
-                return (
-                  <td key={letra} className="border border-[#4F85A6] py-2">
-                    {acertou ? (
-                      <Balao
-                        src={balaoPorLetra[letra]}
-                        alt={`Balão ${letra}`}
-                        tempo={equipe.tempos[letra]}
-                      />
-                    ) : null}
-                  </td>
-                );
-              })}
-              <td className="border border-[#4F85A6] font-bold">{equipe.total}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </NavRanking>
-  );
-}
+export default RankingPage;

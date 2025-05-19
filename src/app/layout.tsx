@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { UserContextProvider } from "@/contexts/UserContext";
+import Navbar from "@/components/_ui/Navbar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,6 +29,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
       >
+        {/* O ideal é que haja apenas um Navbar */}
+        <Navbar />
+
         <UserContextProvider>
           <main className="flex-grow">{children}</main>
         </UserContextProvider>
