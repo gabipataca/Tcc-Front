@@ -6,13 +6,14 @@ import Navbar from "@/components/_ui/Navbar";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import { ThemeProvider } from "@mui/material";
 import theme from "@/theme";
+import SnackbarProviderC from "@/contexts/SnackbarProvider";
 
 
 const roboto = Roboto({
-  weight: ['300', '400', '500', '600', '700'],
-  subsets: ['latin'],
-  display: "swap",
-  variable: "--font-roboto"
+    weight: ["300", "400", "500", "600", "700"],
+    subsets: ["latin"],
+    display: "swap",
+    variable: "--font-roboto",
 });
 
 export const metadata: Metadata = {
@@ -30,12 +31,14 @@ export default function RootLayout({
             <body className={roboto.variable}>
                 <AppRouterCacheProvider>
                     <ThemeProvider theme={theme}>
-                      {/* O ideal é que haja apenas um Navbar */}
-                      <Navbar />
+                        <SnackbarProviderC>
+                            {/* O ideal é que haja apenas um Navbar */}
+                            <Navbar />
 
-                      <UserContextProvider>
-                          <main className="flex-grow">{children}</main>
-                      </UserContextProvider>
+                            <UserContextProvider>
+                                <main className="flex-grow">{children}</main>
+                            </UserContextProvider>
+                        </SnackbarProviderC>
                     </ThemeProvider>
                 </AppRouterCacheProvider>
             </body>
