@@ -1,3 +1,5 @@
+"use client"
+
 import Button from "@/components/_ui/Button";
 import GridColumn from "@/components/_ui/GridColumn";
 import Input from "@/components/_ui/Input";
@@ -6,11 +8,12 @@ import TitleLarge from "@/components/_ui/TitleLarge";
 import GridItem from "@/components/pages/profile/components/GridItem";
 import NavbarItem from "@/components/pages/profile/components/NavbarItem";
 import ProfileNavbar from "@/components/pages/profile/components/ProfileNavbar";
+import React from "react";
 
 
 
 
-const Profile = () => {
+const Profile: React.FC = () => {
     return (
     <div className="flex h-full mx-auto w-full">
       {/* Navbar Lateral */}

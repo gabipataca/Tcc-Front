@@ -8,6 +8,7 @@ export const StyledButton = styled(Button)<{ $secondary?: boolean, $fullWidth?: 
     color: ${props => props.$secondary ? "var(--secondary-text-color)" : "var(--primary-text-color)"};
     background-color: ${props => props.$secondary ? "var(--secondary-bg-color)" : "var(--primary-bg-color)"};
 
+    font-size: 1rem;
     border-radius: ${props => props.$rounded ? "0.5rem" : "0"};
     text-transform: none;
 
