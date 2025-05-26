@@ -3,6 +3,7 @@
 import Link from "next/link";
 import styles from "./Button.module.scss";
 import { ButtonProps } from "./types";
+import { StyledButton } from "./styles";
 
 const Button = ({
     className,
@@ -14,21 +15,20 @@ const Button = ({
     style = "primary",
     rounded,
     fullWidth,
+    primary = true,
 }: ButtonProps) => {
     if (type == "button") {
         return (
-            <button
-                className={`${styles.button}
-                    ${style == "primary" ? styles.primary : styles.secondary}
-                    ${rounded ? styles.rounded : ""}
-                    ${fullWidth ? styles.fullWidth : ""}
-                    ${className}
-                `}
+            <StyledButton
+                $secondary={!primary}
+                $fullWidth={fullWidth}
+                $rounded={rounded}
+                className={`${className}`}
                 onClick={onClick}
                 role={role}
             >
                 {children}
-            </button>
+            </StyledButton>
         );
     } else {
         return (

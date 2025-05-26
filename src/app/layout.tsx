@@ -8,7 +8,6 @@ import { ThemeProvider } from "@mui/material";
 import theme from "@/theme";
 import SnackbarProviderC from "@/contexts/SnackbarProvider";
 
-
 const roboto = Roboto({
     weight: ["300", "400", "500", "600", "700"],
     subsets: ["latin"],

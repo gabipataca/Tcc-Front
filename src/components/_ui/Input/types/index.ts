@@ -6,6 +6,16 @@ import { FieldError } from "react-hook-form";
  */
 export interface InputProps {
     /**
+     * Additional CSS classes for the input container.
+     */
+    containerClassName?: string;
+
+    /**
+     * Additional CSS classes for the input element.
+     */
+    className?: string;
+
+    /**
      * The current value of the input.
      */
     value?: string;

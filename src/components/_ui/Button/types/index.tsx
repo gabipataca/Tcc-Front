@@ -49,4 +49,10 @@ export interface ButtonProps {
      * Whether the button should take up the full width of its container.
      */
     fullWidth?: boolean;
+
+    /*
+     * Whether the button is styled as a primary button.
+     */
+
+    primary?: boolean;
 }
