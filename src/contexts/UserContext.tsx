@@ -27,7 +27,7 @@ export const UserContextProvider: React.FC<UserContextProviderProps> = ({ childr
         <UserContext.Provider value={{ user, setUser }}>
             {children}
         </UserContext.Provider>
-    )
+    );
 }
 
 

@@ -1,116 +1,263 @@
+"use client";
+
 import Balao from "@/components/_ui/Balao";
-import balaoVermelho from "../balaoList/balao-vermelho.svg";
-import balaoLilas from "../balaoList/balao-lilas.svg";
-import balaoVerde from "../balaoList/balao-verde.svg";
-import balaoLaranja from "../balaoList/balao-laranja.svg";
-import balaoRosa from "../balaoList/balao-rosa.svg";
-import balaoCinza from "../balaoList/balao-cinza.svg";
-import balaoVinho from "../balaoList/balao-vinho.svg";
-import balaoVerdeAgua from "../balaoList/balao-verdeAgua.svg";
-import balaoMarrom from "../balaoList/balao-marrom.svg";
-import balaoPreto from "../balaoList/balao-preto.svg";
-import { ReactNode } from "react";
+import React from "react";
 import NavbarRanking from "@/components/_ui/NavbarRanking";
+import Table from "@/components/_ui/Table";
+import TableHeader from "@/components/_ui/Table/components/TableHeader";
+import TableBody from "@/components/_ui/Table/components/TableBody";
+import TableHeaderItem from "@/components/_ui/Table/components/TableHeaderItem";
+import TableRow from "@/components/_ui/Table/components/TableRow";
+import TableCell from "@/components/_ui/Table/components/TableCell";
+import { TableContainer as TableContainerMui } from "@mui/material";
+import TableContainer from "@/components/_ui/Table/components/TableContainer";
+import { StyledRankingCellContainer } from "@/components/pages/ranking/styles";
 
 const letras = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
 
-const balaoPorLetra: Record<string, string> = {
-  A: balaoVermelho,
-  B: balaoLilas,
-  C: balaoVerde,
-  D: balaoLaranja,
-  E: balaoMarrom,
-  F: balaoRosa,
-  G: balaoPreto,
-  H: balaoCinza,
-  I: balaoVerdeAgua,
-  J: balaoVinho,
-};
+interface GroupRankingData {
+    group: string;
+    exercisesAccepteds: string[];
+    times: { [key: string]: string };
+    total: string;
+    totalCount: number;
+    totalScore: number;
+}
 
-const data = [
-  {
-    user: "Equipe 1",
-    acertos: ["A", "B", "C", "E", "F", "G", "I", "J"],
-    tempos: {
-      A: "2/64",
-      B: "1/16",
-      C: "1/99",
-      E: "1/31",
-      F: "1/7",
-      G: "1/162",
-      I: "1/88",
-      J: "2/47",
-    },
-    total: 100,
-  },
-  {
-    user: "Equipe 2",
-    acertos: ["A", "B", "C", "D", "F", "H", "I", "J"],
-    tempos: {
-      A: "1/152",
-      B: "1/113",
-      C: "2/91",
-      D: "1/185",
-      F: "2/76",
-      H: "1/77",
-      I: "1/54",
-      J: "1/39",
-    },
-    total: 90,
-  },
+const colors = [
+    "#979797",
+    "#33353a",
+    "#d46314",
+    "#db7271",
+    "#5c3b22",
+    "#d35de9",
+    "#4500d4",
+    "#478898",
+    "#08b2cb",
+    "#c42321",
+    "#934383",
+    "#EFAF10",
+    "#F0C5C9",
+    "#856EBC",
+    "#80A582",
 ];
 
-function NavRanking({ children }: { children: ReactNode }) {
-  return (
-    <div className="flex flex-col bg-gray-200 min-h-screen">
-      <NavbarRanking/>
-  
-      {/* Conteúdo abaixo da navbar */}
-      <main className="flex-1 p-4 overflow-auto">{children}</main>
-    </div>
-  );
-}
+const data: GroupRankingData[] = [
+    {
+        group: "Equipe 1",
+        exercisesAccepteds: ["A", "B", "C", "D", "E", "F", "G", "H", "I"],
+        times: {
+            A: "2/64",
+            B: "1/16",
+            C: "1/99",
+            D: "2/80",
+            E: "1/31",
+            F: "1/7",
+            G: "1/162",
+            H: "3/120",
+            I: "1/88",
+            J: "2/47",
+        },
+        total: "9 (740)",
+        totalCount: 9,
+        totalScore: 740,
+    },
+    {
+        group: "Equipe 2",
+        exercisesAccepteds: ["A", "B", "C", "D", "E", "F", "G", "H"],
+        times: {
+            A: "1/152",
+            B: "1/113",
+            C: "2/91",
+            D: "1/185",
+            E: "1/89",
+            F: "2/76",
+            G: "1/90",
+            H: "1/77",
+            I: "1/54",
+            J: "1/39",
+        },
+        total: "8 (640)",
+        totalCount: 8,
+        totalScore: 640,
+    },
+    {
+        group: "Equipe 3",
+        exercisesAccepteds: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
+        times: {
+            A: "2/64",
+            B: "1/16",
+            C: "1/99",
+            D: "2/80",
+            E: "1/31",
+            F: "1/7",
+            G: "1/162",
+            H: "3/120",
+            I: "1/88",
+            J: "2/47",
+        },
+        total: "10 (480)",
+        totalCount: 10,
+        totalScore: 480,
+    },
+    {
+        group: "Equipe 4",
+        exercisesAccepteds: ["A", "B", "C", "D", "E", "F", "G"],
+        times: {
+            A: "1/152",
+            B: "1/113",
+            C: "2/91",
+            D: "1/185",
+            E: "1/89",
+            F: "2/76",
+            G: "1/90",
+            H: "1/77",
+            I: "1/54",
+            J: "1/39",
+        },
+        total: "7 (520)",
+        totalCount: 7,
+        totalScore: 520,
+    },
+    {
+        group: "Equipe 5",
+        exercisesAccepteds: ["A", "B", "C", "E", "F", "H"],
+        times: {
+            A: "1/120",
+            B: "2/110",
+            C: "1/95",
+            D: "",
+            E: "1/80",
+            F: "1/60",
+            G: "",
+            H: "2/70",
+            I: "1/50",
+            J: "",
+        },
+        total: "6 (500)",
+        totalCount: 6,
+        totalScore: 500,
+    },
+    {
+        group: "Equipe 6",
+        exercisesAccepteds: ["A", "C", "D", "E", "G", "H"],
+        times: {
+            A: "2/140",
+            B: "",
+            C: "1/100",
+            D: "1/130",
+            E: "2/85",
+            F: "",
+            G: "1/120",
+            H: "1/90",
+            I: "",
+            J: "1/60",
+        },
+        total: "6 (240)",
+        totalCount: 6,
+        totalScore: 240,
+    },
+    {
+        group: "Equipe 7",
+        exercisesAccepteds: ["B", "C", "D", "F", "G", "I"],
+        times: {
+            A: "",
+            B: "1/115",
+            C: "2/105",
+            D: "1/125",
+            E: "",
+            F: "1/65",
+            G: "2/100",
+            H: "",
+            I: "1/55",
+            J: "1/45",
+        },
+        total: "6 (352)",
+        totalCount: 6,
+        totalScore: 352,
+    },
+    {
+        group: "Equipe 8",
+        exercisesAccepteds: ["A", "B", "E", "F", "G", "H", "I"],
+        times: {
+            A: "1/135",
+            B: "1/120",
+            C: "",
+            D: "",
+            E: "2/95",
+            F: "1/75",
+            G: "1/110",
+            H: "1/85",
+            I: "2/60",
+            J: "1/40",
+        },
+        total: "7 (400)",
+        totalCount: 7,
+        totalScore: 400,
+    },
+];
 
-export default function RankingPage() {
-  return (
-    <NavRanking>
-      <table className="w-full text-center border border-[#4F85A6] border-collapse">
-        <thead className="bg-[#4F85A6] text-white text-lg">
-          <tr>
-            <th className="border border-[#4F85A6]">#</th>
-            <th className="border border-[#4F85A6]">Equipe</th>
-            {letras.map((letra) => (
-              <th key={letra} className="border border-[#4F85A6]">
-                {letra}
-              </th>
-            ))}
-            <th className="border border-[#4F85A6]">Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((equipe, index) => (
-            <tr key={index} className="text-base">
-              <td className="border border-[#4F85A6]">{index + 1}</td>
-              <td className="border border-[#4F85A6]">{equipe.user}</td>
-              {letras.map((letra) => {
-                const acertou = equipe.acertos.includes(letra);
-                return (
-                  <td key={letra} className="border border-[#4F85A6] py-2">
-                    {acertou ? (
-                      <Balao
-                        src={balaoPorLetra[letra]}
-                        alt={`Balão ${letra}`}
-                        tempo={equipe.tempos[letra]}
-                      />
-                    ) : null}
-                  </td>
-                );
-              })}
-              <td className="border border-[#4F85A6] font-bold">{equipe.total}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </NavRanking>
-  );
-}
+// Ordena as equipes por número de exercícios acertados (decrescente)
+data.sort((a, b) => {
+    const aCount = a.exercisesAccepteds.length;
+    const bCount = b.exercisesAccepteds.length;
+
+    if(aCount == bCount) {
+        const aTime = a.totalScore;
+        const bTime = b.totalScore;
+
+        return aTime - bTime;
+    }
+
+    return bCount - aCount;
+});
+
+const tableHeaderColumns = ["Equipe", ...letras, "Total"];
+
+const RankingPage: React.FC = () => {
+    return (
+        <TableContainerMui component={TableContainer}>
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        {tableHeaderColumns.map((column, idx) => (
+                            <TableHeaderItem
+                                key={`${column}-${idx}`}
+                                item={{ content: column, space: 1 }}
+                            />
+                        ))}
+                    </TableRow>
+                </TableHeader>
+
+                <TableBody>
+                    {data.map((data, idx) => (
+                        <TableRow key={`${data.group}-${idx}`}>
+                            <TableCell>{data.group}</TableCell>
+
+                            {letras.map((l, index) => (
+                                <TableCell key={`${l}-${index}`}>
+                                    {data.exercisesAccepteds.includes(l) ? (
+                                        <StyledRankingCellContainer
+                                            $fillColor={colors[index]}
+                                            $size={40}
+                                        >
+                                            <Balao />
+                                            {data.times[l]}
+                                        </StyledRankingCellContainer>
+                                    ) : (
+                                        " "
+                                    )}
+                                </TableCell>
+                            ))}
+                            <TableCell key={`${data.total}-${idx}`}>
+                                {data.total}
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+        </TableContainerMui>
+    );
+};
+
+export default RankingPage;
