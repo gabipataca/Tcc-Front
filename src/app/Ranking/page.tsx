@@ -1,116 +1,76 @@
-import Balao from "@/components/_ui/Balao";
-import balaoVermelho from "../balaoList/balao-vermelho.svg";
-import balaoLilas from "../balaoList/balao-lilas.svg";
-import balaoVerde from "../balaoList/balao-verde.svg";
-import balaoLaranja from "../balaoList/balao-laranja.svg";
-import balaoRosa from "../balaoList/balao-rosa.svg";
-import balaoCinza from "../balaoList/balao-cinza.svg";
-import balaoVinho from "../balaoList/balao-vinho.svg";
-import balaoVerdeAgua from "../balaoList/balao-verdeAgua.svg";
-import balaoMarrom from "../balaoList/balao-marrom.svg";
-import balaoPreto from "../balaoList/balao-preto.svg";
-import { ReactNode } from "react";
-import NavbarRanking from "@/components/_ui/NavbarRanking";
+import React from 'react';
+import Balao from '@/components/_ui/Balao'; // importa o componente
 
-const letras = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
-
-const balaoPorLetra: Record<string, string> = {
-  A: balaoVermelho,
-  B: balaoLilas,
-  C: balaoVerde,
-  D: balaoLaranja,
-  E: balaoMarrom,
-  F: balaoRosa,
-  G: balaoPreto,
-  H: balaoCinza,
-  I: balaoVerdeAgua,
-  J: balaoVinho,
-};
-
-const data = [
+const dados = [
   {
-    user: "Equipe 1",
-    acertos: ["A", "B", "C", "E", "F", "G", "I", "J"],
-    tempos: {
-      A: "2/64",
-      B: "1/16",
-      C: "1/99",
-      E: "1/31",
-      F: "1/7",
-      G: "1/162",
-      I: "1/88",
-      J: "2/47",
+    equipe: 'Equipe 1',
+    colunas: {
+      A: ['HTML', 'CSS'],
+      B: ['JS'],
+      C: ['React', 'Redux'],
+      D: [],
+      E: ['Node'],
+      F: ['SQL'],
+      G: [],
+      H: [],
+      I: ['Docker'],
+      J: [],
     },
     total: 100,
   },
   {
-    user: "Equipe 2",
-    acertos: ["A", "B", "C", "D", "F", "H", "I", "J"],
-    tempos: {
-      A: "1/152",
-      B: "1/113",
-      C: "2/91",
-      D: "1/185",
-      F: "2/76",
-      H: "1/77",
-      I: "1/54",
-      J: "1/39",
+    equipe: 'Equipe 2',
+    colunas: {
+      A: ['HTML'],
+      B: [],
+      C: [],
+      D: ['Python', 'Flask'],
+      E: [],
+      F: [],
+      G: ['Pandas'],
+      H: [],
+      I: [],
+      J: ['Git'],
     },
     total: 90,
   },
 ];
 
-function NavRanking({ children }: { children: ReactNode }) {
-  return (
-    <div className="flex flex-col bg-gray-200 min-h-screen">
-      <NavbarRanking/>
-  
-      {/* Conteúdo abaixo da navbar */}
-      <main className="flex-1 p-4 overflow-auto">{children}</main>
-    </div>
-  );
-}
+const colunas = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
 
-export default function RankingPage() {
+const Ranking = () => {
   return (
-    <NavRanking>
-      <table className="w-full text-center border border-[#4F85A6] border-collapse">
-        <thead className="bg-[#4F85A6] text-white text-lg">
-          <tr>
-            <th className="border border-[#4F85A6]">#</th>
-            <th className="border border-[#4F85A6]">Equipe</th>
-            {letras.map((letra) => (
-              <th key={letra} className="border border-[#4F85A6]">
-                {letra}
-              </th>
-            ))}
-            <th className="border border-[#4F85A6]">Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((equipe, index) => (
-            <tr key={index} className="text-base">
-              <td className="border border-[#4F85A6]">{index + 1}</td>
-              <td className="border border-[#4F85A6]">{equipe.user}</td>
-              {letras.map((letra) => {
-                const acertou = equipe.acertos.includes(letra);
-                return (
-                  <td key={letra} className="border border-[#4F85A6] py-2">
-                    {acertou ? (
-                      <Balao
-                        src={balaoPorLetra[letra]}
-                        alt={`Balão ${letra}`}
-                        tempo={equipe.tempos[letra]}
-                      />
-                    ) : null}
-                  </td>
-                );
-              })}
-              <td className="border border-[#4F85A6] font-bold">{equipe.total}</td>
-            </tr>
+    <table className={styles['ranking-table']}>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Equipe</th>
+          {colunas.map((letra) => (
+            <th key={letra}>{letra}</th>
           ))}
-        </tbody>
-      </table>
-    </NavRanking>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {dados.map((equipe, i) => (
+          <tr key={i}>
+            <td>{i + 1}</td>
+            <td>{equipe.equipe}</td>
+            {colunas.map((letra) => (
+              <td key={letra}>
+                <div className={styles['balao-container']}>
+                  {equipe.colunas[letra].map((texto, j) => (
+                    <Balao key={j} texto={texto} index={j} />
+                  ))}
+                </div>
+              </td>
+            ))}
+            <td className={styles.total}>{equipe.total}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
-}
+};
+
+export default Ranking;

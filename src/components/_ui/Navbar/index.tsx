@@ -10,12 +10,15 @@ const Navbar = () => {
             <span>|</span>
             <a href="#" className="hover:underline">Inscrições</a>
             <span>|</span>
+            <a href="#" className="hover:underline">Montar Exercícios</a>
+            <span>|</span>
             <a href="#" className="hover:underline">Criar Maratona</a>
             <span>|</span>
             <a href="#" className="hover:underline">Estatísticas</a>
             <span>|</span>
             <a href="#" className="hover:underline">Ranking</a>
             <span>|</span>
+          
           </nav>
           <button className="text-white ml-auto">
             <FaSignOutAlt size={24} />
