@@ -7,43 +7,15 @@ import ScreenContainer from "@/components/_ui/ScreenContainer";
 import TitleLarge from "@/components/_ui/TitleLarge";
 import LoginContainer from "@/components/pages/login/components/LoginContainer";
 import LogoContainer from "@/components/pages/login/components/LogoContainer";
-import { zodResolver } from "@hookform/resolvers/zod";
+import useLogin from "@/components/pages/login/hooks/useLogin";
 import { IdCard, Lock } from "lucide-react";
 import React from "react";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
-import z from "zod"
+import { Controller } from "react-hook-form";
 
-interface LoginInputs {
-	RA: string;
-	password: string;
-}
-
-const schema = z.object({
-	RA: z.string().min(6, { message: "RA deve ter no mínimo 6 digitos!" }).max(7, { message: "RA deve ter no máximo 7 digitos!" }),
-	password: z.string()
-});
 
 const Login: React.FC = () => {
 
-	const {
-		register,
-		handleSubmit,
-		control,
-		reset,
-		watch,
-		formState: { errors }
-	} = useForm<LoginInputs>({
-		defaultValues: {
-			RA: "",
-			password: ""
-		},
-		mode: "onTouched",
-		resolver: zodResolver(schema)
-	});
-
-	const onSubmit: SubmitHandler<LoginInputs> = (data) => {
-		console.log(data);
-	}
+	const { control, handleSubmit, onSubmit } = useLogin();
 
 	return (
 		<ScreenContainer>
@@ -54,7 +26,7 @@ const Login: React.FC = () => {
 					<div className="w-full max-w-sm">
 						{/* Campo RA */}
 						<Controller
-							name="RA"
+							name="ra"
 							control={control}
 							render={({ field, fieldState }) => (
 								<Input

@@ -1,13 +1,16 @@
 import styled from "styled-components";
+import { Button } from "@mui/material";
 
 
-export const StyledButton = styled.button<{ $secondary?: boolean, $fullWidth?: boolean, $rounded?: boolean }>`
+export const StyledButton = styled(Button)<{ $secondary?: boolean, $fullWidth?: boolean, $rounded?: boolean }>`
     width: ${props => props.$fullWidth ? "100%" : "max-content"};
 
     color: ${props => props.$secondary ? "var(--secondary-text-color)" : "var(--primary-text-color)"};
     background-color: ${props => props.$secondary ? "var(--secondary-bg-color)" : "var(--primary-bg-color)"};
 
-    border-radius: ${props => props.$rounded ? "1rem" : "0"};
+    font-size: 1rem;
+    border-radius: ${props => props.$rounded ? "0.5rem" : "0"};
+    text-transform: none;
 
     padding-left: 1.5rem;
     padding-right: 1.5rem;

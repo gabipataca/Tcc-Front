@@ -1,34 +1,42 @@
-"use client"
+"use client";
 
 import Link from "next/link";
 import styles from "./Button.module.scss";
 import { ButtonProps } from "./types";
+import { StyledButton } from "./styles";
 
-const Button = ({ className, children, onClick, role, type = "button", linkHref, style = "primary", rounded, fullWidth }: ButtonProps) => {
-
-
+const Button = ({
+    className,
+    children,
+    onClick,
+    role,
+    type = "button",
+    linkHref,
+    style = "primary",
+    rounded,
+    fullWidth,
+    primary = true,
+}: ButtonProps) => {
     if (type == "button") {
         return (
-            <button
-                className={`${styles.button}
-                    ${(style == "primary") ? styles.primary : styles.secondary}
-                    ${(rounded) ? styles.rounded : ""}
-                    ${(fullWidth) ? styles.fullWidth : ""}
-                    ${className}
-                `}
+            <StyledButton
+                $secondary={!primary}
+                $fullWidth={fullWidth}
+                $rounded={rounded}
+                className={`${className}`}
                 onClick={onClick}
                 role={role}
             >
                 {children}
-            </button>
+            </StyledButton>
         );
     } else {
         return (
             <Link
                 className={`${styles.button}
-                    ${(style == "primary") ? styles.primary : styles.secondary}
-                    ${(rounded) ? styles.rounded : ""}
-                    ${(fullWidth) ? styles.fullWidth : ""}
+                    ${style == "primary" ? styles.primary : styles.secondary}
+                    ${rounded ? styles.rounded : ""}
+                    ${fullWidth ? styles.fullWidth : ""}
                     ${className}
                 `}
                 role={"link"}
@@ -38,6 +46,6 @@ const Button = ({ className, children, onClick, role, type = "button", linkHref,
             </Link>
         );
     }
-}
+};
 
 export default Button;
