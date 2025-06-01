@@ -18,6 +18,8 @@ const Navbar = () => {
             <span>|</span>
             <a href="#" className="hover:underline">Ranking</a>
             <span>|</span>
+            <a href="#" className="hover:underline">Dúvidas</a>
+            <span>|</span>
           
           </nav>
           <button className="text-white ml-auto">

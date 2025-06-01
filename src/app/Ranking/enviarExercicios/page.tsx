@@ -1,4 +1,8 @@
+"use client";
+
 import { FaSignOutAlt } from "react-icons/fa";
+import StyledButton from "./styles/StyledButton";
+import AttachButton from "./styles/AttachButton";
 
 export default function AnaliseJuiz() {
   return (
@@ -14,16 +18,19 @@ export default function AnaliseJuiz() {
           <span>|</span>
           <a href="#" className="text-white no-underline hover:border-b-2 hover:border-white">Dúvidas</a>
         </nav>
-        <button className="text-white">
+        <button className="text-white ml-auto">
           <FaSignOutAlt size={24} />
         </button>
       </div>
 
-      {/* Card Principal */}
+ 
       <div className="flex justify-center items-center flex-grow">
         <div className="bg-white p-16 rounded-xl shadow-lg w-[700px] text-center">
-          <h2 className="text-4xl font-bold text-[#4F85A6] mb-6 tracking-wide">Submeter a análise do Juíz</h2>
-          
+          <h2 className="text-4xl font-bold text-[#4F85A6] mb-6 tracking-wide">
+            Submeter a análise do Juíz
+          </h2>
+
+          {/* Escolha do exercício */}
           <div className="mb-8">
             <label className="block text-gray-700 text-lg mb-2">Escolha o exercício:</label>
             <div className="flex justify-center gap-4 mt-2">
@@ -32,10 +39,11 @@ export default function AnaliseJuiz() {
                   <option key={letter}>{letter}</option>
                 ))}
               </select>
-              <button className="bg-gray-300 text-black px-4 py-2 rounded">Anexar arquivo</button>
+              <AttachButton>Anexar arquivo</AttachButton>
             </div>
           </div>
 
+          {/* Escolha da linguagem */}
           <div className="mb-8">
             <label className="block text-gray-700 text-lg mb-2">Escolha a Linguagem:</label>
             <select className="border rounded px-3 py-2 mt-2 w-40">
@@ -44,8 +52,8 @@ export default function AnaliseJuiz() {
               ))}
             </select>
           </div>
-          
-          <button className="bg-[#4F85A6] text-white px-6 py-3 rounded text-lg">Enviar</button>
+
+          <StyledButton>Enviar</StyledButton>
         </div>
       </div>
     </div>

@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState } from "react";
-import Navbar from "@/components/_ui/Navbar";
 import SideMenu from "@/components/_ui/SideMenu";
 import Button from "@/components/_ui/Button";
 import { FaEdit, FaTrash } from "react-icons/fa";
@@ -131,7 +130,6 @@ const AdminDashboard: React.FC = () => {
     <div className="flex h-screen w-screen bg-gray-200">
       <SideMenu />
       <div className="flex-1 flex flex-col bg-gray-200">
-        <Navbar />
         <div className="mt-10 p-5">
           <div className="grid grid-cols-2 gap-8 px-20 py-1">
             <ExercisesList

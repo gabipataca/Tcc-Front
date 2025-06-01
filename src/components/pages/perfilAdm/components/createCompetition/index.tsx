@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import Navbar from '@/components/_ui/Navbar';
 import SideMenu from '@/components/_ui/SideMenu';
 import Input from '@/components/_ui/Input';
 import Button from '@/components/_ui/Button';
@@ -30,7 +29,6 @@ const CreateCompetition: React.FC = () => {
     <div className="flex h-full mx-auto w-full">
       <SideMenu />
       <div className="flex-1 flex flex-col bg-gray-200">
-        <Navbar />
         <div className="flex justify-center items-start p-6 w-full">
           <div className="bg-white p-6 shadow-md rounded-lg w-full max-w-3xl space-y-6">
             <h3 className="text-3xl font-semibold text-[#4F85A6] text-center">
