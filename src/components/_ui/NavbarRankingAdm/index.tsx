@@ -12,13 +12,13 @@ export default function NavRanking({ children }: Props) {
       {/* Navbar fixa no topo */}
       <div className="bg-[#4F85A6] text-white flex justify-between items-center p-4 px-6">
         <nav className="flex space-x-6 text-lg">
-          <a href="#" className="text-white no-underline hover:border-b-2 hover:border-white">Home</a>
+          <a href="#" className="text-white no-underline hover:border-b-2 hover:border-white">Home-Ranking</a>
           <span>|</span>
           <a href="#" className="text-white no-underline hover:border-b-2 hover:border-white">Usuários</a>
           <span>|</span>
           <a href="#" className="text-white no-underline hover:border-b-2 hover:border-white">Logs</a>
           <span>|</span>
-          <a href="#" className="text-white no-underline hover:border-b-2 hover:border-white">Tasks</a>
+          <a href="#" className="text-white no-underline hover:border-b-2 hover:border-white">Gerenciar Equipes</a>
           <span>|</span>
           <a href="#" className="text-white no-underline hover:border-b-2 hover:border-white">Configurações</a>
           <span>|</span>
