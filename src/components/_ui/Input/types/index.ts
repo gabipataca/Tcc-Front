@@ -1,5 +1,6 @@
-import React, { FocusEvent, HTMLInputAutoCompleteAttribute } from "react";
-import { FieldError } from "react-hook-form";
+import type React from "react";
+import type { FocusEvent, HTMLInputAutoCompleteAttribute } from "react";
+import type { FieldError } from "react-hook-form";
 
 /**
  * Props for the Input component.
@@ -38,7 +39,7 @@ export interface InputProps {
     /**
      * The type of input, e.g., "text", "number", "email", or "password".
      */
-    type: "text" | "number" | "email" | "password";
+    type: "text" | "number" | "email" | "password" | "time";
 
     /**
      * Label text for the input.
@@ -84,4 +85,19 @@ export interface InputProps {
      * Error property, with type of the error and message.
      */
     error?: FieldError;
+
+    /**
+     * Min value for number inputs.
+     */
+    min?: number;
+
+    /**
+     * Max value for number inputs.
+     */
+    max?: number;
+
+    /**
+     * ID for the input element.
+     */
+    id?: string;
 }

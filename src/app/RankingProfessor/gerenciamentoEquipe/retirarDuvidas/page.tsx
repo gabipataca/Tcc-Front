@@ -20,7 +20,7 @@ export interface Question {
   language?: string;
 }
 
-export const allMockQuestions: Question[] = [
+const allMockQuestions: Question[] = [
   {
     id: 1,
     title: "Problema ao compilar código",

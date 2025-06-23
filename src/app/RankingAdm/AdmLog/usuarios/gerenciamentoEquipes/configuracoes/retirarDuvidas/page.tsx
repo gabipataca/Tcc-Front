@@ -1,12 +1,28 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import NavRanking from '@/components/_ui/NavbarRankingAdm';
-import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, TextField, CircularProgress } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Button,
+  TextField,
+  CircularProgress,
+} from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import Collapse from '@mui/material/Collapse';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
 export interface Question {
   id: number;
@@ -164,10 +180,6 @@ const getQuestions = (): Question[] => {
   return [...allMockQuestions];
 };
 
-const getQuestionById = (id: number): Question | undefined => {
-  return allMockQuestions.find(q => q.id === id);
-};
-
 const updateQuestionMock = (id: number, newAnswer: string): Question | undefined => {
   const questionIndex = allMockQuestions.findIndex(q => q.id === id);
   if (questionIndex > -1) {
@@ -249,7 +261,18 @@ function QuestionRow(props: { initialQuestion: Question; onQuestionUpdate: (upda
           {question.askedBy}
         </TableCell>
         <TableCell sx={{ fontSize: '18px', textAlign: 'center' }}>
-          {question.language || 'N/A'}
+          <Box
+            component="span"
+            sx={{
+              p: '4px 8px',
+              borderRadius: '9999px',
+              fontWeight: 'bold',
+              border: '1px solid #ccc',
+              display: 'inline-block',
+            }}
+          >
+            {question.language || 'N/A'}
+          </Box>
         </TableCell>
         <TableCell sx={{ fontSize: '18px', textAlign: 'center' }}>
           {new Date(question.askedAt).toLocaleString('pt-BR')}
@@ -258,13 +281,13 @@ function QuestionRow(props: { initialQuestion: Question; onQuestionUpdate: (upda
           <Box
             component="span"
             sx={{
-              p: 0.5,
+              p: '4px 8px',
               borderRadius: 1,
               fontWeight: 'bold',
               backgroundColor:
-                question.status === 'pending' ? '#ffeb3b' : '#c8e6c9',
+                question.status === 'pending' ? '#FFFBE6' : '#E6FFE6',
               color:
-                question.status === 'pending' ? '#333' : '#2e7d32',
+                question.status === 'pending' ? '#C08A00' : '#2E7D32',
             }}
           >
             {question.status === 'pending' ? 'Pendente' : 'Respondida'}
@@ -305,9 +328,9 @@ function QuestionRow(props: { initialQuestion: Question; onQuestionUpdate: (upda
               <Button
                 variant="contained"
                 sx={{
-                  bgcolor: '#4CAF50',
+                  bgcolor: '#4F85A6', // Changed to navbar color
                   '&:hover': {
-                    bgcolor: '#43A047',
+                    bgcolor: '#3F6D8A', // Slightly darker shade for hover
                   },
                   width: '25%',
                   display: 'block',
@@ -343,6 +366,12 @@ const AdminQuestionsListPage: React.FC = () => {
     );
   };
 
+  const stats = useMemo(() => {
+    const pending = questions.filter((q) => q.status === "pending").length;
+    const answered = questions.filter((q) => q.status === "answered").length;
+    return { pending, answered, total: questions.length };
+  }, [questions]);
+
   return (
     <NavRanking>
       <Box
@@ -363,7 +392,54 @@ const AdminQuestionsListPage: React.FC = () => {
           Caixa de Entrada de Dúvidas
         </Typography>
 
-        <Paper sx={{ width: '100%', maxWidth: '1500px' }}>
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' },
+            gap: 2,
+            mb: 4,
+            width: '100%',
+            maxWidth: '1500px',
+          }}
+        >
+          <Paper elevation={2} sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderRadius: 2 }}>
+            <Box>
+              <Typography variant="subtitle2" color="text.secondary">
+                Total
+              </Typography>
+              <Typography variant="h4" fontWeight="bold">
+                {stats.total}
+              </Typography>
+            </Box>
+            <InfoOutlinedIcon sx={{ fontSize: 40, color: '#2196f3' }} />
+          </Paper>
+
+          <Paper elevation={2} sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderRadius: 2 }}>
+            <Box>
+              <Typography variant="subtitle2" color="text.secondary">
+                Pendentes
+              </Typography>
+              <Typography variant="h4" fontWeight="bold" color="#ffc107">
+                {stats.pending}
+              </Typography>
+            </Box>
+            <AccessTimeIcon sx={{ fontSize: 40, color: '#ffc107' }} />
+          </Paper>
+
+          <Paper elevation={2} sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderRadius: 2 }}>
+            <Box>
+              <Typography variant="subtitle2" color="text.secondary">
+                Respondidas
+              </Typography>
+              <Typography variant="h4" fontWeight="bold" color="#4caf50">
+                {stats.answered}
+              </Typography>
+            </Box>
+            <CheckCircleOutlineIcon sx={{ fontSize: 40, color: '#4caf50' }} />
+          </Paper>
+        </Box>
+
+        <Paper sx={{ width: '100%', maxWidth: '1500px', borderRadius: 2 }}>
           <TableContainer sx={{ maxHeight: 'calc(100vh - 250px)', overflowY: 'auto' }}>
             <Table stickyHeader aria-label="collapsible questions table" sx={{ minWidth: 1200 }}>
               <TableHead>
