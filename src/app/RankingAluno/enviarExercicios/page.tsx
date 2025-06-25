@@ -1,26 +1,13 @@
 'use client';
 
-import { FaSignOutAlt, FaUpload, FaPaperPlane } from "react-icons/fa";
+import { FaUpload, FaPaperPlane } from "react-icons/fa";
 import Button from '@/components/_ui/Button';
 import { Box, Paper, Typography } from '@mui/material';
-
+import NavbarRanking from '@/components/_ui/NavbarRanking'; 
 export default function AnaliseJuiz() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
-      <div className="bg-[#4F85A6] text-white mb-6 flex justify-between items-center p-4 px-6">
-        <nav className="flex space-x-6 text-lg">
-          <a href="#" className="text-white no-underline hover:border-b-2 hover:border-white transition-colors duration-200">Home</a>
-          <span>|</span>
-          <a href="#" className="text-white no-underline hover:border-b-2 hover:border-white transition-colors duration-200">Enviar Exercício</a>
-          <span>|</span>
-          <a href="#" className="text-white no-underline hover:border-b-2 hover:border-white transition-colors duration-200">Ranking</a>
-          <span>|</span>
-          <a href="#" className="text-white no-underline hover:border-b-2 hover:border-white transition-colors duration-200">Dúvidas</a>
-        </nav>
-        <button className="text-white ml-auto">
-          <FaSignOutAlt size={24} />
-        </button>
-      </div>
+      <NavbarRanking />
 
       <Box
         sx={{

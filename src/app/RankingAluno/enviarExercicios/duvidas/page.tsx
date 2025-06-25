@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { FaSignOutAlt, FaPaperPlane, FaQuestionCircle, FaUser } from "react-icons/fa";
+import { FaPaperPlane, FaQuestionCircle, FaUser, FaSignOutAlt } from "react-icons/fa"; // Importado FaSignOutAlt
 import {
-  Box,TextField,Autocomplete, Button as MuiButton,Typography,Paper, Table,TableBody,TableCell,TableContainer,TableHead,TableRow,IconButton,Collapse,
+  Box, TextField, Autocomplete, Button as MuiButton, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, Collapse,
   InputAdornment,
 } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -11,6 +11,8 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import BookIcon from '@mui/icons-material/Book';
 import CodeIcon from '@mui/icons-material/Code';
 import TitleIcon from '@mui/icons-material/Title';
+import NavbarRanking from '@/components/_ui/NavbarRanking';
+
 
 interface InputFieldProps {
   label: string;
@@ -106,18 +108,18 @@ const MuiSelectField = ({ label, options, placeholder, icon }: MuiSelectFieldPro
               ) : null,
             }}
             sx={{
-                '& .MuiOutlinedInput-root': {
-                    borderRadius: 2,
-                    '&.Mui-focused fieldset': {
-                        borderColor: '#4F85A6',
-                    },
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 2,
+                '&.Mui-focused fieldset': {
+                  borderColor: '#4F85A6',
                 },
-                '& .MuiInputLabel-root': {
-                    color: '#4F85A6',
-                },
-                '& .MuiInputLabel-root.Mui-focused': {
-                    color: '#4F85A6',
-                },
+              },
+              '& .MuiInputLabel-root': {
+                color: '#4F85A6',
+              },
+              '& .MuiInputLabel-root.Mui-focused': {
+                color: '#4F85A6',
+              },
             }}
           />
         )}
@@ -368,98 +370,83 @@ const UserQuestionsPageContent = () => {
 
   return (
     <Box
+      sx={{
+        bgcolor: 'transparent',
+        minHeight: 'calc(100vh - 64px - 60px)', 
+        display: 'flex',
+        flexDirection: 'column',
+        p: 3,
+        alignItems: 'center',
+        width: '100%',
+        flexGrow: 1,
+      }}
+    >
+      <Typography
+        variant="h4"
+        component="h2"
         sx={{
-          bgcolor: 'transparent',
-          minHeight: 'calc(100vh - 64px - 60px)',
-          display: 'flex',
-          flexDirection: 'column',
-          p: 3,
-          alignItems: 'center',
-          width: '100%',
-          flexGrow: 1,
+          mb: 4,
+          textAlign: 'center',
+          color: '#4F85A6',
+          fontWeight: 'bold',
+          fontSize: { xs: '2rem', md: '2.5rem' },
+          letterSpacing: '0.05em',
         }}
       >
-        <Typography
-          variant="h4"
-          component="h2"
-          sx={{
-            mb: 4,
-            textAlign: 'center',
-            color: '#4F85A6',
-            fontWeight: 'bold',
-            fontSize: { xs: '2rem', md: '2.5rem' },
-            letterSpacing: '0.05em',
-          }}
-        >
-          Minhas Dúvidas
-        </Typography>
+        Minhas Dúvidas
+      </Typography>
 
-        <Paper sx={{
-          width: '100%',
-          maxWidth: '1500px',
-          borderRadius: 4,
-          boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.1)',
-          overflow: 'hidden',
-        }}>
-          <TableContainer sx={{ maxHeight: 'calc(100vh - 350px)', overflowY: 'auto' }}>
-            <Table stickyHeader aria-label="collapsible user questions table" sx={{ minWidth: 800 }}>
-              <TableHead>
+      <Paper sx={{
+        width: '100%',
+        maxWidth: '1500px',
+        borderRadius: 4,
+        boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.1)',
+        overflow: 'hidden',
+      }}>
+        <TableContainer sx={{ maxHeight: 'calc(100vh - 350px)', overflowY: 'auto' }}>
+          <Table stickyHeader aria-label="collapsible user questions table" sx={{ minWidth: 800 }}>
+            <TableHead>
+              <TableRow>
+                <TableCell style={{ backgroundColor: '#4F85A6', color: '#fff', fontSize: '1rem', fontWeight: 'bold' }} />
+                <TableCell style={{ width: '8%', backgroundColor: '#4F85A6', color: '#fff', fontSize: '1rem', fontWeight: 'bold', textAlign: 'center' }}>ID</TableCell>
+                <TableCell style={{ width: '35%', backgroundColor: '#4F85A6', color: '#fff', fontSize: '1rem', fontWeight: 'bold', textAlign: 'center' }}>Título</TableCell>
+                <TableCell style={{ width: '15%', backgroundColor: '#4F85A6', color: '#fff', fontSize: '1rem', fontWeight: 'bold', textAlign: 'center' }}>Linguagem</TableCell>
+                <TableCell style={{ width: '25%', backgroundColor: '#4F85A6', color: '#fff', fontSize: '1rem', fontWeight: 'bold', textAlign: 'center' }}>Data/Hora Pergunta</TableCell>
+                <TableCell style={{ width: '17%', backgroundColor: '#4F85A6', color: '#fff', fontSize: '1rem', fontWeight: 'bold', textAlign: 'center' }}>Situação</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {questions.length === 0 ? (
                 <TableRow>
-                  <TableCell style={{ backgroundColor: '#4F85A6', color: '#fff', fontSize: '1rem', fontWeight: 'bold' }} />
-                  <TableCell style={{ width: '8%', backgroundColor: '#4F85A6', color: '#fff', fontSize: '1rem', fontWeight: 'bold', textAlign: 'center' }}>ID</TableCell>
-                  <TableCell style={{ width: '35%', backgroundColor: '#4F85A6', color: '#fff', fontSize: '1rem', fontWeight: 'bold', textAlign: 'center' }}>Título</TableCell>
-                  <TableCell style={{ width: '15%', backgroundColor: '#4F85A6', color: '#fff', fontSize: '1rem', fontWeight: 'bold', textAlign: 'center' }}>Linguagem</TableCell>
-                  <TableCell style={{ width: '25%', backgroundColor: '#4F85A6', color: '#fff', fontSize: '1rem', fontWeight: 'bold', textAlign: 'center' }}>Data/Hora Pergunta</TableCell>
-                  <TableCell style={{ width: '17%', backgroundColor: '#4F85A6', color: '#fff', fontSize: '1rem', fontWeight: 'bold', textAlign: 'center' }}>Situação</TableCell>
+                  <TableCell colSpan={6} align="center" sx={{ fontSize: '18px', py: 3, color: '#757575' }}>
+                    Você ainda não fez nenhuma pergunta.
+                  </TableCell>
                 </TableRow>
-              </TableHead>
-              <TableBody>
-                {questions.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={6} align="center" sx={{ fontSize: '18px', py: 3, color: '#757575' }}>
-                      Você ainda não fez nenhuma pergunta.
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  questions.map((question) => (
-                    <UserQuestionRow
-                      key={question.id}
-                      question={question}
-                    />
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Paper>
-      </Box>
+              ) : (
+                questions.map((question) => (
+                  <UserQuestionRow
+                    key={question.id}
+                    question={question}
+                  />
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
+    </Box>
   );
 };
 
-const Navbar = () => (
-  <div className="bg-[#4F85A6] text-white mb-6 flex justify-between items-center p-4 px-6">
-    <nav className="flex space-x-6 text-lg">
-      <a href="#" className="text-white no-underline hover:border-b-2 hover:border-white transition-colors duration-200">Home</a>
-      <span>|</span>
-      <a href="#" className="text-white no-underline hover:border-b-2 hover:border-white transition-colors duration-200">Enviar Exercício</a>
-      <span>|</span>
-      <a href="#" className="text-white no-underline hover:border-b-2 hover:border-white transition-colors duration-200">Ranking</a>
-      <span>|</span>
-      <a href="#" className="text-white no-underline hover:border-b-2 hover:border-white transition-colors duration-200">Dúvidas</a>
-    </nav>
-    <button className="text-white ml-auto">
-      <FaSignOutAlt size={24} />
-    </button>
-  </div>
-);
 
 export default function CentralDeDuvidas() {
   const [visualizacaoAtiva, setVisualizacaoAtiva] = useState<'fazer' | 'minhas'>('fazer');
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100">
-      <Navbar />
+    <div className="flex flex-col min-h-screen bg-white">
+      <NavbarRanking /> 
 
+      {/* Box que contém os botões "Fazer Pergunta" e "Minhas Dúvidas" */}
       <Box
         sx={{
           display: 'flex',
@@ -470,8 +457,11 @@ export default function CentralDeDuvidas() {
           maxWidth: 'fit-content',
           p: 1,
           borderRadius: 4,
-          bgcolor: '#e0e0e0',
+          bgcolor: '#fff', 
           boxShadow: 'inset 0px 1px 3px rgba(0, 0, 0, 0.1)',
+          // Adicionado marginTop para criar um pequeno espaçamento visual abaixo da Navbar
+
+          marginTop: '20px', 
         }}
       >
         <MuiButton
