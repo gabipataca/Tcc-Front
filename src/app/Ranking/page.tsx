@@ -2,7 +2,6 @@
 
 import Balao from "@/components/_ui/Balao";
 import React from "react";
-import NavbarRanking from "@/components/_ui/NavbarRanking";
 import Table from "@/components/_ui/Table";
 import TableHeader from "@/components/_ui/Table/components/TableHeader";
 import TableBody from "@/components/_ui/Table/components/TableBody";

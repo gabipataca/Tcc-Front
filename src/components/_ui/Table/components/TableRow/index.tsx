@@ -1,3 +1,5 @@
+"use client"
+
 import React from "react";
 import { StyledTableRow } from "./styles";
 import { TableLineProps } from "./types";

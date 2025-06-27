@@ -1,4 +1,6 @@
-import styled from "@emotion/styled";
+"use client"
+
+import { styled } from '@mui/material/styles';
 import { TableCell } from "@mui/material";
 
 interface StyledTableHeaderItemProps {

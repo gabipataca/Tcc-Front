@@ -1,3 +1,5 @@
+"use client"
+
 import React from "react";
 import { StyledTableHeaderItem } from "./styles";
 import { TableHeaderItemProps } from "./types";
