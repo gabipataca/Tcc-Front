@@ -1,4 +1,5 @@
-import React from "react";
+import React from 'react';
+import styles from './Balao.module.scss';
 
 const Balao: React.FC = () => {
     return (

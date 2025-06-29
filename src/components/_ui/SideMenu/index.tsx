@@ -1,27 +1,45 @@
-import Falcon from "@/components/_ui/icons/Falcon";
-import React from "react"
+"use client"
+
+import type React from "react"
 import { FaUserCircle } from "react-icons/fa"
-
-
+import Image from "next/image"
 
 const SideMenu: React.FC = () => {
+  return (
+    <div className="w-[280px] bg-[#4F85A6] flex flex-col items-center py-6 shadow-xl relative min-h-screen">
+    
+      <div className="mb-8">
+        <Image
+          src="/fhologo.png"
+          alt="FHO Logo"
+          width={80}
+          height={80}
+          className="h-20 w-auto"
+        />
+      </div>
 
-    return (
-        <div className="w-[250px] bg-[#4F85A6] flex flex-col items-center py-8 relative">
-        <div className="mt-[-30px] mb-2">
-          <img src="/fhologo.png" alt="" className="h-20" />
+      <div className="flex flex-col items-center text-center mb-8">
+        <div className="relative mb-4">
+          <FaUserCircle size={120} className="text-white drop-shadow-lg" />
+          <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-green-400 rounded-full border-2 border-white"></div>
         </div>
-            <div className="mt-20 h-full top-24 flex flex-col items-center">
-                <FaUserCircle size={140} className="text-white mb-4" />
-                <h2 className="text-white text-2xl font-semibold mb-1">Perfil Usuário</h2>
-                <p className="text-white text-lg">E-mail Institucional</p>
-                <div className="mt-auto mb-3">
-                    <Falcon className="w-32 h-auto" />
-                </div>
-            </div>
-        </div>
-    );
+
+        <h2 className="text-white text-xl font-semibold mb-2 drop-shadow-sm">Perfil Usuário</h2>
+
+        <p className="text-white/90 text-sm">E-mail Institucional</p>
+      </div>
+      {/* Falcon Logo at Bottom */}
+      <div className="mt-auto mb-6">
+        <Image
+          src="/falcon.png"
+          alt="Falcon"
+          width={128}
+          height={40}
+          className="w-32 h-auto"
+        />
+      </div>
+      </div>
+  )
 }
 
-
-export default SideMenu;
+export default SideMenu
