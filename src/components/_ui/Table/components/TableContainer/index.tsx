@@ -1,7 +1,7 @@
+"use client"
+
 import React from "react"
 import { StyledTableContainer } from "./styles"
-
-
 
 
 const TableContainer: React.FC<{ children: React.ReactNode }> = ({ children, ...props }) => {

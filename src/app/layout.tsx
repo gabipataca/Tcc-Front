@@ -1,19 +1,9 @@
 import type { Metadata } from "next";
-import { Roboto } from "next/font/google";
 import "./globals.css";
 import { UserContextProvider } from "@/contexts/UserContext";
 import Navbar from "@/components/_ui/Navbar";
-import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
-import { ThemeProvider } from "@mui/material";
-import theme from "@/theme";
 import SnackbarProviderC from "@/contexts/SnackbarProvider";
-
-const roboto = Roboto({
-    weight: ["300", "400", "500", "600", "700"],
-    subsets: ["latin"],
-    display: "swap",
-    variable: "--font-roboto",
-});
+import ThemeRegistry from "./ThemeRegistry";
 
 export const metadata: Metadata = {
     title: "Create Next App",
@@ -26,20 +16,18 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en">
-            <body className={roboto.variable}>
-                <AppRouterCacheProvider>
-                    <ThemeProvider theme={theme}>
-                        <SnackbarProviderC>
-                            {/* O ideal é que haja apenas um Navbar */}
-                            <Navbar />
+        <html lang="pt-br">
+            <body>
+                <ThemeRegistry>
+                    <SnackbarProviderC>
+                        {/* O ideal é que haja apenas um Navbar */}
+                        <Navbar />
 
-                            <UserContextProvider>
-                                <main className="flex-grow">{children}</main>
-                            </UserContextProvider>
-                        </SnackbarProviderC>
-                    </ThemeProvider>
-                </AppRouterCacheProvider>
+                        <UserContextProvider>
+                            <main className="flex-grow">{children}</main>
+                        </UserContextProvider>
+                    </SnackbarProviderC>
+                </ThemeRegistry>
             </body>
         </html>
     );

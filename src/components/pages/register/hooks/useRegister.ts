@@ -1,3 +1,5 @@
+"use client"
+
 import { DropdownOption } from "@/components/_ui/Dropdown/types";
 import { useUser } from "@/contexts/UserContext";
 import { RegisterUserRequest, RegisterUserResponse } from "@/types/Auth";

@@ -1,6 +1,6 @@
 "use client"
 
-import styled from "@emotion/styled";
+import { styled } from '@mui/material/styles';
 import { TableBody } from "@mui/material";
 
 

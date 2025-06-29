@@ -1,3 +1,5 @@
+"use client"
+
 import React from "react";
 import { StyledTableCell } from "./styles";
 import { TableCellProps } from "./types";
