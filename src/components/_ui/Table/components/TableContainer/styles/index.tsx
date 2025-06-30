@@ -1,4 +1,4 @@
-import { styled } from '@mui/material/styles';
+import styled from '@emotion/styled';
 
 // Customizar css aqui
 export const StyledTableContainer = styled.div`
