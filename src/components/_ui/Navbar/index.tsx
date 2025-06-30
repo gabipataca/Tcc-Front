@@ -1,13 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { FC, useState } from "react"
 import { FaSignOutAlt } from "react-icons/fa"
 import { Menu } from "lucide-react"
 import Button from "@/components/_ui/Button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/_ui/Sheet"
 import { Home, UserPlus, BookOpen, Trophy, BarChart3, Medal, HelpCircle } from "lucide-react"
 
-const Navbar = () => {
+const Navbar: FC = () => {
   const [isOpen, setIsOpen] = useState(false)
 
   const navLinks = [
