@@ -1,4 +1,4 @@
-import { Question } from "../../../types";
+import { Question } from "@/components/pages/Competition/pages/Questions/types";
 
 export interface QuestionsContextProps {
     questions: Question[];
@@ -6,5 +6,5 @@ export interface QuestionsContextProps {
     insertQuestion: (question: Question) => Question | undefined;
     deleteQuestion: (id: number) => void;
     getQuestionById: (id: number) => Question | undefined;
-
+    editQuestion: (updatedQuestion: Question) => void;
 }

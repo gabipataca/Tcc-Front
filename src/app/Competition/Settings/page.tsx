@@ -2,8 +2,8 @@
 
 import type React from "react"
 import { useState } from "react"
-import Input from "../../../../../../components/_ui/Input"
-import Button from "../../../../../../components/_ui/Button"
+import Input from "../../../components/_ui/Input"
+import Button from "../../../components/_ui/Button"
 
 
 import { AlertTriangle, Clock, Settings, StopCircle, Calendar, Timer, FileText } from "lucide-react"

@@ -1,10 +1,8 @@
 "use client"
 
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { WebSocketContextProps } from "./types";
 import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr"
-
-
 
 export const WebSocketContext = createContext<WebSocketContextProps | null>(null);
 
@@ -13,7 +11,7 @@ export const WebSocketContextProvider = ({ children }: { children: React.ReactNo
     const [webSocketConnection, setWebSocketConnection] = useState<HubConnection | null>(null);
     const [connectionId, setConnectionId] = useState<string | null>(null);
 
-    const ConfigureWebSocket = async () => {
+    const ConfigureWebSocket = useCallback(async () => {
         if(webSocketConnection == null) return;
 
         await webSocketConnection!.start();
@@ -21,7 +19,7 @@ export const WebSocketContextProvider = ({ children }: { children: React.ReactNo
         webSocketConnection.invoke("GetConnectionId").then((id: string) => {
             setConnectionId(id);
         });
-    }
+    }, [webSocketConnection]);
 
     useEffect(() => {
         const newConnection = new HubConnectionBuilder()
@@ -36,12 +34,21 @@ export const WebSocketContextProvider = ({ children }: { children: React.ReactNo
 
     useEffect(() => {
         ConfigureWebSocket();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [webSocketConnection]);
+    }, [ConfigureWebSocket]);
 
     return(
-        <WebSocketContext.Provider value={{ webSocketConnection }}>
+        <WebSocketContext.Provider value={{ webSocketConnection, connectionId }}>
             { children }
         </WebSocketContext.Provider>
     );
+}
+
+export const useWebSocket = () => {
+    const context = useContext(WebSocketContext);
+
+    if(context == null) {
+        throw new Error("You are not inside the context scope");
+    }
+
+    return context;
 }

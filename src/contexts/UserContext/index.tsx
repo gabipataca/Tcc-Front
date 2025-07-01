@@ -2,21 +2,9 @@
 
 import { User } from "@/types/User";
 import React, { createContext, useContext, useState } from "react";
+import { UserContextProviderProps, UserContextType } from "./types";
 
-
-
-interface UserContextProps {
-    user: User | null;
-    setUser: React.Dispatch<React.SetStateAction<User | null>>;
-}
-
-export const UserContext = createContext<UserContextProps | null>(null);
-
-
-
-interface UserContextProviderProps {
-    children: React.ReactNode;
-}
+export const UserContext = createContext<UserContextType | null>(null);
 
 export const UserContextProvider: React.FC<UserContextProviderProps> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
