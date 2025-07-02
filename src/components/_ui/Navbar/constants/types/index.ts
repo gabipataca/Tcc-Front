@@ -17,5 +17,5 @@ export interface NavbarLink {
     /**
      * (Optional) A ReactNode representing the icon to display alongside the label.
      */
-    icon?: React.ComponentType;
+    Icon: React.ComponentType;
 }

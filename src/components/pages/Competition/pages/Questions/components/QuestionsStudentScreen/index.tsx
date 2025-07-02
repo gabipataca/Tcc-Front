@@ -237,7 +237,7 @@ export interface Question {
     language?: string;
 }
 
-const CentralDeDuvidas: FC = () => {
+const QuestionsStudentScreen: FC = () => {
     const [visualizacaoAtiva, setVisualizacaoAtiva] = useState<
         "fazer" | "minhas"
     >("fazer");
@@ -335,4 +335,4 @@ const CentralDeDuvidas: FC = () => {
     );
 };
 
-export default CentralDeDuvidas;
+export default QuestionsStudentScreen;

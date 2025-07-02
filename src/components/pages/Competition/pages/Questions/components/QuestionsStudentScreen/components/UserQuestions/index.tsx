@@ -41,7 +41,7 @@ const UserQuestions: FC = () => {
         boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.1)',
         overflow: 'hidden',
       }}>
-        <TableContainer sx={{ maxHeight: 'calc(100vh - 350px)', overflowY: 'auto' }}>
+        <TableContainer sx={{ maxHeight: 'auto', overflowY: 'auto' }}>
           <Table stickyHeader aria-label="collapsible user questions table" sx={{ minWidth: 800 }}>
             <TableHead>
               <TableRow>

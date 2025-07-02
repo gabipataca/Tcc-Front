@@ -6,19 +6,11 @@ import { Menu } from "lucide-react"
 import Button from "@/components/_ui/Button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/_ui/Sheet"
 import { Home, UserPlus, BookOpen, Trophy, BarChart3, Medal, HelpCircle } from "lucide-react"
+import { NavbarLinks } from "./constants"
+import Link from "next/link"
 
 const Navbar: FC = () => {
   const [isOpen, setIsOpen] = useState(false)
-
-  const navLinks = [
-    { href: "#", label: "Home", icon: Home },
-    { href: "#", label: "Inscrições", icon: UserPlus },
-    { href: "#", label: "Montar Exercícios", icon: BookOpen },
-    { href: "#", label: "Criar Maratona", icon: Trophy },
-    { href: "#", label: "Estatísticas", icon: BarChart3 },
-    { href: "#", label: "Ranking", icon: Medal },
-    { href: "#", label: "Dúvidas", icon: HelpCircle },
-  ]
 
   return (
     <div className="bg-[#4F85A6] text-white shadow-lg">
@@ -26,16 +18,16 @@ const Navbar: FC = () => {
         <div className="flex justify-between items-center h-16">
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-1">
-            {navLinks.map((link, index) => (
+            {NavbarLinks.map((link, index) => (
               <div key={link.label} className="flex items-center">
-                <a
+                <Link
                   href={link.href}
                   className="flex items-center gap-2 px-3 py-2 text-xl font-medium hover:bg-white/10 hover:text-white transition-all duration-200 rounded-md"
                 >
-                  <link.icon className="h-4 w-4" />
+                  <link.Icon className="h-4 w-4" />
                   {link.label}
-                </a>
-                {index < navLinks.length - 1 && <span className="text-white/60 mx-1">|</span>}
+                </Link>
+                {index < NavbarLinks.length - 1 && <span className="text-white/60 mx-1">|</span>}
               </div>
             ))}
           </nav>
@@ -51,16 +43,16 @@ const Navbar: FC = () => {
               </SheetTrigger>
               <SheetContent side="left" className="bg-[#4F85A6] text-white border-none">
                 <div className="flex flex-col space-y-4 mt-8">
-                  {navLinks.map((link) => (
-                    <a
+                  {NavbarLinks.map((link) => (
+                    <Link
                       key={link.label}
                       href={link.href}
                       className="flex items-center gap-3 text-lg font-medium hover:bg-white/10 hover:text-white transition-all duration-200 rounded-md px-3 py-2"
                       onClick={() => setIsOpen(false)}
                     >
-                      <link.icon className="h-5 w-5" />
+                      <link.Icon className="h-5 w-5" />
                       {link.label}
-                    </a>
+                    </Link>
                   ))}
                 </div>
               </SheetContent>
