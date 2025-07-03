@@ -33,7 +33,7 @@ export const NavbarLinks: NavbarLink[] = [
     {
         href: "/Competition",
         label: "Home-Ranking",
-        Icon: HomeIcon
+        Icon: HomeIcon,
     },
     {
         href: "/Competition/Submissions",
@@ -43,7 +43,7 @@ export const NavbarLinks: NavbarLink[] = [
     {
         href: "/Competition/Logs",
         label: "Logs",
-        Icon: FileTextIcon
+        Icon: FileTextIcon,
     },
     {
         // Professor possui acesso
@@ -58,9 +58,9 @@ export const NavbarLinks: NavbarLink[] = [
     },
     {
         // Professor possui acesso
-        href: "/Competition/Questions",// Aluno possui acesso
+        href: "/Competition/Questions", // Aluno possui acesso
         label: "Dúvidas",
-        Icon: HelpCircleIcon
+        Icon: HelpCircleIcon,
     },
     {
         href: "/Competition/ManualCorrection",
@@ -69,13 +69,56 @@ export const NavbarLinks: NavbarLink[] = [
     },
     /////////////////////////////////////
     {
-        href: "#",
+        href: "/Competition/SendExercise",
         label: "Enviar Exercício",
-        Icon: UploadIcon
+        Icon: UploadIcon,
     },
-    /* {
-        href: "/Profile",
-        label: "Perfil",
-        Icon: 
-    } */
+    {
+        //Perfil aluno
+        href: "/Profile/PerfilAluno",
+        label: "Perfil do Aluno",
+        Icon: UsersIcon,
+    },
+
+    {
+        //Perfil aluno - Inscrição
+        href: "/Profile/Subscription",
+        label: "Inscrição",
+        Icon: UsersIcon,
+    },
+
+    {
+        //Perfil Professor
+        href: "/Profile/PerfilProfessor",
+        label: "Perfil do Professor",
+        Icon: UsersIcon,
+    },
+
+    {
+        //Perfil Professor e ADM criam exercícios
+        href: "/Profile/CreateExercise",
+        label: "Montar Exercícios",
+        Icon: UsersIcon,
+    },
+
+    {
+        //Perfil Adm
+        href: "/Profile/PerfilAdm",
+        label: "Perfil do Administrador",
+        Icon: UsersIcon,
+    },
+
+    {
+        //Perfil Adm - Criar Formulários para inscrição maratona
+        href: "/Profile/CreateSubscription",
+        label: "Liberar Inscrições",
+        Icon: UsersIcon,
+    },
+
+    {
+        //Perfil Adm - Criar Maratona
+        href: "/Competition/Create",
+        label: "Criar Maratona",
+        Icon: UsersIcon,
+    },
 ];
