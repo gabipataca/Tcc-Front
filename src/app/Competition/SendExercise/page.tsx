@@ -3,11 +3,12 @@
 import { FaUpload, FaPaperPlane } from "react-icons/fa";
 import Button from '@/components/_ui/Button';
 import { Box, Paper, Typography } from '@mui/material';
-import NavbarRanking from '@/components/_ui/NavbarRanking'; 
+import Navbar from '@/components/_ui/Navbar'; 
 export default function AnaliseJuiz() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
-      <NavbarRanking />
+      <Navbar/>
+      
 
       <Box
         sx={{

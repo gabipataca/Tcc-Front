@@ -2,11 +2,11 @@
 
 import SignUpMarathon from "@/components/pages/perfilAluno/components/signUp"
 
-const inscricao: React.FC = () => {
+const UserSubscription: React.FC = () => {
 
   return(
     <SignUpMarathon/>
   )
 };
 
-export default inscricao;
+export default UserSubscription;

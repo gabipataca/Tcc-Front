@@ -2,12 +2,12 @@
 
 import CreateExercisePage from "@/components/pages/perfilAdm/components/createExercise"
 
-const AdminDashboard: React.FC = () => {
+const CreateExercise: React.FC = () => {
 
   return(
     <CreateExercisePage />
   )
 };
 
-export default AdminDashboard;
+export default CreateExercise;
 
