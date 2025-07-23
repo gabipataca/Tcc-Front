@@ -114,11 +114,4 @@ export const NavbarLinks: NavbarLink[] = [
         label: "Liberar Inscrições",
         Icon: UsersIcon,
     },
-
-    {
-        //Perfil Adm - Criar Maratona
-        href: "/Competition/Create",
-        label: "Criar Maratona",
-        Icon: UsersIcon,
-    },
 ];
