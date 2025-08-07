@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/_ui/Badge"
 import SideMenu from "@/components/_ui/SideMenu"
 
-const PerfilAluno: React.FC = () => {
+const StudentDashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
 
@@ -311,4 +311,4 @@ const PerfilAluno: React.FC = () => {
   )
 }
 
-export default PerfilAluno
+export default StudentDashboard
