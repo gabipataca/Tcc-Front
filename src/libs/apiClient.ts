@@ -1,6 +1,10 @@
 import axios from "axios";
 import { ApiRequestOptions } from "./types";
 
+/**
+ * Base URL for the API. This should be set in your environment variables.
+ * @remarks It can be either `API_URL` or `NEXT_PUBLIC_API_URL` depending on the access context, either server-side or client-side.
+ */
 const API_URL = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL;
 
 const apiClient = axios.create({

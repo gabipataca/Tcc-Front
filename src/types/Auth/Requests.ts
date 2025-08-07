@@ -31,7 +31,7 @@ export interface RegisterUserRequest {
     /**
      * The user's role, either "student" or "teacher".
      */
-    role: "student" | "teacher";
+    role: "Student" | "Teacher";
 
     /**
      * The code required to access or register for the system.
