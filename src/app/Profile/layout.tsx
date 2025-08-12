@@ -7,10 +7,9 @@ import { ReactNode } from "react";
 const ProfileLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
     return (
         <ProfileMenuContextProvider>
-            <div className="flex">
+            <div className="flex bg-gradient-to-br from-slate-50 to-slate-100">
                 <SideMenu />
 
-                
                 {children}
             </div>
         </ProfileMenuContextProvider>
