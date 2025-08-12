@@ -1,3 +1,5 @@
+"use client";
+
 import useProfile from "@/components/pages/profile/hooks/useProfile";
 import { FC, Suspense } from "react";
 

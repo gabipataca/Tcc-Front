@@ -1,8 +1,11 @@
+"use client";
+
 import { useUser } from "@/contexts/UserContext";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import AdminDashboard from "../_modules/AdminDashboard";
 import TeacherDashboard from "../_modules/TeacherDashboard";
 import StudentDashboard from "../_modules/StudentDashboard";
+import { ProfileMenuType } from "./types";
 
 
 
@@ -29,7 +32,7 @@ const useProfile = () => {
             case "Student":
                 return StudentDashboard;
             default:
-                return null;
+                return AdminDashboard;
         }
     }, [user]);
 

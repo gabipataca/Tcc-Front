@@ -26,6 +26,8 @@ import StudentsTable from "../../components/StudentsTable";
 import GroupsTable from "../../components/GroupsTable";
 import StatsCard from "../../components/StatsCard";
 import { groupsData, studentsData } from "../../hooks/mockData";
+import useProfileMenu from "../../hooks/useProfileMenu";
+import ExerciseManagement from "../Shared/ExerciseManagement";
 
 const AppSidebar = () => {
     return (
@@ -148,80 +150,70 @@ const Navbar = () => {
 };
 
 const TeacherDashboard: FC = () => {
+    const { activeMenu, toggleMenu } = useProfileMenu();
+
     return (
-        <div className="min-h-screen bg-[#e9edee]">
-            <Navbar />
-
-            <div className="flex">
-                <AppSidebar />
-
-                <div className="flex-1">
-                    <div className="container mx-auto p-6 space-y-6">
-                        {/* Header */}
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <h1 className="text-4xl font-bold text-[#3f3c40] py-2">
-                                    Dashboard Administrativo
-                                </h1>
-                                <p className="text-lg text-[#4F85A6]">
-                                    Gerencie alunos e grupos
-                                </p>
-                            </div>
-                        </div>
-
-                        {/* Stats Cards */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <StatsCard
-                                title="Total de Alunos"
-                                value={studentsData.length}
-                                description="Ativos no ultimo mês"
-                                icon={Users}
-                            />
-                            <StatsCard
-                                title="Grupos Ativos"
-                                value={
-                                    groupsData.filter(
-                                        (g) => g.status === "active"
-                                    ).length
-                                }
-                                description="Ativos no ultimo mês"
-                                icon={UserCheck}
-                            />
-                        </div>
-
-                        {/* Main Content */}
-                        <Tabs defaultValue="students" className="space-y-6">
-                            <TabsList className="grid w-full grid-cols-2 bg-white border border-[#e9edee]">
-                                <TabsTrigger
-                                    value="students"
-                                    className="data-[state=active]:bg-[#4F85A6] data-[state=active]:text-white text-base text-[#3f3c40] px-1 py-0.5"
-                                >
-                                    Alunos
-                                </TabsTrigger>
-                                <TabsTrigger
-                                    value="groups"
-                                    className="data-[state=active]:bg-[#4F85A6] data-[state=active]:text-white text-base text-[#3f3c40] px-3 py-0.5"
-                                >
-                                    Grupos
-                                </TabsTrigger>
-                            </TabsList>
-
-                            <TabsContent
-                                value="students"
-                                className="space-y-0 mt-0"
-                            >
-                                <StudentsTable />
-                            </TabsContent>
-
-                            <TabsContent
-                                value="groups"
-                                className="space-y-0 mt-0"
-                            >
-                                <GroupsTable />
-                            </TabsContent>
-                        </Tabs>
+        <div className="flex-1">
+            <div className="container mx-auto p-6 space-y-6">
+                {/* Header */}
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h1 className="text-4xl font-bold text-[#3f3c40] py-2">
+                            Dashboard Administrativo
+                        </h1>
+                        <p className="text-lg text-[#4F85A6]">
+                            Gerencie alunos e grupos
+                        </p>
                     </div>
                 </div>
+
+                {/* Stats Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <StatsCard
+                        title="Total de Alunos"
+                        value={studentsData.length}
+                        description="Ativos no ultimo mês"
+                        icon={Users}
+                    />
+                    <StatsCard
+                        title="Grupos Ativos"
+                        value={
+                            groupsData.filter((g) => g.status === "active")
+                                .length
+                        }
+                        description="Ativos no ultimo mês"
+                        icon={UserCheck}
+                    />
+                </div>
+                
+                {(activeMenu === "Main") ? (
+                <Tabs defaultValue="students" className="space-y-6">
+                    <TabsList className="grid w-full grid-cols-2 bg-white border border-[#e9edee]">
+                        <TabsTrigger
+                            value="students"
+                            className="data-[state=active]:bg-[#4F85A6] data-[state=active]:text-white text-base text-[#3f3c40] px-1 py-0.5"
+                        >
+                            Alunos
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value="groups"
+                            className="data-[state=active]:bg-[#4F85A6] data-[state=active]:text-white text-base text-[#3f3c40] px-3 py-0.5"
+                        >
+                            Grupos
+                        </TabsTrigger>
+                    </TabsList>
+
+                    <TabsContent value="students" className="space-y-0 mt-0">
+                        <StudentsTable />
+                    </TabsContent>
+
+                    <TabsContent value="groups" className="space-y-0 mt-0">
+                        <GroupsTable />
+                    </TabsContent>
+                </Tabs>
+                ) : (activeMenu === "Exercise") ? (
+                    <ExerciseManagement />
+                ) : <></>}
             </div>
         </div>
     );

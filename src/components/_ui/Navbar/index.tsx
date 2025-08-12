@@ -5,12 +5,24 @@ import { FaSignOutAlt } from "react-icons/fa"
 import { Menu } from "lucide-react"
 import Button from "@/components/_ui/Button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/_ui/Sheet"
-import { Home, UserPlus, BookOpen, Trophy, BarChart3, Medal, HelpCircle } from "lucide-react"
 import { NavbarLinks } from "./constants"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 const Navbar: FC = () => {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
+
+  const pathname = usePathname();
+
+  console.log(pathname)
+
+  // Admin
+  // Criar maratona
+  // Criar exercicio
+  // Editar maratona
+  // Criar inscricao
+  // Professores
+  // Alunos
 
   return (
     <div className="bg-[#4F85A6] text-white shadow-lg">
@@ -24,7 +36,7 @@ const Navbar: FC = () => {
                   href={link.href}
                   className="flex items-center gap-2 px-3 py-2 text-xl font-medium hover:bg-white/10 hover:text-white transition-all duration-200 rounded-md"
                 >
-                  <link.Icon className="h-4 w-4" />
+                  {link.Icon && <link.Icon className="h-4 w-4" />}
                   {link.label}
                 </Link>
                 {index < NavbarLinks.length - 1 && <span className="text-white/60 mx-1">|</span>}
@@ -50,7 +62,7 @@ const Navbar: FC = () => {
                       className="flex items-center gap-3 text-lg font-medium hover:bg-white/10 hover:text-white transition-all duration-200 rounded-md px-3 py-2"
                       onClick={() => setIsOpen(false)}
                     >
-                      <link.Icon className="h-5 w-5" />
+                      {link.Icon && <link.Icon className="h-5 w-5" />}
                       {link.label}
                     </Link>
                   ))}

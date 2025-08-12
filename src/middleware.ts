@@ -18,7 +18,7 @@ export const middleware = async (request: NextRequest) => {
     const token = request.cookies.get("CompetitionAuthToken")?.value;
 
     if(!token) {
-        return NextResponse.redirect(new URL("/login", request.url));
+        //return NextResponse.redirect(new URL("/login", request.url));
     }
 
     try {
@@ -27,19 +27,21 @@ export const middleware = async (request: NextRequest) => {
         const isTokenValid = await AuthService.validateTokenSSR(token);
 
         if(!route?.roles?.includes(jwtPayload.role) || !isTokenValid) {
-            return NextResponse.redirect(new URL("/login", request.url));
+            //return NextResponse.redirect(new URL("/login", request.url));
         }
 
         return NextResponse.next();
     } catch (error) {
         console.error("JWT verification failed:", error);
-        return NextResponse.redirect(new URL("/login", request.url));
+        //return NextResponse.redirect(new URL("/login", request.url));
     }
+
+    return NextResponse.next();
 }
 
 export const config = {
     matcher: [
-        "/admin/:path*",
-        "/Competition/:path*",
+        //"/admin/:path*",
+        //"/Competition/:path*",
     ]
 };

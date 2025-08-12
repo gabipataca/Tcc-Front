@@ -1,6 +1,6 @@
 'use client'
 
-import SignUpMarathon from "@/components/pages/perfilAluno/components/signUp"
+import SignUpMarathon from "@/components/pages/profile/_modules/StudentDashboard/components/signUp"
 
 const UserSubscription: React.FC = () => {
 
