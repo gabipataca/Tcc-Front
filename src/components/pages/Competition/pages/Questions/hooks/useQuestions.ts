@@ -1,9 +1,3 @@
-
-
-
-const useQuestions = () => {
-    
-}
-
+const useQuestions = () => {};
 
 export default useQuestions;
