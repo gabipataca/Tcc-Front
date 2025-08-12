@@ -45,7 +45,7 @@ const Input: React.FC<InputProps> = ({
           className={`w-full p-3 outline-none bg-transparent rounded-lg ${className || ""}`}
           type={type}
           placeholder={placeholder}
-          value={value}
+          value={value ?? ""}
           onChange={(e) => (setValue ? setValue(e.target.value) : undefined)}
           onBlur={onBlur}
           readOnly={readOnly}

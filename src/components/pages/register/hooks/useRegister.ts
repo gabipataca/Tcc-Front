@@ -24,7 +24,7 @@ const schema = z
             .number()
             .min(new Date().getFullYear() - 8, "Ano inválido!")
             .max(new Date().getFullYear(), "Ano inválido!")
-            .optional(),
+            .nullable(),
         role: z.enum(["Student", "Teacher"]),
         accessCode: z.string().optional(),
     })
@@ -46,9 +46,11 @@ const schema = z
         };
 
         if (data.role === "Student") {
+            // @ts-expect-error : extra
             if (data.joinYear === "") {
                 addInvalidJoinYear();
             } else if (
+                !data.joinYear ||
                 data.joinYear === 0 ||
                 new Date().getFullYear() - data.joinYear > 8
             ) {
@@ -76,7 +78,7 @@ const useRegister = () => {
             ra: "",
             role: "Student",
             email: "",
-            joinYear: "",
+            joinYear: 0,
             password: "",
             accessCode: "",
         },
