@@ -58,6 +58,8 @@ export async function POST(req: NextRequest) {
 
     const data = res.data;
 
+    cookie.set("token", data.token);
+
     return NextResponse.json(
         {
             message: "Usuário registrado com sucesso.",
