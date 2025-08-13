@@ -4,9 +4,7 @@ import React from "react";
  * Props for the Button component.
  */
 export interface ButtonProps {
-    /**
-     * Additional class names to apply to the button.
-     */
+    
     className?: string;
 
     /**
@@ -55,4 +53,5 @@ export interface ButtonProps {
      */
 
     primary?: boolean;
+    
 }

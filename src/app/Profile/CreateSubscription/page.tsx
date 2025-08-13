@@ -1,7 +1,7 @@
+
 "use client"
 
 import type React from "react"
-import { useState } from "react"
 import { Trophy, Users, Calendar, CheckCircle, FileText } from "lucide-react"
 import SideMenu from "@/components/_ui/SideMenu"
 import Navbar from "@/components/_ui/Navbar"
@@ -11,31 +11,27 @@ import { ButtonAdm } from "@/components/_ui/ButtonAdm"
 import { Badge } from "@/components/_ui/Badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/_ui/Select"
 
+import { useCompetitionForm } from './hooks/useCreateSubscription'
+
 const CreateCompetitionSubscription: React.FC = () => {
-  const [name, setName] = useState("")
-  const [description, setDescription] = useState("")
-  const [maxMembers, setMaxMembers] = useState("3")
-  const [initialDate, setInitialDate] = useState("")
-  const [initialRegistration, setInitialRegistration] = useState("")
-  const [endRegistration, setEndRegistration] = useState("")
-  const [status, setStatus] = useState("Fechado")
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    const dataCompetition = {
-      name,
-      description,
-      maxMembers: Number(maxMembers),
-      initialDate,
-      initialRegistration,
-      endRegistration,
-      status,
-    }
-    console.log(dataCompetition)
-    alert("Maratona criada com sucesso!")
-  }
-
-  const isFormValid = name && description && initialDate && initialRegistration && endRegistration
+  const {
+    name,
+    setName,
+    description,
+    setDescription,
+    maxMembers,
+    setMaxMembers,
+    initialDate,
+    setInitialDate,
+    initialRegistration,
+    setInitialRegistration,
+    endRegistration,
+    setEndRegistration,
+    status,
+    setStatus,
+    handleSubmit,
+    isFormValid,
+  } = useCompetitionForm()
 
   return (
     <div className="min-h-screen bg-[#e9edee]">
@@ -46,7 +42,6 @@ const CreateCompetitionSubscription: React.FC = () => {
 
         <div className="flex-1">
           <div className="container mx-auto p-8 space-y-12">
-            {/* Header */}
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-4xl font-bold text-[#3f3c40] flex items-center gap-6">
@@ -58,9 +53,7 @@ const CreateCompetitionSubscription: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-              {/* Main Form */}
               <div className="lg:col-span-2 space-y-12">
-                {/* Basic Information */}
                 <Card className="bg-white border-[#e9edee] shadow-sm">
                   <CardHeader className="pb-8">
                     <CardTitle className="text-3xl text-[#3f3c40] flex items-center gap-4">
@@ -120,7 +113,6 @@ const CreateCompetitionSubscription: React.FC = () => {
                   </CardContent>
                 </Card>
 
-                {/* Team Configuration */}
                 <Card className="bg-white border-[#e9edee] shadow-sm">
                   <CardHeader className="pb-8">
                     <CardTitle className="text-3xl text-[#3f3c40] flex items-center gap-4">
@@ -155,7 +147,6 @@ const CreateCompetitionSubscription: React.FC = () => {
                   </CardContent>
                 </Card>
 
-                {/* Date Configuration */}
                 <Card className="bg-white border-[#e9edee] shadow-sm">
                   <CardHeader className="pb-8">
                     <CardTitle className="text-3xl text-[#3f3c40] flex items-center gap-4">
@@ -208,7 +199,6 @@ const CreateCompetitionSubscription: React.FC = () => {
                 </Card>
               </div>
 
-              {/* Summary Sidebar */}
               <div className="space-y-12">
                 <Card className="bg-white border-[#e9edee] shadow-sm sticky top-6">
                   <CardHeader className="pb-8">
