@@ -3,6 +3,7 @@ import {
     styled as muiStyled,
     Theme,
 } from "@mui/material/styles";
+import { JSX } from "react";
 
 type MuiStyledType = typeof muiStyled;
 
@@ -30,6 +31,7 @@ export const defaultStyledOptions = {
 
 const styled: CreateMUIStyled<Theme> = Object.keys(muiStyled).reduce(
     (acc, tag) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (acc as any)[tag] = muiStyled(
             tag as keyof JSX.IntrinsicElements,
             defaultStyledOptions
@@ -37,6 +39,7 @@ const styled: CreateMUIStyled<Theme> = Object.keys(muiStyled).reduce(
         return acc;
     },
     (component: React.ElementType, options?: object) => {
+        /* @ts-expect-error : Generic */
         return muiStyled(component, {
             ...defaultStyledOptions,
             ...options,

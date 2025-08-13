@@ -19,9 +19,9 @@ export interface RegisterUserRequest {
     email: string;
 
     /**
-     * The year the user joined, as a string.
+     * The year the user joined, as a number.
      */
-    joinYear: string;
+    joinYear: number | null;
 
     /**
      * The user's chosen password.
@@ -37,7 +37,7 @@ export interface RegisterUserRequest {
      * The code required to access or register for the system.
      * @remarks Only required for teacher registration.
      */
-    accessCode: string;
+    accessCode?: string;
 }
 
 /**
