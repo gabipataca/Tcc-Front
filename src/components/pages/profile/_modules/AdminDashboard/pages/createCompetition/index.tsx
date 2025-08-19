@@ -144,7 +144,7 @@ const CreateCompetition: React.FC = () => {
                                                             min={1}
                                                             placeholder="Ex: 90"
                                                             {...field}
-                                                            onChange={(e) => field.onChange(parseInt(e.target.value))}
+                                                            onChange={(e) => field.onChange(e.target.value)}
                                                             className="border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-xl h-16 px-6"
                                                         />
                                                     )}

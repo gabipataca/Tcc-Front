@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
 import { FileText, Plus, Filter, Upload, Edit, Trash2, Search } from "lucide-react"
 import SideMenu from "@/components/_ui/SideMenu"
 import Navbar from "@/components/_ui/Navbar"
@@ -10,68 +9,29 @@ import Input from "@/components/_ui/Input"
 import { ButtonAdm } from "@/components/_ui/ButtonAdm"
 import { Badge } from "@/components/_ui/Badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/_ui/Select"
+import { useCreateExercise } from "./hooks/useCreateExercise" 
 
 const TeacherCreateExercises: React.FC = () => {
-  const [exercises, setExercises] = useState<{ title: string; type: string }[]>([
-    { title: "Exemplo de Exercício", type: "Lógico" },
-  ])
-  const [title, setTitle] = useState("")
-  const [type, setType] = useState("Lógico")
-  const [filter, setFilter] = useState("Todos")
-  const [searchTerm, setSearchTerm] = useState("")
-  const [editingExercise, setEditingExercise] = useState<{ index: number; title: string; type: string } | null>(null)
-
-  const addExercises = () => {
-    if (title.trim()) {
-      setExercises([...exercises, { title, type }])
-      setTitle("")
-    }
-  }
-
-  const removeExercise = (index: number) => {
-    setExercises(exercises.filter((_, i) => i !== index))
-  }
-
-  const startEdit = (index: number, exercise: { title: string; type: string }) => {
-    setEditingExercise({ index, title: exercise.title, type: exercise.type })
-  }
-
-  const saveEdit = () => {
-    if (editingExercise) {
-      const updatedExercises = [...exercises]
-      updatedExercises[editingExercise.index] = {
-        title: editingExercise.title,
-        type: editingExercise.type,
-      }
-      setExercises(updatedExercises)
-      setEditingExercise(null)
-    }
-  }
-
-  const cancelEdit = () => {
-    setEditingExercise(null)
-  }
-
-  const exerciseTypes = ["Lógico", "Sequenciais", "Matemáticos", "Strings", "Grafos", "Matriz"]
-  const filterOptions = ["Todos", ...exerciseTypes]
-
-  const exercisesFilter = exercises.filter((ex) => {
-    const matchesFilter = filter === "Todos" || ex.type === filter
-    const matchesSearch = ex.title.toLowerCase().includes(searchTerm.toLowerCase())
-    return matchesFilter && matchesSearch
-  })
-
-  const getTypeColor = (type: string) => {
-    const colors: { [key: string]: string } = {
-      Lógico: "bg-[#4F85A6] text-white",
-      Sequenciais: "bg-[#9abbd6] text-white",
-      Matemáticos: "bg-[#3f3c40] text-white",
-      Strings: "bg-[#4F85A6] text-white",
-      Grafos: "bg-[#9abbd6] text-white",
-      Matriz: "bg-[#3f3c40] text-white",
-    }
-    return colors[type] || "bg-[#e9edee] text-[#3f3c40]"
-  }
+  const {
+    title,
+    setTitle,
+    type,
+    setType,
+    filter,
+    setFilter,
+    searchTerm,
+    setSearchTerm,
+    editingExercise,
+    addExercise,
+    removeExercise,
+    startEdit,
+    saveEdit,
+    cancelEdit,
+    exerciseTypes,
+    filterOptions,
+    filteredExercises,
+    getTypeColor,
+  } = useCreateExercise() // Uso do hook atualizado!
 
   return (
     <div className="min-h-screen bg-[#e9edee]">
@@ -139,7 +99,7 @@ const TeacherCreateExercises: React.FC = () => {
                   </div>
 
                   <div className="max-h-96 overflow-y-auto border border-[#e9edee] rounded-lg p-6 space-y-4">
-                    {exercisesFilter.length === 0 ? (
+                    {filteredExercises.length === 0 ? (
                       <div className="text-center py-12">
                         <FileText className="h-16 w-16 text-[#9abbd6] mx-auto mb-4" />
                         <p className="text-xl text-[#4F85A6]">Nenhum exercício encontrado</p>
@@ -148,7 +108,7 @@ const TeacherCreateExercises: React.FC = () => {
                         </p>
                       </div>
                     ) : (
-                      exercisesFilter.map((exercise, index) => (
+                      filteredExercises.map((exercise, index) => (
                         <div
                           key={index}
                           className="flex justify-between items-center p-4 border-b border-[#e9edee] hover:bg-[#e9edee]/30 rounded transition-colors"
@@ -184,7 +144,7 @@ const TeacherCreateExercises: React.FC = () => {
 
                   <div className="text-center">
                     <Badge variant="outline" className="text-lg px-4 py-2 border-[#4F85A6] text-[#4F85A6]">
-                      Total: {exercisesFilter.length} exercício(s)
+                      Total: {filteredExercises.length} exercício(s)
                     </Badge>
                   </div>
                 </CardContent>
@@ -247,7 +207,7 @@ const TeacherCreateExercises: React.FC = () => {
 
                   <div className="pt-6 border-t border-[#e9edee]">
                     <ButtonAdm
-                      onClick={addExercises}
+                      onClick={addExercise}
                       disabled={!title.trim()}
                       className="w-full bg-[#4F85A6] hover:bg-[#3f3c40] text-white disabled:opacity-50 disabled:cursor-not-allowed text-xl h-16"
                     >

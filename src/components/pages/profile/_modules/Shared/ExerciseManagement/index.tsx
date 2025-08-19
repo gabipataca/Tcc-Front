@@ -1,7 +1,4 @@
-"use client";
-
 import type React from "react";
-import { useState } from "react";
 import {
     FileText,
     Plus,
@@ -28,88 +25,37 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/_ui/Select";
+import { useExerciseManagement } from "./hooks/useExerciseManagement";
+import { Textarea } from "@/components/_ui/Textarea";
 
 const ExerciseManagement: React.FC = () => {
-    const [exercises, setExercises] = useState<
-        { title: string; type: string }[]
-    >([{ title: "Exemplo de Exercício", type: "Lógico" }]);
-    const [title, setTitle] = useState("");
-    const [type, setType] = useState("Lógico");
-    const [filter, setFilter] = useState("Todos");
-    const [searchTerm, setSearchTerm] = useState("");
-    const [editingExercise, setEditingExercise] = useState<{
-        index: number;
-        title: string;
-        type: string;
-    } | null>(null);
-
-    const addExercises = () => {
-        if (title.trim()) {
-            setExercises([...exercises, { title, type }]);
-            setTitle("");
-        }
-    };
-
-    const removeExercise = (index: number) => {
-        setExercises(exercises.filter((_, i) => i !== index));
-    };
-
-    const startEdit = (
-        index: number,
-        exercise: { title: string; type: string }
-    ) => {
-        setEditingExercise({
-            index,
-            title: exercise.title,
-            type: exercise.type,
-        });
-    };
-
-    const saveEdit = () => {
-        if (editingExercise) {
-            const updatedExercises = [...exercises];
-            updatedExercises[editingExercise.index] = {
-                title: editingExercise.title,
-                type: editingExercise.type,
-            };
-            setExercises(updatedExercises);
-            setEditingExercise(null);
-        }
-    };
-
-    const cancelEdit = () => {
-        setEditingExercise(null);
-    };
-
-    const exerciseTypes = [
-        "Lógico",
-        "Sequenciais",
-        "Matemáticos",
-        "Strings",
-        "Grafos",
-        "Matriz",
-    ];
-    const filterOptions = ["Todos", ...exerciseTypes];
-
-    const exercisesFilter = exercises.filter((ex) => {
-        const matchesFilter = filter === "Todos" || ex.type === filter;
-        const matchesSearch = ex.title
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase());
-        return matchesFilter && matchesSearch;
-    });
-
-    const getTypeColor = (type: string) => {
-        const colors: { [key: string]: string } = {
-            Lógico: "bg-[#4F85A6] text-white",
-            Sequenciais: "bg-[#9abbd6] text-white",
-            Matemáticos: "bg-[#3f3c40] text-white",
-            Strings: "bg-[#4F85A6] text-white",
-            Grafos: "bg-[#9abbd6] text-white",
-            Matriz: "bg-[#3f3c40] text-white",
-        };
-        return colors[type] || "bg-[#e9edee] text-[#3f3c40]";
-    };
+    const {
+        title,
+        setTitle,
+        type,
+        setType,
+        filter,
+        setFilter,
+        searchTerm,
+        setSearchTerm,
+        editingExercise,
+        addExercise,
+        removeExercise,
+        startEdit,
+        saveEdit,
+        cancelEdit,
+        exerciseTypes,
+        filterOptions,
+        filteredExercises,
+        getTypeColor,
+        description,
+        setDescription,
+        inputValues,
+        setInputValues,
+        outputValues,
+        setOutputValues,
+        setEditingExercise,
+    } = useExerciseManagement();
 
     return (
         <>
@@ -184,7 +130,7 @@ const ExerciseManagement: React.FC = () => {
                                 </div>
 
                                 <div className="max-h-96 overflow-y-auto border border-[#e9edee] rounded-lg p-6 space-y-4">
-                                    {exercisesFilter.length === 0 ? (
+                                    {filteredExercises.length === 0 ? (
                                         <div className="text-center py-12">
                                             <FileText className="h-16 w-16 text-[#9abbd6] mx-auto mb-4" />
                                             <p className="text-xl text-[#4F85A6]">
@@ -197,7 +143,7 @@ const ExerciseManagement: React.FC = () => {
                                             </p>
                                         </div>
                                     ) : (
-                                        exercisesFilter.map(
+                                        filteredExercises.map(
                                             (exercise, index) => (
                                                 <div
                                                     key={index}
@@ -253,7 +199,7 @@ const ExerciseManagement: React.FC = () => {
                                         variant="outline"
                                         className="text-lg px-4 py-2 border-[#4F85A6] text-[#4F85A6]"
                                     >
-                                        Total: {exercisesFilter.length}{" "}
+                                        Total: {filteredExercises.length}{" "}
                                         exercício(s)
                                     </Badge>
                                 </div>
@@ -316,31 +262,56 @@ const ExerciseManagement: React.FC = () => {
 
                                 <div className="space-y-6">
                                     <h4 className="text-xl font-medium text-[#3f3c40]">
-                                        Arquivos do Exercício
+                                        Conteúdo do Exercício
                                     </h4>
-                                    {[
-                                        "Descrição",
-                                        "Valores de entrada",
-                                        "Valores de saída",
-                                    ].map((label) => (
-                                        <div key={label} className="space-y-3">
-                                            <label className="block text-lg font-medium text-[#3f3c40]">
-                                                {label}:
-                                            </label>
-                                            <ButtonAdm
-                                                variant="outline"
-                                                className="w-full border-[#4F85A6] text-[#4F85A6] hover:bg-[#9abbd6]/20 text-lg h-14 flex items-center gap-3"
-                                            >
-                                                <Upload className="w-5 h-5" />
-                                                Anexar arquivo - {label}
-                                            </ButtonAdm>
-                                        </div>
-                                    ))}
+
+
+                                    <div className="space-y-3">
+                                        <label className="block text-lg font-medium text-[#3f3c40]">
+                                            Descrição:
+                                        </label>
+                                        <Textarea
+                                            placeholder="Digite a descrição do exercício..."
+                                            value={description}
+                                            onChange={(e) =>
+                                                setDescription(e.target.value)
+                                            }
+                                            className="border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-lg min-h-[120px] p-4"
+                                        />
+                                    </div>
+
+                                    <div className="space-y-3">
+                                        <label className="block text-lg font-medium text-[#3f3c40]">
+                                            Valores de entrada:
+                                        </label>
+                                        <Textarea
+                                            placeholder="Digite os valores de entrada (separados por linha, vírgula, etc.)"
+                                            value={inputValues}
+                                            onChange={(e) =>
+                                                setInputValues(e.target.value)
+                                            }
+                                            className="border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-lg min-h-[120px] p-4"
+                                        />
+                                    </div>
+
+                                    <div className="space-y-3">
+                                        <label className="block text-lg font-medium text-[#3f3c40]">
+                                            Valores de saída:
+                                        </label>
+                                        <Textarea
+                                            placeholder="Digite os valores de saída esperados (separados por linha, vírgula, etc.)"
+                                            value={outputValues}
+                                            onChange={(e) =>
+                                                setOutputValues(e.target.value)
+                                            }
+                                            className="border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-lg min-h-[120px] p-4"
+                                        />
+                                    </div>
                                 </div>
 
                                 <div className="pt-6 border-t border-[#e9edee]">
                                     <ButtonAdm
-                                        onClick={addExercises}
+                                        onClick={addExercise}
                                         disabled={!title.trim()}
                                         className="w-full bg-[#4F85A6] hover:bg-[#3f3c40] text-white disabled:opacity-50 disabled:cursor-not-allowed text-xl h-16"
                                     >
@@ -365,7 +336,8 @@ const ExerciseManagement: React.FC = () => {
                                 Modifique as informações do exercício
                             </CardDescription>
                         </CardHeader>
-                        <CardContent className="space-y-6">
+                        {/* 🚀 APPLY THESE CHANGES HERE 🚀 */}
+                        <CardContent className="space-y-6 overflow-y-auto max-h-[70vh] p-6"> {/* Add overflow-y-auto and max-h- property */}
                             <div>
                                 <label className="block text-xl font-medium text-[#3f3c40] mb-4">
                                     Título do Exercício
@@ -415,45 +387,79 @@ const ExerciseManagement: React.FC = () => {
 
                             <div className="space-y-6">
                                 <h4 className="text-xl font-medium text-[#3f3c40]">
-                                    Arquivos do Exercício
+                                    Conteúdo do Exercício
                                 </h4>
-                                {[
-                                    "Descrição",
-                                    "Valores de entrada",
-                                    "Valores de saída",
-                                ].map((label) => (
-                                    <div key={label} className="space-y-3">
-                                        <label className="block text-lg font-medium text-[#3f3c40]">
-                                            {label}:
-                                        </label>
-                                        <ButtonAdm
-                                            variant="outline"
-                                            className="w-full border-[#4F85A6] text-[#4F85A6] hover:bg-[#9abbd6]/20 text-lg h-14 flex items-center gap-3"
-                                        >
-                                            <Upload className="w-5 h-5" />
-                                            Editar arquivo - {label}
-                                        </ButtonAdm>
-                                    </div>
-                                ))}
-                            </div>
 
-                            <div className="flex gap-4 pt-6 border-t border-[#e9edee]">
-                                <ButtonAdm
-                                    onClick={cancelEdit}
-                                    variant="outline"
-                                    className="flex-1 border-[#e9edee] text-[#3f3c40] hover:bg-[#e9edee] text-xl h-16"
-                                >
-                                    Cancelar
-                                </ButtonAdm>
-                                <ButtonAdm
-                                    onClick={saveEdit}
-                                    className="flex-1 bg-[#4F85A6] hover:bg-[#3f3c40] text-white text-xl h-16"
-                                >
-                                    <Edit className="w-6 h-6 mr-3" />
-                                    Salvar Alterações
-                                </ButtonAdm>
+                                <div className="space-y-3">
+                                    <label className="block text-lg font-medium text-[#3f3c40]">
+                                        Descrição:
+                                    </label>
+                                    <Textarea
+                                        placeholder="Edite a descrição do exercício..."
+                                        value={editingExercise.description || ''}
+                                        onChange={(e) =>
+                                            setEditingExercise({
+                                                ...editingExercise,
+                                                description: e.target.value,
+                                            })
+                                        }
+                                        className="border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-lg min-h-[120px] p-4"
+                                    />
+                                </div>
+
+                                <div className="space-y-3">
+                                    <label className="block text-lg font-medium text-[#3f3c40]">
+                                        Valores de entrada:
+                                    </label>
+                                    <Textarea
+                                        placeholder="Edite os valores de entrada..."
+                                        value={editingExercise.inputValues || ''}
+                                        onChange={(e) =>
+                                            setEditingExercise({
+                                                ...editingExercise,
+                                                inputValues: e.target.value,
+                                            })
+                                        }
+                                        className="border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-lg min-h-[120px] p-4"
+                                    />
+                                </div>
+
+
+                                <div className="space-y-3">
+                                    <label className="block text-lg font-medium text-[#3f3c40]">
+                                        Valores de saída:
+                                    </label>
+                                    <Textarea
+                                        placeholder="Edite os valores de saída esperados..."
+                                        value={editingExercise.outputValues || ''} // Ensure it's not undefined
+                                        onChange={(e) =>
+                                            setEditingExercise({
+                                                ...editingExercise,
+                                                outputValues: e.target.value,
+                                            })
+                                        }
+                                        className="border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-lg min-h-[120px] p-4"
+                                    />
+                                </div>
                             </div>
                         </CardContent>
+
+                        <div className="flex gap-4 p-6 border-t border-[#e9edee]"> {/* The buttons are here */}
+                            <ButtonAdm
+                                onClick={cancelEdit}
+                                variant="outline"
+                                className="flex-1 border-[#e9edee] text-[#3f3c40] hover:bg-[#e9edee] text-xl h-16"
+                            >
+                                Cancelar
+                            </ButtonAdm>
+                            <ButtonAdm
+                                onClick={saveEdit}
+                                className="flex-1 bg-[#4F85A6] hover:bg-[#3f3c40] text-white text-xl h-16"
+                            >
+                                <Edit className="w-6 h-6 mr-3" />
+                                Salvar Alterações
+                            </ButtonAdm>
+                        </div>
                     </Card>
                 </div>
             )}

@@ -7,10 +7,6 @@ import TeacherDashboard from "../_modules/TeacherDashboard";
 import StudentDashboard from "../_modules/StudentDashboard";
 import { ProfileMenuType } from "./types";
 
-
-
-
-
 /**
  * Custom hook that selects the appropriate dashboard component based on the current user's role.
  *
@@ -24,7 +20,7 @@ const useProfile = () => {
      * according to the user's role (Admin, Teacher, Student).
      */
     const ProfileToRender = useMemo(() => {
-        switch(user?.role) {
+        switch (user?.role) {
             case "Admin":
                 return AdminDashboard;
             case "Teacher":
@@ -37,9 +33,8 @@ const useProfile = () => {
     }, [user]);
 
     return {
-        ProfileToRender
+        ProfileToRender,
     };
-}
-
+};
 
 export default useProfile;
