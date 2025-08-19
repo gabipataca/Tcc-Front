@@ -10,7 +10,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
     const cookie = await cookies();
-    const token = cookie.get("token")?.value || null;
+    const token = ""//cookie.get("CompetitionAuthToken")?.value || null;
 
     if(token != null) {
         return NextResponse.json(
@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
 
     const data = res.data;
 
-    cookie.set("token", data.token);
+    cookie.set("CompetitionAuthToken", data.token);
 
     return NextResponse.json(
         {

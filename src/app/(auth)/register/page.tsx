@@ -199,7 +199,9 @@ const Cadastro: React.FC = () => {
                             />
                         )}
 
-                        <Button rounded={true} fullWidth={true}>
+                        <Button onClick={handleSubmit(handleFormSubmit, (d) =>
+                            console.log(d)
+                        )} rounded={true} fullWidth={true}>
                             Criar
                         </Button>
                     </form>

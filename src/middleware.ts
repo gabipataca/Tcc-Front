@@ -40,5 +40,6 @@ export const config = {
     matcher: [
         //"/admin/:path*",
         //"/Competition/:path*",
+        //"/profile/:path*"
     ],
 };
