@@ -1,13 +1,5 @@
 import type React from "react";
-import {
-    FileText,
-    Plus,
-    Filter,
-    Upload,
-    Edit,
-    Trash2,
-    Search,
-} from "lucide-react";
+import { FileText, Plus, Filter, Edit, Trash2, Search } from "lucide-react";
 import {
     Card,
     CardContent,
@@ -27,6 +19,7 @@ import {
 } from "@/components/_ui/Select";
 import { useExerciseManagement } from "./hooks/useExerciseManagement";
 import { Textarea } from "@/components/_ui/Textarea";
+import EditExerciseModal from "./components/EditExerciseModal";
 
 const ExerciseManagement: React.FC = () => {
     const {
@@ -38,6 +31,8 @@ const ExerciseManagement: React.FC = () => {
         setFilter,
         searchTerm,
         setSearchTerm,
+        showEditExerciseModal,
+        toggleEditExerciseModal,
         editingExercise,
         addExercise,
         removeExercise,
@@ -265,7 +260,6 @@ const ExerciseManagement: React.FC = () => {
                                         Conteúdo do Exercício
                                     </h4>
 
-
                                     <div className="space-y-3">
                                         <label className="block text-lg font-medium text-[#3f3c40]">
                                             Descrição:
@@ -324,144 +318,18 @@ const ExerciseManagement: React.FC = () => {
                     </div>
                 </div>
             </div>
-            {editingExercise && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                    <Card className="bg-white border-[#e9edee] shadow-xl w-full max-w-2xl mx-4">
-                        <CardHeader className="pb-6">
-                            <CardTitle className="text-3xl text-[#3f3c40] flex items-center gap-4">
-                                <Edit className="h-8 w-8 text-[#4F85A6]" />
-                                Editar Exercício
-                            </CardTitle>
-                            <CardDescription className="text-xl text-[#4F85A6] mt-2">
-                                Modifique as informações do exercício
-                            </CardDescription>
-                        </CardHeader>
-                        {/* 🚀 APPLY THESE CHANGES HERE 🚀 */}
-                        <CardContent className="space-y-6 overflow-y-auto max-h-[70vh] p-6"> {/* Add overflow-y-auto and max-h- property */}
-                            <div>
-                                <label className="block text-xl font-medium text-[#3f3c40] mb-4">
-                                    Título do Exercício
-                                </label>
-                                <Input
-                                    type="text"
-                                    value={editingExercise.title}
-                                    onChange={(e) =>
-                                        setEditingExercise({
-                                            ...editingExercise,
-                                            title: e.target.value,
-                                        })
-                                    }
-                                    className="border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-xl h-16 px-6"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-xl font-medium text-[#3f3c40] mb-4">
-                                    Tipo do Exercício
-                                </label>
-                                <Select
-                                    value={editingExercise.type}
-                                    onValueChange={(value) =>
-                                        setEditingExercise({
-                                            ...editingExercise,
-                                            type: value,
-                                        })
-                                    }
-                                >
-                                    <SelectTrigger className="w-full border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-xl h-16 px-6">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent className="bg-white border-[#e9edee]">
-                                        {exerciseTypes.map((exerciseType) => (
-                                            <SelectItem
-                                                key={exerciseType}
-                                                value={exerciseType}
-                                                className="text-lg"
-                                            >
-                                                {exerciseType}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-
-                            <div className="space-y-6">
-                                <h4 className="text-xl font-medium text-[#3f3c40]">
-                                    Conteúdo do Exercício
-                                </h4>
-
-                                <div className="space-y-3">
-                                    <label className="block text-lg font-medium text-[#3f3c40]">
-                                        Descrição:
-                                    </label>
-                                    <Textarea
-                                        placeholder="Edite a descrição do exercício..."
-                                        value={editingExercise.description || ''}
-                                        onChange={(e) =>
-                                            setEditingExercise({
-                                                ...editingExercise,
-                                                description: e.target.value,
-                                            })
-                                        }
-                                        className="border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-lg min-h-[120px] p-4"
-                                    />
-                                </div>
-
-                                <div className="space-y-3">
-                                    <label className="block text-lg font-medium text-[#3f3c40]">
-                                        Valores de entrada:
-                                    </label>
-                                    <Textarea
-                                        placeholder="Edite os valores de entrada..."
-                                        value={editingExercise.inputValues || ''}
-                                        onChange={(e) =>
-                                            setEditingExercise({
-                                                ...editingExercise,
-                                                inputValues: e.target.value,
-                                            })
-                                        }
-                                        className="border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-lg min-h-[120px] p-4"
-                                    />
-                                </div>
 
 
-                                <div className="space-y-3">
-                                    <label className="block text-lg font-medium text-[#3f3c40]">
-                                        Valores de saída:
-                                    </label>
-                                    <Textarea
-                                        placeholder="Edite os valores de saída esperados..."
-                                        value={editingExercise.outputValues || ''} // Ensure it's not undefined
-                                        onChange={(e) =>
-                                            setEditingExercise({
-                                                ...editingExercise,
-                                                outputValues: e.target.value,
-                                            })
-                                        }
-                                        className="border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-lg min-h-[120px] p-4"
-                                    />
-                                </div>
-                            </div>
-                        </CardContent>
-
-                        <div className="flex gap-4 p-6 border-t border-[#e9edee]"> {/* The buttons are here */}
-                            <ButtonAdm
-                                onClick={cancelEdit}
-                                variant="outline"
-                                className="flex-1 border-[#e9edee] text-[#3f3c40] hover:bg-[#e9edee] text-xl h-16"
-                            >
-                                Cancelar
-                            </ButtonAdm>
-                            <ButtonAdm
-                                onClick={saveEdit}
-                                className="flex-1 bg-[#4F85A6] hover:bg-[#3f3c40] text-white text-xl h-16"
-                            >
-                                <Edit className="w-6 h-6 mr-3" />
-                                Salvar Alterações
-                            </ButtonAdm>
-                        </div>
-                    </Card>
-                </div>
+            {showEditExerciseModal && editingExercise && (
+                <EditExerciseModal
+                    open={showEditExerciseModal}
+                    onClose={toggleEditExerciseModal}
+                    cancelEdit={cancelEdit}
+                    saveEdit={saveEdit}
+                    editingExercise={editingExercise}
+                    setEditingExercise={setEditingExercise}
+                    exerciseTypes={exerciseTypes}
+                />
             )}
         </>
     );

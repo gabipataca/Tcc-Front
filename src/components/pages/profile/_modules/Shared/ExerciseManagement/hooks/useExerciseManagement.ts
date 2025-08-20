@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
 
-interface Exercise {
+export interface Exercise {
     title: string;
     type: string;
     description: string;
@@ -8,7 +8,7 @@ interface Exercise {
     outputValues: string;
 }
 
-interface EditingExercise extends Exercise {
+export interface EditingExercise extends Exercise {
     originalIndex: number;
 }
 
@@ -26,6 +26,8 @@ export const useExerciseManagement = () => {
     const [editingExercise, setEditingExercise] =
         useState<EditingExercise | null>(null);
 
+    const [showEditExerciseModal, setShowEditExerciseModal] = useState(false);
+
     const exerciseTypes = useMemo(
         () => [
             "Estruturas de Dados",
@@ -42,6 +44,10 @@ export const useExerciseManagement = () => {
         () => ["Todos", ...exerciseTypes],
         [exerciseTypes]
     );
+
+    const toggleEditExerciseModal = useCallback(() => {
+        setShowEditExerciseModal(prev => !prev);
+    }, []);
 
     const getTypeColor = useCallback((exerciseType: string) => {
         switch (exerciseType) {
@@ -93,8 +99,9 @@ export const useExerciseManagement = () => {
     }, []);
 
     const startEdit = useCallback((index: number, exercise: Exercise) => {
+        toggleEditExerciseModal();
         setEditingExercise({ ...exercise, originalIndex: index });
-    }, []);
+    }, [toggleEditExerciseModal]);
 
     const saveEdit = useCallback(() => {
         if (editingExercise === null) return;
@@ -113,7 +120,8 @@ export const useExerciseManagement = () => {
             )
         );
         setEditingExercise(null);
-    }, [editingExercise]);
+        toggleEditExerciseModal();
+    }, [editingExercise, toggleEditExerciseModal]);
 
     const cancelEdit = useCallback(() => {
         setEditingExercise(null);
@@ -138,7 +146,10 @@ export const useExerciseManagement = () => {
         filter,
         setFilter,
         searchTerm,
+        setSearchTerm,
         editingExercise,
+        showEditExerciseModal,
+        toggleEditExerciseModal,
         setEditingExercise,
         addExercise,
         removeExercise,
