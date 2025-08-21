@@ -336,8 +336,8 @@ const ExerciseManagement: React.FC = () => {
                                 Modifique as informações do exercício
                             </CardDescription>
                         </CardHeader>
-                        {/* 🚀 APPLY THESE CHANGES HERE 🚀 */}
-                        <CardContent className="space-y-6 overflow-y-auto max-h-[70vh] p-6"> {/* Add overflow-y-auto and max-h- property */}
+                       
+                        <CardContent className="space-y-6 overflow-y-auto max-h-[70vh] p-6"> 
                             <div>
                                 <label className="block text-xl font-medium text-[#3f3c40] mb-4">
                                     Título do Exercício
