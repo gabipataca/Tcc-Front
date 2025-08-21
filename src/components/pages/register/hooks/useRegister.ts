@@ -8,7 +8,7 @@ import { RegisterUserResponse } from "@/types/Auth/Responses";
 import { ServerSideResponse } from "@/types/Global";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import z from "zod";
 
 const schema = z
@@ -78,7 +78,8 @@ const useRegister = () => {
             ra: "",
             role: "Student",
             email: "",
-            joinYear: 0,
+            // @ts-expect-error : irrelevant
+            joinYear: "",
             password: "",
             accessCode: "",
         },
@@ -97,10 +98,10 @@ const useRegister = () => {
         },
     ];
 
-    const handleFormSubmit = useCallback(
+    const handleFormSubmit: SubmitHandler<RegisterUserRequest> = useCallback(
         async (data: RegisterUserRequest) => {
             console.log(isValid);
-            if (isValid) {
+            if (!isValid) {
                 return;
             }
 
