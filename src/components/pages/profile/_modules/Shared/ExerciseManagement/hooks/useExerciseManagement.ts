@@ -1,21 +1,46 @@
-import { useState, useMemo, useCallback } from "react";
+import { Exercise, ExerciseType } from "@/types/Exercise";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState, useMemo, useCallback, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import z from "zod";
+import { EditExerciseRequestFormValues } from "../types";
+import { exerciseTypeOptions } from "../constants";
+import { GetExercisesResponse } from "@/types/Exercise/Responses";
+import { CreateExerciseRequest } from "@/types/Exercise/Requests";
+import useLoadExercises from "./useLoadExercises";
 
-export interface Exercise {
-    title: string;
-    type: string;
-    description: string;
-    inputValues: string;
-    outputValues: string;
-}
-
-export interface EditingExercise extends Exercise {
-    originalIndex: number;
-}
+const schema = z.object({
+    id: z.number().min(1),
+    title: z.string().min(2).max(100),
+    exerciseType: z.custom<ExerciseType>(),
+    description: z.string().min(10).max(1000, "Descrição muito longa"),
+    estimatedTime: z.number().min(1),
+    judgeUuid: z.string().uuid(),
+    createdAt: z.string(),
+    inputs: z
+        .string()
+        .min(1, "O exercício deve ter pelo menos um input")
+        .max(1000, "Input muito longo"),
+    outputs: z
+        .string()
+        .min(1, "O exercício deve ter pelo menos um output")
+        .max(1000, "Output muito longo"),
+});
 
 export const useExerciseManagement = () => {
-    const [exercises, setExercises] = useState<Exercise[]>([]);
+    const {
+        exercises,
+        currentPage,
+        totalPages,
+        nextPage,
+        prevPage,
+        loadExercises,
+        addExercise,
+        deleteExercise,
+    } = useLoadExercises();
+
     const [title, setTitle] = useState<string>("");
-    const [type, setType] = useState<string>("Estruturas de Dados");
+    const [type, setType] = useState<ExerciseType>(1);
     const [description, setDescription] = useState<string>("");
     const [inputValues, setInputValues] = useState<string>("");
     const [outputValues, setOutputValues] = useState<string>("");
@@ -23,54 +48,68 @@ export const useExerciseManagement = () => {
     const [filter, setFilter] = useState<string>("Todos");
     const [searchTerm, setSearchTerm] = useState<string>("");
 
-    const [editingExercise, setEditingExercise] =
-        useState<EditingExercise | null>(null);
+    const {
+        control: editExerciseControl,
+        handleSubmit: handleEditSubmit,
+        setError,
+        setValue,
+        register,
+        watch,
+        formState: { isValid },
+    } = useForm({
+        defaultValues: {
+            id: 0,
+            title: "",
+            exerciseType: 1,
+            description: "",
+            estimatedTime: 0,
+            judgeUuid: "",
+            createdAt: "",
+            inputs: "",
+            outputs: "",
+        },
+        mode: "onBlur",
+        // @ts-expect-error : Irrelevant
+        resolver: zodResolver(schema),
+    });
+
+    // @ts-expect-error : Irrelevant
+    const editingExercise: EditExerciseRequestFormValues = watch();
 
     const [showEditExerciseModal, setShowEditExerciseModal] = useState(false);
 
-    const exerciseTypes = useMemo(
-        () => [
-            "Estruturas de Dados",
-            "Algoritmos",
-            "Matemática Computacional",
-            "Grafos",
-            "Programação Dinâmica",
-            "Geometria Computacional",
-            "Teoria dos Números",
-        ],
-        []
-    );
+
     const filterOptions = useMemo(
-        () => ["Todos", ...exerciseTypes],
-        [exerciseTypes]
+        () => ["Todos", ...exerciseTypeOptions.map(x => x.label)],
+        []
     );
 
     const toggleEditExerciseModal = useCallback(() => {
-        setShowEditExerciseModal(prev => !prev);
+        setShowEditExerciseModal((prev) => !prev);
     }, []);
 
-    const getTypeColor = useCallback((exerciseType: string) => {
+    const getTypeColor = useCallback((exerciseType: ExerciseType) => {
         switch (exerciseType) {
-            case "Estruturas de Dados":
+            case 1:
                 return "bg-blue-100 text-blue-800";
-            case "Algoritmos":
+            case 2:
                 return "bg-green-100 text-green-800";
-            case "Matemática Computacional":
+            case 3:
                 return "bg-purple-100 text-purple-800";
-            case "Grafos":
+            case 4:
                 return "bg-red-100 text-red-800";
-            case "Programação Dinâmica":
+            case 5:
                 return "bg-indigo-100 text-indigo-800";
-            case "Geometria Computacional":
+            case 6:
                 return "bg-pink-100 text-pink-800";
-            case "Teoria dos Números":
+            case 7:
                 return "bg-yellow-100 text-yellow-800";
             default:
                 return "bg-gray-100 text-gray-800";
         }
     }, []);
 
-    const addExercise = useCallback(() => {
+    const handleCreateExercise = useCallback(async () => {
         if (!title.trim() || !type) {
             alert(
                 "Por favor, preencha o título e selecione o tipo do exercício."
@@ -78,65 +117,81 @@ export const useExerciseManagement = () => {
             return;
         }
 
-        const newExercise: Exercise = {
+        const newExercise: CreateExerciseRequest = {
             title,
-            type,
+            exerciseType: type,
             description,
-            inputValues,
-            outputValues,
+            estimatedTime: 0,
+            judgeUuid: null,
+            inputs: [],
+            outputs: [],
         };
 
-        setExercises((prev) => [...prev, newExercise]);
+        await addExercise(newExercise);
         setTitle("");
-        setType("Estruturas de Dados");
+        setType(1);
         setDescription("");
         setInputValues("");
         setOutputValues("");
-    }, [title, type, description, inputValues, outputValues]);
+    }, [title, type, description, inputValues, outputValues, addExercise]);
 
-    const removeExercise = useCallback((indexToRemove: number) => {
-        setExercises((prev) => prev.filter((_, i) => i !== indexToRemove));
-    }, []);
+    const handleRemoveExercise = useCallback((indexToRemove: number) => {
+        try {
+            deleteExercise(exercises[indexToRemove].id);
+        } catch (error) {
+            console.error("Error removing exercise:", error);
+        }
+    }, [deleteExercise, exercises]);
 
-    const startEdit = useCallback((index: number, exercise: Exercise) => {
-        toggleEditExerciseModal();
-        setEditingExercise({ ...exercise, originalIndex: index });
-    }, [toggleEditExerciseModal]);
+    const startEdit = useCallback(
+        (index: number, exercise: Exercise) => {
+            toggleEditExerciseModal();
+            setValue("id", exercise.id);
+        },
+        [toggleEditExerciseModal, setValue]
+    );
 
     const saveEdit = useCallback(() => {
-        if (editingExercise === null) return;
+        if (editingExercise.id == -1) return;
 
-        setExercises((prevExercises) =>
-            prevExercises.map((ex, i) =>
-                i === editingExercise.originalIndex
-                    ? {
-                          title: editingExercise.title,
-                          type: editingExercise.type,
-                          description: editingExercise.description,
-                          inputValues: editingExercise.inputValues,
-                          outputValues: editingExercise.outputValues,
-                      }
-                    : ex
-            )
-        );
-        setEditingExercise(null);
+        
+        setValue("id", -1);
         toggleEditExerciseModal();
-    }, [editingExercise, toggleEditExerciseModal]);
+    }, [editingExercise, toggleEditExerciseModal, setValue]);
+
+    const handleLoadExercises = useCallback(async () => {
+        await loadExercises(searchTerm);
+    }, [loadExercises, searchTerm]);
 
     const cancelEdit = useCallback(() => {
-        setEditingExercise(null);
-    }, []);
+        setValue("id", -1);
+        toggleEditExerciseModal();
+    }, [toggleEditExerciseModal, setValue]);
 
     const filteredExercises = useMemo(() => {
         return exercises.filter((exercise) => {
             const matchesFilter =
-                filter === "Todos" || exercise.type === filter;
+                filter === "Todos" || exercise.exerciseType === exerciseTypeOptions.find(x => x.label === filter)?.value;
             const matchesSearch = exercise.title
                 .toLowerCase()
                 .includes(searchTerm.toLowerCase());
             return matchesFilter && matchesSearch;
         });
     }, [exercises, filter, searchTerm]);
+
+    const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
+
+    useEffect(() => {
+        if (searchTimeout) {
+            clearTimeout(searchTimeout);
+            setSearchTimeout(null);
+        }
+
+        setSearchTimeout(setTimeout(() => {
+            handleLoadExercises();
+        }, 1000));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [handleLoadExercises, searchTerm]);
 
     return {
         title,
@@ -148,15 +203,14 @@ export const useExerciseManagement = () => {
         searchTerm,
         setSearchTerm,
         editingExercise,
+        editExerciseControl,
         showEditExerciseModal,
         toggleEditExerciseModal,
-        setEditingExercise,
-        addExercise,
-        removeExercise,
+        handleRemoveExercise,
+        handleCreateExercise,
         startEdit,
         saveEdit,
         cancelEdit,
-        exerciseTypes,
         filterOptions,
         filteredExercises,
         getTypeColor,
@@ -166,5 +220,10 @@ export const useExerciseManagement = () => {
         setInputValues,
         outputValues,
         setOutputValues,
+        currentPage,
+        totalPages,
+        nextPage,
+        prevPage,
+        handleLoadExercises,
     };
 };

@@ -2,36 +2,24 @@
 
 import Input from "@/components/_ui/Input";
 import Modal from "@/components/_ui/Modal";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/_ui/Select";
 import { Textarea } from "@/components/_ui/Textarea";
-import { EditingExercise } from "../../hooks/useExerciseManagement";
 import { Edit } from "lucide-react";
+import CustomDropdown from "@/components/_ui/Dropdown";
+import { exerciseTypeOptions } from "../../constants";
+import { Controller } from "react-hook-form";
+import { EditExerciseModalProps } from "./types";
 
-interface EditExerciseModalProps {
-    open: boolean;
-    onClose: () => void;
-    exerciseTypes: string[];
-    editingExercise: EditingExercise;
-    setEditingExercise: (data: EditingExercise) => void;
-    saveEdit: () => void;
-    cancelEdit: () => void;
-}
+
 
 const EditExerciseModal: React.FC<EditExerciseModalProps> = ({
     open,
     onClose,
-    exerciseTypes,
     editingExercise,
-    setEditingExercise,
     saveEdit,
     cancelEdit,
+    editExerciseControl,
 }) => {
+
     return (
         <Modal
             open={open}
@@ -64,46 +52,58 @@ const EditExerciseModal: React.FC<EditExerciseModalProps> = ({
                         <label className="block text-xl font-medium text-[#3f3c40] mb-4">
                             Título do Exercício
                         </label>
-                        <Input
-                            type="text"
-                            value={editingExercise.title}
-                            onChange={(e) =>
-                                setEditingExercise({
-                                    ...editingExercise,
-                                    title: e.target.value,
-                                })
-                            }
-                            className="border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-xl h-16 px-6"
+                        <Controller
+                            control={editExerciseControl}
+                            name="title"
+                            defaultValue={editingExercise.title || ""}
+                            render={({ field, fieldState }) => (
+                                <Input
+                                    type="text"
+                                    {...field}
+                                    className={`border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-xl h-16 px-6 ${
+                                        fieldState.error ? "border-red-500" : ""
+                                    }`}
+                                />
+                            )}
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-xl font-medium text-[#3f3c40] mb-4">
+                            Título do Exercício
+                        </label>
+                        <Controller
+                            control={editExerciseControl}
+                            name="title"
+                            defaultValue={editingExercise.title || ""}
+                            render={({ field, fieldState }) => (
+                                <Input
+                                    type="text"
+                                    {...field}
+                                    className={`border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-xl h-16 px-6 ${
+                                        fieldState.error ? "border-red-500" : ""
+                                    }`}
+                                />
+                            )}
                         />
                     </div>
                     <div>
                         <label className="block text-xl font-medium text-[#3f3c40] mb-4">
                             Tipo do Exercício
                         </label>
-                        <Select
-                            value={editingExercise.type}
-                            onValueChange={(value) =>
-                                setEditingExercise({
-                                    ...editingExercise,
-                                    type: value,
-                                })
-                            }
-                        >
-                            <SelectTrigger className="w-full border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-xl h-16 px-6">
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent className="bg-white border-[#e9edee] z-50" position="item-aligned">
-                                {exerciseTypes.map((exerciseType) => (
-                                    <SelectItem
-                                        key={exerciseType}
-                                        value={exerciseType}
-                                        className="text-lg"
-                                    >
-                                        {exerciseType}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                        <Controller
+                            control={editExerciseControl}
+                            name="exerciseType"
+                            defaultValue={1}
+                            render={({ field, fieldState }) => (
+                                <CustomDropdown
+                                    type="selectDropdown"
+                                    options={exerciseTypeOptions}
+                                    errored={fieldState.error != undefined}
+                                    errorMessage={fieldState.error?.message ?? ""}
+                                    {...field}
+                                />
+                            )}
+                        />
                     </div>
                     <div className="space-y-6">
                         <h4 className="text-xl font-medium text-[#3f3c40]">
@@ -114,16 +114,19 @@ const EditExerciseModal: React.FC<EditExerciseModalProps> = ({
                             <label className="block text-lg font-medium text-[#3f3c40]">
                                 Descrição:
                             </label>
-                            <Textarea
-                                placeholder="Edite a descrição do exercício..."
-                                value={editingExercise.description || ""}
-                                onChange={(e) =>
-                                    setEditingExercise({
-                                        ...editingExercise,
-                                        description: e.target.value,
-                                    })
-                                }
-                                className="border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-lg min-h-[120px] p-4"
+                            <Controller
+                                control={editExerciseControl}
+                                name="description"
+                                defaultValue={editingExercise.description || ""}
+                                render={({ field, fieldState }) => (
+                                    <Textarea
+                                        placeholder="Edite a descrição do exercício..."
+                                        {...field}
+                                        className={`border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-lg min-h-[120px] p-4 ${
+                                            fieldState.error ? "border-red-500" : ""
+                                        }`}
+                                    />
+                                )}
                             />
                         </div>
 
@@ -131,16 +134,19 @@ const EditExerciseModal: React.FC<EditExerciseModalProps> = ({
                             <label className="block text-lg font-medium text-[#3f3c40]">
                                 Valores de entrada:
                             </label>
-                            <Textarea
-                                placeholder="Edite os valores de entrada..."
-                                value={editingExercise.inputValues || ""}
-                                onChange={(e) =>
-                                    setEditingExercise({
-                                        ...editingExercise,
-                                        inputValues: e.target.value,
-                                    })
-                                }
-                                className="border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-lg min-h-[120px] p-4"
+                            <Controller
+                                control={editExerciseControl}
+                                name="inputs"
+                                defaultValue={editingExercise.inputValues || ""}
+                                render={({ field, fieldState }) => (
+                                    <Textarea
+                                        placeholder="Edite os valores de entrada..."
+                                        {...field}
+                                        className={`border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-lg min-h-[120px] p-4 ${
+                                            fieldState.error ? "border-red-500" : ""
+                                        }`}
+                                    />
+                                )}
                             />
                         </div>
 
@@ -148,16 +154,20 @@ const EditExerciseModal: React.FC<EditExerciseModalProps> = ({
                             <label className="block text-lg font-medium text-[#3f3c40]">
                                 Valores de saída:
                             </label>
-                            <Textarea
-                                placeholder="Edite os valores de saída esperados..."
-                                value={editingExercise.outputValues || ""} // Ensure it's not undefined
-                                onChange={(e) =>
-                                    setEditingExercise({
-                                        ...editingExercise,
-                                        outputValues: e.target.value,
-                                    })
-                                }
-                                className="border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-lg min-h-[120px] p-4"
+
+                            <Controller
+                                control={editExerciseControl}
+                                name="outputs"
+                                defaultValue={editingExercise.outputValues || ""}
+                                render={({ field, fieldState }) => (
+                                    <Textarea
+                                        placeholder="Edite os valores de saída esperados..."
+                                        {...field}
+                                        className={`border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-lg min-h-[120px] p-4 ${
+                                            fieldState.error ? "border-red-500" : ""
+                                        }`}
+                                    />
+                                )}
                             />
                         </div>
                     </div>

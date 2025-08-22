@@ -10,16 +10,12 @@ import {
 import Input from "@/components/_ui/Input";
 import { ButtonAdm } from "@/components/_ui/ButtonAdm";
 import { Badge } from "@/components/_ui/Badge";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/_ui/Select";
 import { useExerciseManagement } from "./hooks/useExerciseManagement";
 import { Textarea } from "@/components/_ui/Textarea";
 import EditExerciseModal from "./components/EditExerciseModal";
+import { exerciseTypeOptions } from "./constants";
+import CustomDropdown from "@/components/_ui/Dropdown";
+import { ExerciseType } from "@/types/Exercise";
 
 const ExerciseManagement: React.FC = () => {
     const {
@@ -31,16 +27,15 @@ const ExerciseManagement: React.FC = () => {
         setFilter,
         searchTerm,
         setSearchTerm,
+        editExerciseControl,
         showEditExerciseModal,
         toggleEditExerciseModal,
         editingExercise,
-        addExercise,
-        removeExercise,
+        handleCreateExercise,
+        handleRemoveExercise,
         startEdit,
         saveEdit,
         cancelEdit,
-        exerciseTypes,
-        filterOptions,
         filteredExercises,
         getTypeColor,
         description,
@@ -49,7 +44,7 @@ const ExerciseManagement: React.FC = () => {
         setInputValues,
         outputValues,
         setOutputValues,
-        setEditingExercise,
+        
     } = useExerciseManagement();
 
     return (
@@ -88,25 +83,12 @@ const ExerciseManagement: React.FC = () => {
                                         <Filter className="h-5 w-5 text-[#4F85A6]" />
                                         Filtrar por Tipo
                                     </label>
-                                    <Select
-                                        value={filter}
-                                        onValueChange={setFilter}
-                                    >
-                                        <SelectTrigger className="w-full border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-xl h-16 px-6">
-                                            <SelectValue placeholder="Selecione um tipo" />
-                                        </SelectTrigger>
-                                        <SelectContent className="bg-white border-[#e9edee]">
-                                            {filterOptions.map((option) => (
-                                                <SelectItem
-                                                    key={option}
-                                                    value={option}
-                                                    className="text-lg"
-                                                >
-                                                    {option}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
+                                    <CustomDropdown
+                                        options={exerciseTypeOptions}
+                                        value={exerciseTypeOptions.find(option => option.label === filter)?.value ?? null}
+                                        onChange={(val: ExerciseType) => setFilter(exerciseTypeOptions.find(option => option.value === val)?.label ?? "Todos")}
+                                        type="normalDropdown"
+                                    />
                                 </div>
                                 <div>
                                     <label className="text-xl font-medium text-[#3f3c40] mb-4 flex items-center gap-2">
@@ -150,10 +132,10 @@ const ExerciseManagement: React.FC = () => {
                                                         </h4>
                                                         <Badge
                                                             className={`${getTypeColor(
-                                                                exercise.type
+                                                                exercise.exerciseType
                                                             )} text-lg px-3 py-1`}
                                                         >
-                                                            {exercise.type}
+                                                            {exerciseTypeOptions.find(option => option.value === exercise.exerciseType)?.label ?? ""}
                                                         </Badge>
                                                     </div>
                                                     <div className="flex space-x-3 ml-4">
@@ -175,7 +157,7 @@ const ExerciseManagement: React.FC = () => {
                                                             size="sm"
                                                             className="hover:bg-red-50 text-red-500 p-3"
                                                             onClick={() =>
-                                                                removeExercise(
+                                                                handleRemoveExercise(
                                                                     index
                                                                 )
                                                             }
@@ -232,27 +214,12 @@ const ExerciseManagement: React.FC = () => {
                                     <label className="block text-xl font-medium text-[#3f3c40] mb-4">
                                         Tipo do Exercício
                                     </label>
-                                    <Select
+                                    <CustomDropdown
+                                        options={exerciseTypeOptions}
                                         value={type}
-                                        onValueChange={setType}
-                                    >
-                                        <SelectTrigger className="w-full border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-xl h-16 px-6">
-                                            <SelectValue placeholder="Selecione um tipo" />
-                                        </SelectTrigger>
-                                        <SelectContent className="bg-white border-[#e9edee]">
-                                            {exerciseTypes.map(
-                                                (exerciseType) => (
-                                                    <SelectItem
-                                                        key={exerciseType}
-                                                        value={exerciseType}
-                                                        className="text-lg"
-                                                    >
-                                                        {exerciseType}
-                                                    </SelectItem>
-                                                )
-                                            )}
-                                        </SelectContent>
-                                    </Select>
+                                        onChange={(value: ExerciseType) => setType(value)}
+                                        type="normalDropdown"
+                                    />
                                 </div>
 
                                 <div className="space-y-6">
@@ -305,7 +272,7 @@ const ExerciseManagement: React.FC = () => {
 
                                 <div className="pt-6 border-t border-[#e9edee]">
                                     <ButtonAdm
-                                        onClick={addExercise}
+                                        onClick={handleCreateExercise}
                                         disabled={!title.trim()}
                                         className="w-full bg-[#4F85A6] hover:bg-[#3f3c40] text-white disabled:opacity-50 disabled:cursor-not-allowed text-xl h-16"
                                     >
@@ -327,8 +294,7 @@ const ExerciseManagement: React.FC = () => {
                     cancelEdit={cancelEdit}
                     saveEdit={saveEdit}
                     editingExercise={editingExercise}
-                    setEditingExercise={setEditingExercise}
-                    exerciseTypes={exerciseTypes}
+                    editExerciseControl={editExerciseControl}
                 />
             )}
         </>

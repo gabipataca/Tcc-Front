@@ -36,4 +36,6 @@ export interface ApiRequestOptions<T> {
      * Optional request payload of generic type T.
      */
     data?: T;
+
+    signal?: AbortSignal;
 }

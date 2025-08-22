@@ -42,5 +42,6 @@ export async function apiRequest<T, X = unknown>(
             referrerPolicy: "origin-when-cross-origin",
         },
         headers: cookies ? { Cookie: cookies } : undefined,
+        signal: options.signal,
     });
 }

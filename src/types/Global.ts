@@ -40,3 +40,11 @@ export interface ServerSideResponse<T> {
      */
     data?: T;
 }
+
+export interface PagedResult<T> {
+    items: T[];
+    totalCount: number;
+    page: number;
+    totalPages: number;
+    pageSize: number;
+}

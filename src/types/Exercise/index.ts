@@ -37,10 +37,9 @@ export interface ExerciseOutput {
      */
     judgeUuid: string | null;
 
-    /**
-     * The output string produced by the judge system.
-     */
-    output: string;
+    inputs: ExerciseInput[];
+
+    outputs: ExerciseOutput[];
 }
 
 /**
@@ -68,6 +67,20 @@ export interface ExerciseInput {
     input: string;
 }
 
+
+/**
+ * Represents the different types of exercises.
+ * - 1 -> Estruturas de Dados
+ * - 2 -> Algoritmos
+ * - 3 -> Matemática Computacional
+ * - 4 -> Grafos
+ * - 5 -> Programação Dinâmica
+ * - 6 -> Geometria Computacional
+ * - 7 -> Teoria dos Números
+ */
+export type ExerciseType = 1 | 2 | 3 | 4 | 5 | 6 | 7;
+
+
 /**
  * Represents an exercise with its details and metadata.
  */
@@ -81,6 +94,11 @@ export interface Exercise {
      * Title of the exercise.
      */
     title: string;
+
+    /**
+     * Type of the exercise.
+     */
+    exerciseType: ExerciseType;
 
     /**
      * Description of the exercise.
