@@ -1,16 +1,5 @@
-"use client";
-
 import type React from "react";
-import { useState } from "react";
-import {
-    FileText,
-    Plus,
-    Filter,
-    Upload,
-    Edit,
-    Trash2,
-    Search,
-} from "lucide-react";
+import { FileText, Plus, Filter, Edit, Trash2, Search } from "lucide-react";
 import {
     Card,
     CardContent,
@@ -21,95 +10,41 @@ import {
 import Input from "@/components/_ui/Input";
 import { ButtonAdm } from "@/components/_ui/ButtonAdm";
 import { Badge } from "@/components/_ui/Badge";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/_ui/Select";
+import { useExerciseManagement } from "./hooks/useExerciseManagement";
+import { Textarea } from "@/components/_ui/Textarea";
+import EditExerciseModal from "./components/EditExerciseModal";
+import { exerciseTypeOptions } from "./constants";
+import CustomDropdown from "@/components/_ui/Dropdown";
+import { ExerciseType } from "@/types/Exercise";
 
 const ExerciseManagement: React.FC = () => {
-    const [exercises, setExercises] = useState<
-        { title: string; type: string }[]
-    >([{ title: "Exemplo de Exercício", type: "Lógico" }]);
-    const [title, setTitle] = useState("");
-    const [type, setType] = useState("Lógico");
-    const [filter, setFilter] = useState("Todos");
-    const [searchTerm, setSearchTerm] = useState("");
-    const [editingExercise, setEditingExercise] = useState<{
-        index: number;
-        title: string;
-        type: string;
-    } | null>(null);
-
-    const addExercises = () => {
-        if (title.trim()) {
-            setExercises([...exercises, { title, type }]);
-            setTitle("");
-        }
-    };
-
-    const removeExercise = (index: number) => {
-        setExercises(exercises.filter((_, i) => i !== index));
-    };
-
-    const startEdit = (
-        index: number,
-        exercise: { title: string; type: string }
-    ) => {
-        setEditingExercise({
-            index,
-            title: exercise.title,
-            type: exercise.type,
-        });
-    };
-
-    const saveEdit = () => {
-        if (editingExercise) {
-            const updatedExercises = [...exercises];
-            updatedExercises[editingExercise.index] = {
-                title: editingExercise.title,
-                type: editingExercise.type,
-            };
-            setExercises(updatedExercises);
-            setEditingExercise(null);
-        }
-    };
-
-    const cancelEdit = () => {
-        setEditingExercise(null);
-    };
-
-    const exerciseTypes = [
-        "Lógico",
-        "Sequenciais",
-        "Matemáticos",
-        "Strings",
-        "Grafos",
-        "Matriz",
-    ];
-    const filterOptions = ["Todos", ...exerciseTypes];
-
-    const exercisesFilter = exercises.filter((ex) => {
-        const matchesFilter = filter === "Todos" || ex.type === filter;
-        const matchesSearch = ex.title
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase());
-        return matchesFilter && matchesSearch;
-    });
-
-    const getTypeColor = (type: string) => {
-        const colors: { [key: string]: string } = {
-            Lógico: "bg-[#4F85A6] text-white",
-            Sequenciais: "bg-[#9abbd6] text-white",
-            Matemáticos: "bg-[#3f3c40] text-white",
-            Strings: "bg-[#4F85A6] text-white",
-            Grafos: "bg-[#9abbd6] text-white",
-            Matriz: "bg-[#3f3c40] text-white",
-        };
-        return colors[type] || "bg-[#e9edee] text-[#3f3c40]";
-    };
+    const {
+        title,
+        setTitle,
+        type,
+        setType,
+        filter,
+        setFilter,
+        searchTerm,
+        setSearchTerm,
+        showEditExerciseModal,
+        toggleEditExerciseModal,
+        editingExercise,
+        handleCreateExercise,
+        handleRemoveExercise,
+        startEdit,
+        saveEdit,
+        cancelEdit,
+        filteredExercises,
+        getTypeColor,
+        description,
+        setDescription,
+        inputValues,
+        setInputValues,
+        outputValues,
+        setOutputValues,
+        
+    } = useExerciseManagement();
 
     return (
         <>
@@ -147,25 +82,12 @@ const ExerciseManagement: React.FC = () => {
                                         <Filter className="h-5 w-5 text-[#4F85A6]" />
                                         Filtrar por Tipo
                                     </label>
-                                    <Select
-                                        value={filter}
-                                        onValueChange={setFilter}
-                                    >
-                                        <SelectTrigger className="w-full border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-xl h-16 px-6">
-                                            <SelectValue placeholder="Selecione um tipo" />
-                                        </SelectTrigger>
-                                        <SelectContent className="bg-white border-[#e9edee]">
-                                            {filterOptions.map((option) => (
-                                                <SelectItem
-                                                    key={option}
-                                                    value={option}
-                                                    className="text-lg"
-                                                >
-                                                    {option}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
+                                    <CustomDropdown
+                                        options={exerciseTypeOptions}
+                                        value={exerciseTypeOptions.find(option => option.label === filter)?.value ?? null}
+                                        onChange={(val: ExerciseType) => setFilter(exerciseTypeOptions.find(option => option.value === val)?.label ?? "Todos")}
+                                        type="normalDropdown"
+                                    />
                                 </div>
                                 <div>
                                     <label className="text-xl font-medium text-[#3f3c40] mb-4 flex items-center gap-2">
@@ -184,7 +106,7 @@ const ExerciseManagement: React.FC = () => {
                                 </div>
 
                                 <div className="max-h-96 overflow-y-auto border border-[#e9edee] rounded-lg p-6 space-y-4">
-                                    {exercisesFilter.length === 0 ? (
+                                    {filteredExercises.length === 0 ? (
                                         <div className="text-center py-12">
                                             <FileText className="h-16 w-16 text-[#9abbd6] mx-auto mb-4" />
                                             <p className="text-xl text-[#4F85A6]">
@@ -197,7 +119,7 @@ const ExerciseManagement: React.FC = () => {
                                             </p>
                                         </div>
                                     ) : (
-                                        exercisesFilter.map(
+                                        filteredExercises.map(
                                             (exercise, index) => (
                                                 <div
                                                     key={index}
@@ -209,10 +131,10 @@ const ExerciseManagement: React.FC = () => {
                                                         </h4>
                                                         <Badge
                                                             className={`${getTypeColor(
-                                                                exercise.type
+                                                                exercise.exerciseType
                                                             )} text-lg px-3 py-1`}
                                                         >
-                                                            {exercise.type}
+                                                            {exerciseTypeOptions.find(option => option.value === exercise.exerciseType)?.label ?? ""}
                                                         </Badge>
                                                     </div>
                                                     <div className="flex space-x-3 ml-4">
@@ -234,7 +156,7 @@ const ExerciseManagement: React.FC = () => {
                                                             size="sm"
                                                             className="hover:bg-red-50 text-red-500 p-3"
                                                             onClick={() =>
-                                                                removeExercise(
+                                                                handleRemoveExercise(
                                                                     index
                                                                 )
                                                             }
@@ -253,7 +175,7 @@ const ExerciseManagement: React.FC = () => {
                                         variant="outline"
                                         className="text-lg px-4 py-2 border-[#4F85A6] text-[#4F85A6]"
                                     >
-                                        Total: {exercisesFilter.length}{" "}
+                                        Total: {filteredExercises.length}{" "}
                                         exercício(s)
                                     </Badge>
                                 </div>
@@ -291,56 +213,65 @@ const ExerciseManagement: React.FC = () => {
                                     <label className="block text-xl font-medium text-[#3f3c40] mb-4">
                                         Tipo do Exercício
                                     </label>
-                                    <Select
+                                    <CustomDropdown
+                                        options={exerciseTypeOptions}
                                         value={type}
-                                        onValueChange={setType}
-                                    >
-                                        <SelectTrigger className="w-full border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-xl h-16 px-6">
-                                            <SelectValue placeholder="Selecione um tipo" />
-                                        </SelectTrigger>
-                                        <SelectContent className="bg-white border-[#e9edee]">
-                                            {exerciseTypes.map(
-                                                (exerciseType) => (
-                                                    <SelectItem
-                                                        key={exerciseType}
-                                                        value={exerciseType}
-                                                        className="text-lg"
-                                                    >
-                                                        {exerciseType}
-                                                    </SelectItem>
-                                                )
-                                            )}
-                                        </SelectContent>
-                                    </Select>
+                                        onChange={(value: ExerciseType) => setType(value)}
+                                        type="normalDropdown"
+                                    />
                                 </div>
 
                                 <div className="space-y-6">
                                     <h4 className="text-xl font-medium text-[#3f3c40]">
-                                        Arquivos do Exercício
+                                        Conteúdo do Exercício
                                     </h4>
-                                    {[
-                                        "Descrição",
-                                        "Valores de entrada",
-                                        "Valores de saída",
-                                    ].map((label) => (
-                                        <div key={label} className="space-y-3">
-                                            <label className="block text-lg font-medium text-[#3f3c40]">
-                                                {label}:
-                                            </label>
-                                            <ButtonAdm
-                                                variant="outline"
-                                                className="w-full border-[#4F85A6] text-[#4F85A6] hover:bg-[#9abbd6]/20 text-lg h-14 flex items-center gap-3"
-                                            >
-                                                <Upload className="w-5 h-5" />
-                                                Anexar arquivo - {label}
-                                            </ButtonAdm>
-                                        </div>
-                                    ))}
+
+                                    <div className="space-y-3">
+                                        <label className="block text-lg font-medium text-[#3f3c40]">
+                                            Descrição:
+                                        </label>
+                                        <Textarea
+                                            placeholder="Digite a descrição do exercício..."
+                                            value={description}
+                                            onChange={(e) =>
+                                                setDescription(e.target.value)
+                                            }
+                                            className="border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-lg min-h-[120px] p-4"
+                                        />
+                                    </div>
+
+                                    <div className="space-y-3">
+                                        <label className="block text-lg font-medium text-[#3f3c40]">
+                                            Valores de entrada:
+                                        </label>
+                                        <Textarea
+                                            placeholder="Digite os valores de entrada (separados por linha, vírgula, etc.)"
+                                            value={inputValues}
+                                            onChange={(e) =>
+                                                setInputValues(e.target.value)
+                                            }
+                                            className="border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-lg min-h-[120px] p-4"
+                                        />
+                                    </div>
+
+                                    <div className="space-y-3">
+                                        <label className="block text-lg font-medium text-[#3f3c40]">
+                                            Valores de saída:
+                                        </label>
+                                        <Textarea
+                                            placeholder="Digite os valores de saída esperados (separados por linha, vírgula, etc.)"
+                                            value={outputValues}
+                                            onChange={(e) =>
+                                                setOutputValues(e.target.value)
+                                            }
+                                            className="border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-lg min-h-[120px] p-4"
+                                        />
+                                    </div>
                                 </div>
 
                                 <div className="pt-6 border-t border-[#e9edee]">
                                     <ButtonAdm
-                                        onClick={addExercises}
+                                        onClick={handleCreateExercise}
                                         disabled={!title.trim()}
                                         className="w-full bg-[#4F85A6] hover:bg-[#3f3c40] text-white disabled:opacity-50 disabled:cursor-not-allowed text-xl h-16"
                                     >
@@ -353,109 +284,16 @@ const ExerciseManagement: React.FC = () => {
                     </div>
                 </div>
             </div>
-            {editingExercise && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                    <Card className="bg-white border-[#e9edee] shadow-xl w-full max-w-2xl mx-4">
-                        <CardHeader className="pb-6">
-                            <CardTitle className="text-3xl text-[#3f3c40] flex items-center gap-4">
-                                <Edit className="h-8 w-8 text-[#4F85A6]" />
-                                Editar Exercício
-                            </CardTitle>
-                            <CardDescription className="text-xl text-[#4F85A6] mt-2">
-                                Modifique as informações do exercício
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-6">
-                            <div>
-                                <label className="block text-xl font-medium text-[#3f3c40] mb-4">
-                                    Título do Exercício
-                                </label>
-                                <Input
-                                    type="text"
-                                    value={editingExercise.title}
-                                    onChange={(e) =>
-                                        setEditingExercise({
-                                            ...editingExercise,
-                                            title: e.target.value,
-                                        })
-                                    }
-                                    className="border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-xl h-16 px-6"
-                                />
-                            </div>
 
-                            <div>
-                                <label className="block text-xl font-medium text-[#3f3c40] mb-4">
-                                    Tipo do Exercício
-                                </label>
-                                <Select
-                                    value={editingExercise.type}
-                                    onValueChange={(value) =>
-                                        setEditingExercise({
-                                            ...editingExercise,
-                                            type: value,
-                                        })
-                                    }
-                                >
-                                    <SelectTrigger className="w-full border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-xl h-16 px-6">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent className="bg-white border-[#e9edee]">
-                                        {exerciseTypes.map((exerciseType) => (
-                                            <SelectItem
-                                                key={exerciseType}
-                                                value={exerciseType}
-                                                className="text-lg"
-                                            >
-                                                {exerciseType}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
 
-                            <div className="space-y-6">
-                                <h4 className="text-xl font-medium text-[#3f3c40]">
-                                    Arquivos do Exercício
-                                </h4>
-                                {[
-                                    "Descrição",
-                                    "Valores de entrada",
-                                    "Valores de saída",
-                                ].map((label) => (
-                                    <div key={label} className="space-y-3">
-                                        <label className="block text-lg font-medium text-[#3f3c40]">
-                                            {label}:
-                                        </label>
-                                        <ButtonAdm
-                                            variant="outline"
-                                            className="w-full border-[#4F85A6] text-[#4F85A6] hover:bg-[#9abbd6]/20 text-lg h-14 flex items-center gap-3"
-                                        >
-                                            <Upload className="w-5 h-5" />
-                                            Editar arquivo - {label}
-                                        </ButtonAdm>
-                                    </div>
-                                ))}
-                            </div>
-
-                            <div className="flex gap-4 pt-6 border-t border-[#e9edee]">
-                                <ButtonAdm
-                                    onClick={cancelEdit}
-                                    variant="outline"
-                                    className="flex-1 border-[#e9edee] text-[#3f3c40] hover:bg-[#e9edee] text-xl h-16"
-                                >
-                                    Cancelar
-                                </ButtonAdm>
-                                <ButtonAdm
-                                    onClick={saveEdit}
-                                    className="flex-1 bg-[#4F85A6] hover:bg-[#3f3c40] text-white text-xl h-16"
-                                >
-                                    <Edit className="w-6 h-6 mr-3" />
-                                    Salvar Alterações
-                                </ButtonAdm>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </div>
+            {showEditExerciseModal && editingExercise && (
+                <EditExerciseModal
+                    open={showEditExerciseModal}
+                    onClose={toggleEditExerciseModal}
+                    cancelEdit={cancelEdit}
+                    saveEdit={saveEdit}
+                    editingExercise={editingExercise}
+                />
             )}
         </>
     );

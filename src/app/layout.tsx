@@ -4,6 +4,7 @@ import { UserContextProvider } from "@/contexts/UserContext";
 import Navbar from "@/components/_ui/Navbar";
 import SnackbarProviderC from "@/contexts/SnackbarProvider";
 import ThemeRegistry from "./ThemeRegistry";
+import styled from "@emotion/styled";
 
 export const metadata: Metadata = {
     title: "Create Next App",

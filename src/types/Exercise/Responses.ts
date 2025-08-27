@@ -1,4 +1,5 @@
-import { JudgeResponseEnum } from ".";
+import { Exercise, JudgeResponseEnum } from ".";
+import { PagedResult } from "../Global";
 
 
 
@@ -8,4 +9,9 @@ export interface ExerciseSubmissionResponse {
     groupId: number;
     accepted: boolean;
     judgeResponse: JudgeResponseEnum;
+}
+
+
+export interface GetExercisesResponse extends PagedResult<Exercise> {
+
 }

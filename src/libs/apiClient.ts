@@ -33,14 +33,20 @@ export async function apiRequest<T, X = unknown>(
     options: ApiRequestOptions<X>
 ) {
     const { method = "GET", data, cookies, params } = options;
+    const cookieHeader = cookies ? Object.entries(cookies).map(([key, value]) => `${key}=${value}`).join('; ') : undefined;
+
     return await apiClient.request<T>({
         url: url,
         method: method,
         data: data,
         params: params,
+        withCredentials: true,
         fetchOptions: {
             referrerPolicy: "origin-when-cross-origin",
+            credentials: "include",
         },
-        headers: cookies ? { Cookie: cookies } : undefined,
+        ...(cookies) ? { headers: { Cookie: cookieHeader } } : {},
+
+        signal: options.signal,
     });
 }

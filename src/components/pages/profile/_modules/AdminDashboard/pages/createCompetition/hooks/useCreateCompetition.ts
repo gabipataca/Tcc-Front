@@ -15,36 +15,47 @@ interface CompetitionFormInputs {
     exerciseCount: number;
 }
 
-const schema = z.object({
-    competitionName: z.string().min(3, {
-        message: "O nome da maratona deve ter no mínimo 3 caracteres.",
-    }),
-    startDate: z
-        .string()
-        .min(1, { message: "A data de início é obrigatória." }),
-    startTime: z
-        .string()
-        .min(1, { message: "A hora de início é obrigatória." }),
-    duration: z.coerce
-        .number()
-        .min(1, { message: "A duração deve ser de no mínimo 1 minuto." }),
-    stopAnswering: z.coerce.number().min(1, {
-        message: "O tempo para parar respostas deve ser de no mínimo 1 minuto.",
-    }),
-    stopScoreboard: z.coerce.number().min(1, {
-        message: "O tempo para parar o placar deve ser de no mínimo 1 minuto.",
-    }),
-    penalty: z.coerce
-        .number()
-        .min(0, { message: "A penalidade deve ser um número positivo." }),
-    maxFileSize: z.coerce.number().min(1, {
-        message: "O tamanho máximo do arquivo deve ser de no mínimo 1 KB.",
-    }),
-    exerciseCount: z.coerce
-        .number()
-        .min(2, { message: "Mínimo de 2 exercícios." })
-        .max(15, { message: "Máximo de 15 exercícios." }),
-});
+const schema = z
+    .object({
+        competitionName: z.string().min(3, {
+            message: "O nome da maratona deve ter no mínimo 3 caracteres.",
+        }),
+        startDate: z
+            .string()
+            .min(1, { message: "A data de início é obrigatória." }),
+        startTime: z
+            .string()
+            .min(1, { message: "A hora de início é obrigatória." }),
+        duration: z.coerce
+            .number()
+            .min(1, { message: "A duração deve ser de no mínimo 1 minuto." }),
+        stopAnswering: z.coerce.number().min(1, {
+            message:
+                "O tempo para parar respostas deve ser de no mínimo 1 minuto.",
+        }),
+        stopScoreboard: z.coerce.number().min(1, {
+            message:
+                "O tempo para parar o placar deve ser de no mínimo 1 minuto.",
+        }),
+        penalty: z.coerce
+            .number()
+            .min(0, { message: "A penalidade deve ser um número positivo." }),
+        maxFileSize: z.coerce.number().min(1, {
+            message: "O tamanho máximo do arquivo deve ser de no mínimo 1 KB.",
+        }),
+        exerciseCount: z.coerce
+            .number()
+            .min(2, { message: "Mínimo de 2 exercícios." })
+            .max(15, { message: "Máximo de 15 exercícios." }),
+    })
+    .superRefine((data, ctx) => {
+        if (Number.isNaN(data.exerciseCount)) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "O número de exercícios deve ser um número válido.",
+            });
+        }
+    });
 
 const exercisesMock = [
     "Exercício 1 - Título exemplo",

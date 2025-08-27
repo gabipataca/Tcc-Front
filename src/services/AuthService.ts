@@ -1,5 +1,6 @@
 import {
     LoginUserResponse,
+    LogoutUserResponse,
     RegisterUserResponse,
     ValidateTokenResponse,
 } from "@/types/Auth/Responses";
@@ -11,13 +12,15 @@ class AuthService {
     /**
      * Validate the authentication token in the context of SSR (Server-Side Rendering).
      *
-     * @param cookies - string containing cookies sent in the request.
+     * @param token - string containing the authentication token.
      * @returns A boolean value indicating if the token is valid.
      */
-    static async validateTokenSSR(cookies: string): Promise<boolean> {
+    static async validateTokenSSR(token: string): Promise<boolean> {
         const req = await apiRequest<ValidateTokenResponse>("/Auth/validate", {
             method: "GET",
-            cookies,
+            cookies: {
+                CompetitionAuthToken: token,
+            },
         });
 
         return req.data.valid;
@@ -57,6 +60,24 @@ class AuthService {
         });
         const data =
             (await response.json()) as ServerSideResponse<LoginUserResponse>;
+
+        return data;
+    }
+
+    static async logoutUser() {
+        const req = await fetch("/api/auth/logout", {
+            method: "GET",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+            },
+            next: { revalidate: false },
+            cache: "no-cache",
+        });
+
+        const data =
+            (await req.json()) as ServerSideResponse<LogoutUserResponse>;
 
         return data;
     }

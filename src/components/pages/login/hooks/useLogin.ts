@@ -5,6 +5,7 @@ import {
 } from "@/types/Auth/Responses";
 import { ServerSideResponse } from "@/types/Global";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { SubmitHandler, useForm } from "react-hook-form";
 import z from "zod";
 
@@ -24,6 +25,8 @@ const schema = z.object({
 const useLogin = () => {
     const { setUser } = useUser();
 
+    const router = useRouter();
+
     const {
         handleSubmit,
         control,
@@ -35,7 +38,7 @@ const useLogin = () => {
             ra: "",
             password: "",
         },
-        mode: "onChange",
+        mode: "onBlur",
         resolver: zodResolver(schema),
     });
 
@@ -52,11 +55,15 @@ const useLogin = () => {
                 email: body.user.email,
                 ra: body.user.ra,
                 joinYear: body.user.joinYear,
-                username: body.user.username,
+                name: body.user.name,
                 role: body.user.role,
                 groupId: body.user.groupId,
                 token: body.token,
             });
+
+            setTimeout(() => {
+                router.push("/profile");
+            }, 500);
         } catch (err) {
             console.error(err);
 

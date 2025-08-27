@@ -45,6 +45,7 @@ export const NavbarLinks: NavbarLink[] = [
         label: "Logs",
         Icon: FileTextIcon,
     },
+    /*
     {
         // Professor possui acesso
         href: "/Competition/ManageTeams",
@@ -114,4 +115,5 @@ export const NavbarLinks: NavbarLink[] = [
         label: "Liberar Inscrições",
         Icon: UsersIcon,
     },
+    */
 ];

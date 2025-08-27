@@ -31,7 +31,6 @@ export const useCompetitionForm = () => {
                 endRegistration,
                 status,
             };
-            console.log(dataCompetition);
             alert("Maratona criada com sucesso!");
         },
         [

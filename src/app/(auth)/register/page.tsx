@@ -46,7 +46,7 @@ const Cadastro: React.FC = () => {
                     >
                         {/* Nome */}
                         <Controller
-                            name="username"
+                            name="name"
                             control={control}
                             render={({ field, fieldState }) => (
                                 <Input
@@ -199,7 +199,9 @@ const Cadastro: React.FC = () => {
                             />
                         )}
 
-                        <Button rounded={true} fullWidth={true}>
+                        <Button style="primary" onClick={handleSubmit(handleFormSubmit, (d) =>
+                            console.log(d)
+                        )} rounded={true} fullWidth={true}>
                             Criar
                         </Button>
                     </form>

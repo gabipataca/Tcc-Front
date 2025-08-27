@@ -14,8 +14,6 @@ const Navbar: FC = () => {
 
   const pathname = usePathname();
 
-  console.log(pathname)
-
   // Admin
   // Criar maratona
   // Criar exercicio
@@ -26,7 +24,7 @@ const Navbar: FC = () => {
 
   return (
     <div className="bg-[#4F85A6] text-white shadow-lg">
-      <div className="flex flex-col max-h-screen">
+      <div className="flex flex-col max-h-[64px]">
         <div className="flex justify-between items-center h-16">
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-1">

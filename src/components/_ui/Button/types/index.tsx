@@ -36,22 +36,18 @@ export interface ButtonProps {
     /**
      * The style of the button, either "primary" or "secondary".
      */
-    style?: "primary" | "secondary";
+    style?: "primary" | "secondary" | "success" | "light-success" | "success-outline" | "destructive" | "outline";
 
     /**
      * Whether the button should have rounded corners.
      */
     rounded?: boolean;
 
+    size?: "default" | "sm" | "lg" | "icon";
+
     /**
      * Whether the button should take up the full width of its container.
      */
     fullWidth?: boolean;
-
-    /*
-     * Whether the button is styled as a primary button.
-     */
-
-    primary?: boolean;
     
 }

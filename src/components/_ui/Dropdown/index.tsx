@@ -150,6 +150,8 @@ const CustomDropdown: React.FC<DropdownProps> = ({
         return options.find((opt) => opt.value === value) || null;
     }, [value, options]);
 
+    console.log(selectedOption)
+
     return (
         <div
             className={`${styles.dropdownWrapper} ${grow && styles.grow} ${
@@ -237,6 +239,7 @@ const CustomDropdown: React.FC<DropdownProps> = ({
                                 <li
                                     key={`${option.label}-${idx}`}
                                     onClick={() => {
+                                        console.log(option);
                                         onChange(option.value);
                                         if (type !== "selectDropdown") {
                                             setIsOpen(false);

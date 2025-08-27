@@ -6,7 +6,7 @@ export interface RegisterUserRequest {
     /**
      * The user's display name.
      */
-    username: string;
+    name: string;
 
     /**
      * The user's registration or identification number.
