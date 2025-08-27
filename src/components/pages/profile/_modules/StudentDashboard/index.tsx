@@ -84,6 +84,8 @@ const StudentDashboard: React.FC = () => {
                     {/* Content */}
                     <main className="px-40 py-8">
                         <div className="max-w-full space-y-8">
+
+                            {/* Componentizar */}
                             {/* Information Cards */}
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                 {/* Student Information */}
@@ -169,6 +171,7 @@ const StudentDashboard: React.FC = () => {
                                     </CardContent>
                                 </Card>
 
+                                {/* Componentizar */}
                                 {/* Group Information */}
                                 <Card className="shadow-lg hover:shadow-xl transition-all duration-300 border-0 bg-gradient-to-br from-white to-slate-50">
                                     <CardHeader className="pb-4 bg-gradient-to-r from-[#4F85A6]/5 to-[#3C6B88]/5 rounded-t-lg">
@@ -256,8 +259,10 @@ const StudentDashboard: React.FC = () => {
                                 </Card>
                             </div>
 
+                            {/* Componentizar */}
                             {/* Tables */}
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                {/* Componentizar */}
                                 {/* Competition History */}
                                 <Card className="shadow-lg border-0 bg-gradient-to-br from-white to-slate-50">
                                     <CardHeader className="bg-gradient-to-r from-[#4F85A6]/5 to-[#3C6B88]/5 rounded-t-lg">
@@ -337,6 +342,7 @@ const StudentDashboard: React.FC = () => {
                                     </CardContent>
                                 </Card>
 
+                                {/* Componentizar */}
                                 {/* Champion Teams */}
                                 <Card className="shadow-lg border-0 bg-gradient-to-br from-white to-slate-50">
                                     <CardHeader className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-t-lg border-b border-yellow-100">
