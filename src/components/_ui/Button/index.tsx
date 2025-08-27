@@ -16,6 +16,7 @@ const Button = ({
     rounded,
     fullWidth,
     size = "default",
+    disabled,
 }: ButtonProps) => {
     if (type == "button") {
         return (
@@ -24,11 +25,12 @@ const Button = ({
                     ${styles[style]}
                     ${rounded ? styles.rounded : ""}
                     ${fullWidth ? styles.fullWidth : ""}
-                    ${className ?? ""}
                     ${styles[size]}
+                    ${className ?? ""}
                 `}
                 onClick={onClick}
                 role={role}
+                disabled={disabled}
             >
                 {children}
             </button>

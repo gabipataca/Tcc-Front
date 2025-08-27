@@ -78,9 +78,11 @@ export default function NavRanking({ children }: Props) {
 
             {/* Logout Button */}
             <Button
-              variant="ghost"
+              style="ghost"
               size="icon"
-              className="text-white hover:bg-white/10 hover:text-white transition-all duration-200 ml-auto lg:ml-0"
+              type="link"
+              linkHref="/logout"
+              className="ml-auto lg:ml-0"
             >
               <FaSignOutAlt size={20} />
               <span className="sr-only">Sair</span>

@@ -46,7 +46,7 @@ const Navbar: FC = () => {
           <div className="lg:hidden flex items-center justify-between w-full">
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger asChild>
-                <Button className="text-white hover:bg-white/10">
+                <Button style="outline" className="text-white hover:bg-white/10">
                   <Menu className="h-6 w-6" />
                   <span className="sr-only">Abrir menu</span>
                 </Button>
