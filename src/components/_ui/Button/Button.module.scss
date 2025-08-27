@@ -1,5 +1,5 @@
 .button {
-    @apply px-6 py-2 transition relative;
+    @apply flex text-center gap-1 justify-center items-center px-6 py-2 shadow-md transition-all duration-200 hover:shadow-lg relative;
 
     /*
     &::before {
@@ -48,4 +48,87 @@
             border-color: var(--secondary-hover-border-color);
         }
     }
+
+    &.success {
+        color: var(--success-text-color);
+        background-color: var(--success-bg-color);
+
+        border: 1px solid var(--success-border-color);
+
+        &:hover {
+            color: var(--success-hover-text-color);
+            background-color: var(--success-hover-bg-color);
+            border-color: var(--success-hover-border-color);
+        }
+    }
+
+    &.light-success {
+        color: var(--light-success-text-color);
+        background-color: var(--light-success-bg-color);
+
+        border: 1px solid var(--light-success-border-color);
+
+        &:hover {
+            color: var(--light-success-hover-text-color);
+            background-color: var(--light-success-hover-bg-color);
+            border-color: var(--light-success-hover-border-color);
+        }
+    }
+
+    &.success-outline {
+        color: var(--success-text-color);
+        background-color: transparent;
+
+        border: 1px solid var(--success-border-color);
+
+        &:hover {
+            color: var(--success-hover-text-color);
+            background-color: var(--success-hover-bg-color);
+            border-color: var(--success-hover-border-color);
+        }
+    }
+
+    &.destructive {
+        color: var(--destructive-text-color);
+        background-color: var(--destructive-bg-color);
+
+        border: 1px solid var(--destructive-border-color);
+
+        &:hover {
+            color: var(--destructive-hover-text-color);
+            background-color: var(--destructive-hover-bg-color);
+            border-color: var(--destructive-hover-border-color);
+        }
+    }
+
+    &.outline {
+        color: var(--outline-text-color);
+        background-color: transparent;
+
+        border: 1px solid var(--outline-border-color);
+
+        &:hover {
+            color: var(--outline-hover-text-color);
+            background-color: var(--outline-hover-bg-color);
+            border-color: var(--outline-hover-border-color);
+        }
+    }
+
+    &.default {
+        @apply h-10 px-4 py-2;
+    }
+
+    &.sm {
+        @apply h-9 rounded-md px-3;
+    }
+
+    &.lg {
+        @apply h-11 rounded-md px-8;
+    }
+
+    &.icon {
+        @apply h-10 w-10;
+    }
+
+    
 }

@@ -1,11 +1,10 @@
 "use client";
 
 import { useUser } from "@/contexts/UserContext";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import AdminDashboard from "../_modules/AdminDashboard";
 import TeacherDashboard from "../_modules/TeacherDashboard";
 import StudentDashboard from "../_modules/StudentDashboard";
-import { ProfileMenuType } from "./types";
 
 /**
  * Custom hook that selects the appropriate dashboard component based on the current user's role.
@@ -28,7 +27,7 @@ const useProfile = () => {
             case "Student":
                 return StudentDashboard;
             default:
-                return AdminDashboard;
+                return null;
         }
     }, [user]);
 

@@ -15,26 +15,29 @@ const Button = ({
     style = "primary",
     rounded,
     fullWidth,
-    primary = true,
+    size = "default",
 }: ButtonProps) => {
     if (type == "button") {
         return (
-            <StyledButton
-                $secondary={!primary}
-                $fullWidth={fullWidth}
-                $rounded={rounded}
-                className={`${className}`}
+            <button
+                className={`${styles.button}
+                    ${styles[style]}
+                    ${rounded ? styles.rounded : ""}
+                    ${fullWidth ? styles.fullWidth : ""}
+                    ${className ?? ""}
+                    ${styles[size]}
+                `}
                 onClick={onClick}
                 role={role}
             >
                 {children}
-            </StyledButton>
+            </button>
         );
     } else {
         return (
             <Link
                 className={`${styles.button}
-                    ${style == "primary" ? styles.primary : styles.secondary}
+                    ${styles[style]}
                     ${rounded ? styles.rounded : ""}
                     ${fullWidth ? styles.fullWidth : ""}
                     ${className}

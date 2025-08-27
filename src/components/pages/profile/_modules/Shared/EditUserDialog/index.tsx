@@ -33,7 +33,7 @@ const EditUserDialog: FC<EditUserDialogProps> = ({
             <DialogContent className="bg-white border-[#e9edee]">
                 <DialogHeader>
                     <DialogTitle className="text-2xl text-[#3f3c40]">
-                        Editar {user.username}
+                        Editar {user.name}
                     </DialogTitle>
                     <DialogDescription className="text-xl text-[#4F85A6]">
                         Altere os dados de {item?.name}.

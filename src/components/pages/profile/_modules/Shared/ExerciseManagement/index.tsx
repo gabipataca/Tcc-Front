@@ -27,7 +27,6 @@ const ExerciseManagement: React.FC = () => {
         setFilter,
         searchTerm,
         setSearchTerm,
-        editExerciseControl,
         showEditExerciseModal,
         toggleEditExerciseModal,
         editingExercise,
@@ -294,7 +293,6 @@ const ExerciseManagement: React.FC = () => {
                     cancelEdit={cancelEdit}
                     saveEdit={saveEdit}
                     editingExercise={editingExercise}
-                    editExerciseControl={editExerciseControl}
                 />
             )}
         </>

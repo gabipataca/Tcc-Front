@@ -13,9 +13,9 @@ export interface User {
     ra: string;
 
     /**
-     * The username chosen by the user.
+     * The name chosen by the user.
      */
-    username: string;
+    name: string;
 
     /**
      * The year the user joined the system.

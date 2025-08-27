@@ -10,10 +10,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import z from "zod";
+import { useRouter } from "next/navigation"
 
 const schema = z
     .object({
-        username: z.string({ message: "Campo obrigatório" }),
+        name: z.string({ message: "Campo obrigatório" }),
         ra: z
             .string()
             .min(6, { message: "RA deve ter no mínimo 6 dígitos!" })
@@ -74,7 +75,7 @@ const useRegister = () => {
         formState: { isValid },
     } = useForm<RegisterUserRequest>({
         defaultValues: {
-            username: "",
+            name: "",
             ra: "",
             role: "Student",
             email: "",
@@ -83,9 +84,11 @@ const useRegister = () => {
             password: "",
             accessCode: "",
         },
-        mode: "all",
+        mode: "onBlur",
         resolver: zodResolver(schema),
     });
+
+    const router = useRouter();
 
     const roleOptions: DropdownOption[] = [
         {
@@ -100,7 +103,6 @@ const useRegister = () => {
 
     const handleFormSubmit: SubmitHandler<RegisterUserRequest> = useCallback(
         async (data: RegisterUserRequest) => {
-            console.log(isValid);
             if (!isValid) {
                 return;
             }
@@ -112,17 +114,21 @@ const useRegister = () => {
 
                 const resData = res.data!;
 
-                if (res.status == 201) {
+                if (res.status == 200) {
                     setUser({
                         id: resData.user.id,
                         ra: resData.user.ra,
-                        username: resData.user.username,
+                        name: resData.user.name,
                         email: resData.user.email,
                         role: resData.user.role,
                         groupId: resData.user.groupId,
                         joinYear: resData.user.joinYear,
                         token: resData.token,
                     });
+
+                    setTimeout(() => {
+                        router.push("/profile");
+                    }, 600);
                 }
             } catch (err) {
                 console.error(err);

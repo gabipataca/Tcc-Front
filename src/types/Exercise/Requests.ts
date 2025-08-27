@@ -28,7 +28,7 @@ export interface CreateExerciseOutputRequest {
     /**
      * The orderId of the output within the exercise.
      */
-    orderIdId: number;
+    orderId: number;
 
     /**
      * The output string produced by the judge system.

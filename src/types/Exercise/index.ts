@@ -119,6 +119,10 @@ export interface Exercise {
      * ISO string representing when the exercise was created.
      */
     createdAt: string;
+
+    inputs: Array<ExerciseInput>;
+
+    outputs: Array<ExerciseOutput>;
 }
 
 

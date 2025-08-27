@@ -1,5 +1,4 @@
 import { NextResponse, NextRequest } from "next/server";
-import jwt from "jsonwebtoken";
 import AuthService from "./services/AuthService";
 import { UserTokenProperties } from "./types/Auth";
 
@@ -8,11 +7,23 @@ const protectedRoutes = [
     { path: "/Competition", roles: ["Admin", "Teacher", "Student"] },
 ];
 
-const SECRET_KEY = process.env.JWT_SECRET!;
+const parseJwt = (token: string): UserTokenProperties => {
+  const base64Url = token.split('.')[1];
+  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  const jsonPayload = decodeURIComponent(
+    atob(base64)
+      .split('')
+      .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+      .join('')
+  );
+  return JSON.parse(jsonPayload);
+}
 
 export const middleware = async (request: NextRequest) => {
-    const { basePath } = request.nextUrl;
-    const route = protectedRoutes.find((r) => basePath.startsWith(r.path));
+    const { basePath, pathname } = request.nextUrl;
+    const isAuthRoute = ["register", "login"].some((path) => basePath.includes(path));
+
+    const route = protectedRoutes.find((r) => pathname.startsWith(r.path));
 
     const token = request.cookies.get("CompetitionAuthToken")?.value;
 
@@ -21,12 +32,19 @@ export const middleware = async (request: NextRequest) => {
     }
 
     try {
-        const jwtPayload = jwt.verify(token, SECRET_KEY) as UserTokenProperties;
+        const jwtPayload = parseJwt(token);
 
         const isTokenValid = await AuthService.validateTokenSSR(token);
 
-        if (!route?.roles?.includes(jwtPayload.role) || !isTokenValid) {
+        console.log("Role: ", jwtPayload.role);
+        console.log("Route: ", route);
+
+        if (!route?.roles?.includes(jwtPayload.role) && !isTokenValid) {
             return NextResponse.redirect(new URL("/login", request.url));
+        }
+
+        if(isAuthRoute) {
+            return NextResponse.redirect(new URL("/profile", request.url));
         }
 
         return NextResponse.next();
@@ -38,8 +56,8 @@ export const middleware = async (request: NextRequest) => {
 
 export const config = {
     matcher: [
-        //"/admin/:path*",
-        //"/Competition/:path*",
-        //"/profile/:path*"
+        "/admin/:path*",
+        "/Competition/:path*",
+        "/profile/:path*"
     ],
 };

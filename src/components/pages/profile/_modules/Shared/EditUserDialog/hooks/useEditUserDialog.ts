@@ -20,14 +20,21 @@ const useEditUserDialog = ({
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const {} = useForm({
+    const {
+        control,
+        setValue,
+        watch,
+    } = useForm({
         defaultValues: {
-            name: user.username,
+            name: user.name,
             email: "email" in user ? user.email : "",
             status: "status" in user ? user.status : "",
+            group: "",
         },
         resolver: zodResolver(schema),
     });
+
+    const editUserFormValues = watch();
 
     const handleClose = useCallback(() => {
         toggleDialog();
@@ -39,7 +46,13 @@ const useEditUserDialog = ({
         setLoading(true);
         setError(null);
         try {
-            await onConfirm({});
+            await onConfirm({
+                id: user.id,
+                email: editUserFormValues.email,
+                name: editUserFormValues.name,
+                status: editUserFormValues.status ?? "",
+                groupId: editUserFormValues.group,
+            });
 
             // @ts-expect-error : Irrelevant
         } catch (err: Error) {
@@ -48,11 +61,13 @@ const useEditUserDialog = ({
             setLoading(false);
             toggleDialog();
         }
-    }, [onConfirm, toggleDialog]);
+    }, [editUserFormValues.email, editUserFormValues.group, editUserFormValues.name, editUserFormValues.status, onConfirm, toggleDialog, user.id]);
 
     return {
         loading,
         error,
+        control,
+        editUserFormValues,
         handleClose,
         handleConfirm,
     };

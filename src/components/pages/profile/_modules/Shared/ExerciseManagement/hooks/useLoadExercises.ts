@@ -1,6 +1,6 @@
 import ExerciseService from "@/services/ExerciseService";
 import { Exercise } from "@/types/Exercise";
-import { CreateExerciseRequest } from "@/types/Exercise/Requests";
+import { CreateExerciseRequest, EditExerciseRequest } from "@/types/Exercise/Requests";
 import { useCallback, useState } from "react";
 
 
@@ -62,6 +62,16 @@ const useLoadExercises = () => {
         }
     }, []);
 
+    const updateExercise = useCallback(async (exercise: EditExerciseRequest) => {
+        try {
+            //const response = await ExerciseService.updateExercise(exercise);
+            //const data = response.data!;
+            setExercises((prev) => prev.map((ex) => (ex.id === exercise.id ? { ...ex, ...exercise } : ex)));
+        } catch (error) {
+            console.error("Error updating exercise:", error);
+        }
+    }, [setExercises]);
+
     return {
         exercises,
         currentPage,
@@ -71,6 +81,7 @@ const useLoadExercises = () => {
         loadExercises,
         addExercise,
         deleteExercise,
+        updateExercise,
         controllerSignal,
         setControllerSignal,
     };

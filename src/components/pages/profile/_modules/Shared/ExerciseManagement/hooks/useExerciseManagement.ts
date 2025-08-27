@@ -1,31 +1,14 @@
 import { Exercise, ExerciseType } from "@/types/Exercise";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useMemo, useCallback, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import z from "zod";
 import { EditExerciseRequestFormValues } from "../types";
 import { exerciseTypeOptions } from "../constants";
-import { GetExercisesResponse } from "@/types/Exercise/Responses";
-import { CreateExerciseRequest } from "@/types/Exercise/Requests";
+import {
+    CreateExerciseRequest,
+} from "@/types/Exercise/Requests";
 import useLoadExercises from "./useLoadExercises";
+import { processCreateExerciseValues, processEditExerciseValues } from "../functions";
 
-const schema = z.object({
-    id: z.number().min(1),
-    title: z.string().min(2).max(100),
-    exerciseType: z.custom<ExerciseType>(),
-    description: z.string().min(10).max(1000, "Descrição muito longa"),
-    estimatedTime: z.number().min(1),
-    judgeUuid: z.string().uuid(),
-    createdAt: z.string(),
-    inputs: z
-        .string()
-        .min(1, "O exercício deve ter pelo menos um input")
-        .max(1000, "Input muito longo"),
-    outputs: z
-        .string()
-        .min(1, "O exercício deve ter pelo menos um output")
-        .max(1000, "Output muito longo"),
-});
+
 
 export const useExerciseManagement = () => {
     const {
@@ -37,6 +20,7 @@ export const useExerciseManagement = () => {
         loadExercises,
         addExercise,
         deleteExercise,
+        updateExercise,
     } = useLoadExercises();
 
     const [title, setTitle] = useState<string>("");
@@ -48,39 +32,12 @@ export const useExerciseManagement = () => {
     const [filter, setFilter] = useState<string>("Todos");
     const [searchTerm, setSearchTerm] = useState<string>("");
 
-    const {
-        control: editExerciseControl,
-        handleSubmit: handleEditSubmit,
-        setError,
-        setValue,
-        register,
-        watch,
-        formState: { isValid },
-    } = useForm({
-        defaultValues: {
-            id: 0,
-            title: "",
-            exerciseType: 1,
-            description: "",
-            estimatedTime: 0,
-            judgeUuid: "",
-            createdAt: "",
-            inputs: "",
-            outputs: "",
-        },
-        mode: "onBlur",
-        // @ts-expect-error : Irrelevant
-        resolver: zodResolver(schema),
-    });
-
-    // @ts-expect-error : Irrelevant
-    const editingExercise: EditExerciseRequestFormValues = watch();
+    const [editingExercise, setEditingExercise] = useState<Exercise | null>(null);
 
     const [showEditExerciseModal, setShowEditExerciseModal] = useState(false);
 
-
     const filterOptions = useMemo(
-        () => ["Todos", ...exerciseTypeOptions.map(x => x.label)],
+        () => ["Todos", ...exerciseTypeOptions.map((x) => x.label)],
         []
     );
 
@@ -117,61 +74,76 @@ export const useExerciseManagement = () => {
             return;
         }
 
+        const { inputs, outputs } = processCreateExerciseValues(inputValues, outputValues);
+
         const newExercise: CreateExerciseRequest = {
             title,
             exerciseType: type,
             description,
             estimatedTime: 0,
             judgeUuid: null,
-            inputs: [],
-            outputs: [],
+            inputs: inputs,
+            outputs: outputs,
         };
 
         await addExercise(newExercise);
-        setTitle("");
-        setType(1);
-        setDescription("");
-        setInputValues("");
-        setOutputValues("");
     }, [title, type, description, inputValues, outputValues, addExercise]);
 
-    const handleRemoveExercise = useCallback((indexToRemove: number) => {
-        try {
-            deleteExercise(exercises[indexToRemove].id);
-        } catch (error) {
-            console.error("Error removing exercise:", error);
-        }
-    }, [deleteExercise, exercises]);
-
-    const startEdit = useCallback(
-        (index: number, exercise: Exercise) => {
-            toggleEditExerciseModal();
-            setValue("id", exercise.id);
+    const handleRemoveExercise = useCallback(
+        async (indexToRemove: number) => {
+            try {
+                //await deleteExercise(exercises[indexToRemove].id);
+            } catch (error) {
+                console.error("Error removing exercise:", error);
+            }
         },
-        [toggleEditExerciseModal, setValue]
+        [deleteExercise, exercises]
     );
 
-    const saveEdit = useCallback(() => {
-        if (editingExercise.id == -1) return;
+    const startEdit = useCallback(
+        (exercise: Exercise) => {
+            setEditingExercise({...exercise});
+            toggleEditExerciseModal();
+        },
+        [toggleEditExerciseModal]
+    );
+
+    const saveEdit = useCallback(async (exercise: EditExerciseRequestFormValues) => {
+        if (!editingExercise || editingExercise.id == -1) return;
+
+        const {outputs, inputs} = processEditExerciseValues(exercise.inputs, exercise.outputs);
+
+        await updateExercise({
+            id: exercise.id,
+            description: exercise.description,
+            judgeUuid: exercise.judgeUuid,
+            inputs: inputs,
+            outputs: outputs,
+            exerciseType: exercise.exerciseType,
+            title: exercise.title,
+            createdAt: exercise.createdAt,
+            estimatedTime: exercise.estimatedTime,
+        });
 
         
-        setValue("id", -1);
         toggleEditExerciseModal();
-    }, [editingExercise, toggleEditExerciseModal, setValue]);
+    }, [editingExercise, toggleEditExerciseModal, updateExercise]);
 
     const handleLoadExercises = useCallback(async () => {
         await loadExercises(searchTerm);
     }, [loadExercises, searchTerm]);
 
     const cancelEdit = useCallback(() => {
-        setValue("id", -1);
         toggleEditExerciseModal();
-    }, [toggleEditExerciseModal, setValue]);
+        setEditingExercise(null);
+    }, [toggleEditExerciseModal]);
 
     const filteredExercises = useMemo(() => {
         return exercises.filter((exercise) => {
             const matchesFilter =
-                filter === "Todos" || exercise.exerciseType === exerciseTypeOptions.find(x => x.label === filter)?.value;
+                filter === "Todos" ||
+                exercise.exerciseType ===
+                    exerciseTypeOptions.find((x) => x.label === filter)?.value;
             const matchesSearch = exercise.title
                 .toLowerCase()
                 .includes(searchTerm.toLowerCase());
@@ -179,7 +151,9 @@ export const useExerciseManagement = () => {
         });
     }, [exercises, filter, searchTerm]);
 
-    const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
+    const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(
+        null
+    );
 
     useEffect(() => {
         if (searchTimeout) {
@@ -187,10 +161,12 @@ export const useExerciseManagement = () => {
             setSearchTimeout(null);
         }
 
-        setSearchTimeout(setTimeout(() => {
-            handleLoadExercises();
-        }, 1000));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        setSearchTimeout(
+            setTimeout(() => {
+                //handleLoadExercises();
+            }, 1000)
+        );
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [handleLoadExercises, searchTerm]);
 
     return {
@@ -203,7 +179,6 @@ export const useExerciseManagement = () => {
         searchTerm,
         setSearchTerm,
         editingExercise,
-        editExerciseControl,
         showEditExerciseModal,
         toggleEditExerciseModal,
         handleRemoveExercise,

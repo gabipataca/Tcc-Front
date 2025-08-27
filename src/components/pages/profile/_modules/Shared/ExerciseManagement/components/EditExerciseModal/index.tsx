@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import Input from "@/components/_ui/Input";
 import Modal from "@/components/_ui/Modal";
@@ -8,8 +8,8 @@ import CustomDropdown from "@/components/_ui/Dropdown";
 import { exerciseTypeOptions } from "../../constants";
 import { Controller } from "react-hook-form";
 import { EditExerciseModalProps } from "./types";
-
-
+import useEditExerciseModal from "./hooks/useEditExerciseModal";
+import { processExercise } from "./functions";
 
 const EditExerciseModal: React.FC<EditExerciseModalProps> = ({
     open,
@@ -17,8 +17,13 @@ const EditExerciseModal: React.FC<EditExerciseModalProps> = ({
     editingExercise,
     saveEdit,
     cancelEdit,
-    editExerciseControl,
 }) => {
+    const { editExerciseControl, handleValidConfirm, handleInvalidConfirm, handleEditSubmit } = useEditExerciseModal(
+        processExercise(editingExercise),
+        saveEdit,
+        cancelEdit,
+        onClose,
+    );
 
     return (
         <Modal
@@ -31,11 +36,7 @@ const EditExerciseModal: React.FC<EditExerciseModalProps> = ({
                 </>
             }
             growFooterButtons={true}
-            description={
-                <>
-                    Modifique as informações do exercício
-                </>
-            }
+            description={<>Modifique as informações do exercício</>}
             hasConfirmButton={true}
             confirmButtonContent={
                 <>
@@ -44,7 +45,7 @@ const EditExerciseModal: React.FC<EditExerciseModalProps> = ({
                 </>
             }
             hasCancelButton={true}
-            onConfirm={saveEdit}
+            onConfirm={handleEditSubmit(handleValidConfirm, handleInvalidConfirm)}
             onCancel={cancelEdit}
             bodyContent={
                 <>
@@ -93,13 +94,15 @@ const EditExerciseModal: React.FC<EditExerciseModalProps> = ({
                         <Controller
                             control={editExerciseControl}
                             name="exerciseType"
-                            defaultValue={1}
+                            defaultValue={editingExercise.exerciseType}
                             render={({ field, fieldState }) => (
                                 <CustomDropdown
                                     type="selectDropdown"
                                     options={exerciseTypeOptions}
                                     errored={fieldState.error != undefined}
-                                    errorMessage={fieldState.error?.message ?? ""}
+                                    errorMessage={
+                                        fieldState.error?.message ?? ""
+                                    }
                                     {...field}
                                 />
                             )}
@@ -123,7 +126,9 @@ const EditExerciseModal: React.FC<EditExerciseModalProps> = ({
                                         placeholder="Edite a descrição do exercício..."
                                         {...field}
                                         className={`border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-lg min-h-[120px] p-4 ${
-                                            fieldState.error ? "border-red-500" : ""
+                                            fieldState.error
+                                                ? "border-red-500"
+                                                : ""
                                         }`}
                                     />
                                 )}
@@ -137,13 +142,14 @@ const EditExerciseModal: React.FC<EditExerciseModalProps> = ({
                             <Controller
                                 control={editExerciseControl}
                                 name="inputs"
-                                defaultValue={editingExercise.inputValues || ""}
                                 render={({ field, fieldState }) => (
                                     <Textarea
                                         placeholder="Edite os valores de entrada..."
                                         {...field}
                                         className={`border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-lg min-h-[120px] p-4 ${
-                                            fieldState.error ? "border-red-500" : ""
+                                            fieldState.error
+                                                ? "border-red-500"
+                                                : ""
                                         }`}
                                     />
                                 )}
@@ -158,13 +164,14 @@ const EditExerciseModal: React.FC<EditExerciseModalProps> = ({
                             <Controller
                                 control={editExerciseControl}
                                 name="outputs"
-                                defaultValue={editingExercise.outputValues || ""}
                                 render={({ field, fieldState }) => (
                                     <Textarea
                                         placeholder="Edite os valores de saída esperados..."
                                         {...field}
                                         className={`border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-lg min-h-[120px] p-4 ${
-                                            fieldState.error ? "border-red-500" : ""
+                                            fieldState.error
+                                                ? "border-red-500"
+                                                : ""
                                         }`}
                                     />
                                 )}

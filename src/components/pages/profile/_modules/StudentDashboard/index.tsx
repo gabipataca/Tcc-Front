@@ -12,7 +12,6 @@ import {
     UserCheck,
 } from "lucide-react";
 import { FaSignOutAlt } from "react-icons/fa";
-import { ButtonAdm } from "@/components/_ui/ButtonAdm";
 import {
     Card,
     CardContent,
@@ -28,13 +27,17 @@ import {
     TableRow,
 } from "@/components/_ui/TableAdm";
 import { Badge } from "@/components/_ui/Badge";
+import Button from "@/components/_ui/Button";
+import { useUser } from "@/contexts/UserContext";
 
 const StudentDashboard: React.FC = () => {
+    const { user } = useUser();
+
     return (
         <>
             {/* Conteúdo Principal */}
             <div className="flex-1 flex flex-col bg-gray-200">
-                {/* Navbar Superior */}
+                {/* Navbar Superior 
                 <div className="bg-[#4F85A6] text-white flex justify-between items-center p-3 px-6">
                     <nav className="flex space-x-6 text-lg">
                         <a href="#" className="hover:underline">
@@ -49,6 +52,7 @@ const StudentDashboard: React.FC = () => {
                         <FaSignOutAlt size={24} />
                     </button>
                 </div>
+                */}
 
                 {/* Main Content */}
                 <div className="flex-1">
@@ -65,14 +69,14 @@ const StudentDashboard: React.FC = () => {
                                 </p>
                             </div>
                             <div className="flex gap-3">
-                                <ButtonAdm className="text-xl bg-[#4F85A6] hover:bg-[#3C6B88] text-white shadow-md transition-all duration-200 hover:shadow-lg">
+                                <Button type="button" style="primary" rounded className="text-xl">
                                     <Users className="h-4 w-4 mr-2" />
                                     Criar Grupo
-                                </ButtonAdm>
-                                <ButtonAdm className="text-xl bg-green-600 hover:bg-green-700 text-white shadow-md transition-all duration-200 hover:shadow-lg">
+                                </Button>
+                                <Button type="button" style="success" rounded className="text-xl">
                                     <Trophy className="h-4 w-4 mr-2" />
                                     Iniciar Maratona
-                                </ButtonAdm>
+                                </Button>
                             </div>
                         </div>
                     </div>
@@ -103,7 +107,7 @@ const StudentDashboard: React.FC = () => {
                                                         Nome Completo
                                                     </span>
                                                     <p className="text-slate-900 font-semibold text-xl">
-                                                        João Silva Santos
+                                                        {user?.name}
                                                     </p>
                                                 </div>
                                             </div>
@@ -117,7 +121,7 @@ const StudentDashboard: React.FC = () => {
                                                         Data de Nascimento
                                                     </span>
                                                     <p className="text-slate-900 font-semibold text-xl">
-                                                        15/03/2001
+                                                        {user?.joinYear}
                                                     </p>
                                                 </div>
                                             </div>
@@ -131,7 +135,7 @@ const StudentDashboard: React.FC = () => {
                                                         E-mail Institucional
                                                     </span>
                                                     <p className="text-slate-900 font-semibold  text-xl">
-                                                        joao.silva@fho.edu.br
+                                                        {user?.email}
                                                     </p>
                                                 </div>
                                             </div>
@@ -145,21 +149,22 @@ const StudentDashboard: React.FC = () => {
                                                         Registro Acadêmico
                                                     </span>
                                                     <p className="text-slate-900 font-semibold text-xl">
-                                                        2021001234
+                                                        {user?.ra}
                                                     </p>
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div className="pt-4 flex justify-end">
-                                            <ButtonAdm
-                                                variant="outline"
+                                            <Button
+                                                type="button"
+                                                style="outline"
                                                 size="sm"
                                                 className=" text-xl text-[#4F85A6] border-[#4F85A6]/20 hover:bg-[#4F85A6]/5 hover:border-[#4F85A6]/40 transition-all duration-200"
                                             >
                                                 <Edit className=" h-4 w-4 mr-2" />
                                                 Editar Informações
-                                            </ButtonAdm>
+                                            </Button>
                                         </div>
                                     </CardContent>
                                 </Card>
@@ -230,22 +235,22 @@ const StudentDashboard: React.FC = () => {
                                         </div>
 
                                         <div className="pt-4 flex justify-end gap-2">
-                                            <ButtonAdm
-                                                variant="outline"
+                                            <Button
+                                                style="light-success"
                                                 size="sm"
-                                                className=" text-xl text-green-600 border-green-200 hover:bg-green-50 hover:border-green-300 transition-all duration-200"
+                                                className=" text-xl"
                                             >
                                                 <Plus className="h-4 w-4 mr-2" />
                                                 Adicionar
-                                            </ButtonAdm>
-                                            <ButtonAdm
-                                                variant="outline"
+                                            </Button>
+                                            <Button
+                                                style="outline"
                                                 size="sm"
-                                                className=" text-xl marker:text-[#4F85A6] border-[#4F85A6]/20 hover:bg-[#4F85A6]/5 hover:border-[#4F85A6]/40 transition-all duration-200"
+                                                className=" text-xl"
                                             >
                                                 <Edit className="h-4 w-4 mr-2" />
                                                 Editar
-                                            </ButtonAdm>
+                                            </Button>
                                         </div>
                                     </CardContent>
                                 </Card>
