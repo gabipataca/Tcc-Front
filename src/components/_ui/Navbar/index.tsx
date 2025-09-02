@@ -8,6 +8,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/_ui/Sheet"
 import { NavbarLinks } from "./constants"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { DialogTitle } from "@radix-ui/react-dialog"
 
 const Navbar: FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -51,7 +52,8 @@ const Navbar: FC = () => {
                   <span className="sr-only">Abrir menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="bg-[#4F85A6] text-white border-none">
+              <SheetContent title="dsdss" side="left" className="bg-[#4F85A6] text-white border-none">
+                <DialogTitle title="Menu" className="text-2xl font-bold mb-4" />
                 <div className="flex flex-col space-y-4 mt-8">
                   {NavbarLinks.map((link) => (
                     <Link

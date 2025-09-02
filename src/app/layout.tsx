@@ -4,7 +4,6 @@ import { UserContextProvider } from "@/contexts/UserContext";
 import Navbar from "@/components/_ui/Navbar";
 import SnackbarProviderC from "@/contexts/SnackbarProvider";
 import ThemeRegistry from "./ThemeRegistry";
-import styled from "@emotion/styled";
 
 export const metadata: Metadata = {
     title: "Create Next App",
@@ -21,7 +20,7 @@ export default function RootLayout({
             <body>
                 <ThemeRegistry>
                     <SnackbarProviderC>
-                        {/* O ideal é que haja apenas um Navbar */}
+                      
                         <Navbar />
 
                         <UserContextProvider>

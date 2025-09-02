@@ -84,14 +84,13 @@ const StudentsTable: FC = () => {
 
       <CardContent className="p-0">
         {" "}
-        {/* Removido o padding padrão do CardContent para a tabela */}
+        
         <div className="rounded-md border border-[#e9edee]">
           <Table>
             <TableHeader>
               <TableRow className="bg-[#e9edee] hover:bg-[#e9edee]">
                 <TableHead className="w-12 text-base text-[#3f3c40] px-2">
                   {" "}
-                  {/* Ajustado tamanho do texto */}
                   <Checkbox
                     checked={selectedStudents.length === filteredStudents.length && filteredStudents.length > 0}
                     onCheckedChange={handleSelectAll}

@@ -1,7 +1,14 @@
 "use client";
 
 import { FC, useState } from "react";
-import { Users, GraduationCap, UserCheck, Edit } from "lucide-react";
+import {
+    Users,
+    GraduationCap,
+    UserCheck,
+    Edit,
+    Package,
+    ArrowLeft,
+} from "lucide-react";
 import { ButtonAdm } from "@/components/_ui/ButtonAdm";
 import {
     Tabs,
@@ -19,6 +26,7 @@ import GroupsTable from "../../components/GroupsTable";
 import AccessCodeDialog from "./components/AccessCodeDialog";
 import useProfileMenu from "../../hooks/useProfileMenu";
 import ExerciseManagement from "../Shared/ExerciseManagement";
+import Button from "@/components/_ui/Button";
 
 const AdminDashboard: FC = () => {
     const [accessCodeDialog, setAccessCodeDialog] = useState<{
@@ -36,6 +44,15 @@ const AdminDashboard: FC = () => {
             <div className="container mx-auto p-6 space-y-6">
                 {/* Header */}
                 <div className="flex items-center justify-between">
+                    {activeMenu !== "Main" && (
+                        <Button
+                            type="button"
+                            style="ghost"
+                            onClick={() => toggleMenu("Main")}
+                        >
+                            <ArrowLeft className="w-4 h-4 mr-2" />
+                        </Button>
+                    )}
                     <div>
                         <h1 className="text-4xl font-bold text-[#3f3c40] py-2">
                             Dashboard Administrativo
@@ -71,6 +88,12 @@ const AdminDashboard: FC = () => {
                 {/* Stats Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <StatsCard
+                        title="Exercícios"
+                        value={20}
+                        description="Exercícios disponíveis"
+                        icon={Package}
+                    />
+                    <StatsCard
                         title="Total de Alunos"
                         value={studentsData.length}
                         description="Ativos no ultimo mês"
@@ -93,50 +116,58 @@ const AdminDashboard: FC = () => {
                     />
                 </div>
 
-                {(activeMenu === "Main") ? (
-                <Tabs defaultValue="students" className="space-y-6">
-                    <TabsList className="grid w-full grid-cols-3 bg-white border border-[#e9edee]">
-                        <TabsTrigger
+                {activeMenu === "Main" ? (
+                    <Tabs defaultValue="students" className="space-y-6">
+                        <TabsList className="grid w-full grid-cols-3 bg-white border border-[#e9edee]">
+                            <TabsTrigger
+                                value="students"
+                                className="data-[state=-white text-base text-[#3f3c40] px-1 py-0.5"
+                            >
+                                Alunos
+                            </TabsTrigger>
+                            <TabsTrigger
+                                value="professors"
+                                className="data-[state=active]:bg-[#4F85A6] data-[state=active]:text-white text-base text-[#3f3c40] px-20 py-0.5"
+                            >
+                                Professores
+                            </TabsTrigger>
+                            <TabsTrigger
+                                value="groups"
+                                className="data-[state=active]:bg-[#4F85A6] data-[state=active]:text-white text-base text-[#3f3c40] px-3 py-0.5"
+                            >
+                                Grupos
+                            </TabsTrigger>
+                        </TabsList>
+
+                        <TabsContent
                             value="students"
-                            className="data-[state=-white text-base text-[#3f3c40] px-1 py-0.5"
+                            className="space-y-0 mt-0"
                         >
-                            Alunos
-                        </TabsTrigger>
-                        <TabsTrigger
+                            {" "}
+                            {/* Ajustado de space-y-6 para space-y-0 e mt-0 */}
+                            <StudentsTable />
+                        </TabsContent>
+
+                        <TabsContent
                             value="professors"
-                            className="data-[state=active]:bg-[#4F85A6] data-[state=active]:text-white text-base text-[#3f3c40] px-20 py-0.5"
+                            className="space-y-0 mt-0"
                         >
-                            Professores
-                        </TabsTrigger>
-                        <TabsTrigger
-                            value="groups"
-                            className="data-[state=active]:bg-[#4F85A6] data-[state=active]:text-white text-base text-[#3f3c40] px-3 py-0.5"
-                        >
-                            Grupos
-                        </TabsTrigger>
-                    </TabsList>
+                            {" "}
+                            {/* Ajustado de space-y-6 para space-y-0 e mt-0 */}
+                            <TeachersTable />
+                        </TabsContent>
 
-                    <TabsContent value="students" className="space-y-0 mt-0">
-                        {" "}
-                        {/* Ajustado de space-y-6 para space-y-0 e mt-0 */}
-                        <StudentsTable />
-                    </TabsContent>
-
-                    <TabsContent value="professors" className="space-y-0 mt-0">
-                        {" "}
-                        {/* Ajustado de space-y-6 para space-y-0 e mt-0 */}
-                        <TeachersTable />
-                    </TabsContent>
-
-                    <TabsContent value="groups" className="space-y-0 mt-0">
-                        {" "}
-                        {/* Ajustado de space-y-6 para space-y-0 e mt-0 */}
-                        <GroupsTable />
-                    </TabsContent>
-                </Tabs>
-                ) : (activeMenu === "Exercise") ? (
+                        <TabsContent value="groups" className="space-y-0 mt-0">
+                            {" "}
+                            {/* Ajustado de space-y-6 para space-y-0 e mt-0 */}
+                            <GroupsTable />
+                        </TabsContent>
+                    </Tabs>
+                ) : activeMenu === "Exercise" ? (
                     <ExerciseManagement />
-                ) : <></>}
+                ) : (
+                    <></>
+                )}
 
                 {/* Side Menu */}
 
