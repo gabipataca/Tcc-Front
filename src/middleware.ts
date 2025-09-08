@@ -8,20 +8,22 @@ const protectedRoutes = [
 ];
 
 const parseJwt = (token: string): UserTokenProperties => {
-  const base64Url = token.split('.')[1];
-  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-  const jsonPayload = decodeURIComponent(
-    atob(base64)
-      .split('')
-      .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-      .join('')
-  );
-  return JSON.parse(jsonPayload);
-}
+    const base64Url = token.split(".")[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+        atob(base64)
+            .split("")
+            .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+            .join("")
+    );
+    return JSON.parse(jsonPayload);
+};
 
 export const middleware = async (request: NextRequest) => {
     const { basePath, pathname } = request.nextUrl;
-    const isAuthRoute = ["register", "login"].some((path) => basePath.includes(path));
+    const isAuthRoute = ["register", "login"].some((path) =>
+        basePath.includes(path)
+    );
 
     const route = protectedRoutes.find((r) => pathname.startsWith(r.path));
 
@@ -43,7 +45,7 @@ export const middleware = async (request: NextRequest) => {
             return NextResponse.redirect(new URL("/login", request.url));
         }
 
-        if(isAuthRoute) {
+        if (isAuthRoute) {
             return NextResponse.redirect(new URL("/profile", request.url));
         }
 
@@ -56,8 +58,8 @@ export const middleware = async (request: NextRequest) => {
 
 export const config = {
     matcher: [
-        "/admin/:path*",
-        "/Competition/:path*",
-        "/profile/:path*"
+        //"/admin/:path*",
+        //"/Competition/:path*",
+        //"/profile/:path*"
     ],
 };

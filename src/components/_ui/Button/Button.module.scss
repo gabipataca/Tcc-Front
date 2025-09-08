@@ -114,6 +114,10 @@
         }
     }
 
+    &.ghost {
+        @apply hover:bg-[#e9edee] hover:text-[#3f3c40] text-[#4F85A6];
+    }
+
     &.default {
         @apply h-10 px-4 py-2;
     }
