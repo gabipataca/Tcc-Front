@@ -52,7 +52,7 @@ export default function HomePage() {
               Acessar Sistema
             </Button>
        
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10 bg-transparent" style={{}}>
+            <Button size="lg" style="outline" className="border-white text-white hover:bg-white/10 bg-transparent">
               Notícias Acadêmicas
             </Button>
           </div>
