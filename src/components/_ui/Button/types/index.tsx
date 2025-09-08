@@ -36,7 +36,7 @@ export interface ButtonProps {
     /**
      * The style of the button, either "primary" or "secondary".
      */
-    style: "primary" | "secondary" | "success" | "light-success" | "success-outline" | "destructive" | "outline" | "ghost";
+    style?: "primary" | "secondary" | "success" | "light-success" | "success-outline" | "destructive" | "outline" | "ghost";
 
     /**
      * Whether the button should have rounded corners.
