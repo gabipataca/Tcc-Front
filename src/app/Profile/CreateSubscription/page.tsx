@@ -34,18 +34,16 @@ const CreateCompetitionSubscription: React.FC = () => {
   } = useCompetitionForm()
 
   return (
-    <div className="min-h-screen bg-[#e9edee]">
-      <Navbar />
+    
 
       <div className="flex">
-        <SideMenu />
 
         <div className="flex-1">
           <div className="container mx-auto p-8 space-y-12">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-4xl font-bold text-[#3f3c40] flex items-center gap-6">
-                  <Trophy className="h-14 w-14 text-[#4F85A6]" />
+                <h1 className="text-5xl font-bold text-[#3f3c40] flex items-center gap-6">
+                  <Trophy className="h-16 w-auto text-[#4F85A6]" />
                   Modelo de Inscrição
                 </h1>
                 <p className="text-xl text-[#4F85A6] mt-4">Configure as inscrições para a maratona de programação</p>
@@ -250,13 +248,13 @@ const CreateCompetitionSubscription: React.FC = () => {
                         </div>
                         <div className="text-sm text-[#3f3c40] space-y-1">
                           <div>
-                            Início:{" "}
+                            Início:
                             {initialRegistration
                               ? new Date(initialRegistration + "T00:00:00").toLocaleDateString("pt-BR")
                               : "Não definido"}
                           </div>
                           <div>
-                            Fim:{" "}
+                            Fim:
                             {endRegistration
                               ? new Date(endRegistration + "T00:00:00").toLocaleDateString("pt-BR")
                               : "Não definido"}
@@ -295,7 +293,6 @@ const CreateCompetitionSubscription: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
   )
 }
 

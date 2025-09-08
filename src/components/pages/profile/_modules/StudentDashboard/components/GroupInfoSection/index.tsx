@@ -32,7 +32,7 @@ const GroupInfoSection: React.FC<{ info: GroupInfo }> = ({ info }) => (
                             variant="secondary"
                             className="bg-[#4F85A6] text-white hover:bg-[#3C6B88] text-xl"
                         >
-                            {info.name}
+                            {info?.name}
                         </Badge>
                     </div>
                 </div>
@@ -62,7 +62,7 @@ const GroupInfoSection: React.FC<{ info: GroupInfo }> = ({ info }) => (
                                 <span className="text-2xl font-medium">
                                     {member.name}
                                 </span>
-                                {info.isLeader && index === 0 && (
+                                {info?.isLeader && index === 0 && (
                                     <Badge
                                         variant="outline"
                                         className="text-lg"

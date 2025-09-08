@@ -31,11 +31,9 @@ const CreateCompetition: React.FC = () => {
     } = useCreateCompetition();
 
     return (
-        <div className="min-h-screen bg-[#e9edee]">
-            <Navbar />
+        <>
 
             <div className="flex">
-                <SideMenu />
 
                 <div className="flex-1">
                     <div className="container mx-auto p-8 space-y-12">
@@ -320,7 +318,7 @@ const CreateCompetition: React.FC = () => {
                                         {!isExerciseSelectionValid && (
                                             <div className="p-6 bg-red-50 border border-red-200 rounded-lg">
                                                 <p className="text-xl text-red-600">
-                                                    Você deve selecionar exatamente {exerciseCount} exercícios. Atualmente selecionados:{" "}
+                                                    Você deve selecionar exatamente {exerciseCount} exercícios. Atualmente selecionados:
                                                     <span className="font-bold">{selectedExercises.length}</span>
                                                 </p>
                                             </div>
@@ -406,7 +404,7 @@ const CreateCompetition: React.FC = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 

@@ -54,7 +54,7 @@ const ExerciseManagement: React.FC = () => {
                     <div className="flex items-center justify-between">
                         <div>
                             <h1 className="text-4xl font-bold text-[#3f3c40] flex items-center gap-6">
-                                <FileText className="h-14 w-14 text-[#4F85A6]" />
+                                <FileText className="h-16 w-auto text-[#4F85A6]" />
                                 Gerenciar Exercícios
                             </h1>
                             <p className="text-2xl text-[#4F85A6] mt-4">
@@ -175,7 +175,7 @@ const ExerciseManagement: React.FC = () => {
                                         variant="outline"
                                         className="text-lg px-4 py-2 border-[#4F85A6] text-[#4F85A6]"
                                     >
-                                        Total: {filteredExercises.length}{" "}
+                                        Total: {filteredExercises.length}
                                         exercício(s)
                                     </Badge>
                                 </div>

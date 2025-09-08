@@ -22,6 +22,8 @@ import GroupsTable from "../../components/GroupsTable";
 import useProfileMenu from "../../hooks/useProfileMenu";
 import { groupsData, professorsData, studentsData } from "../../hooks/mockData";
 import ExerciseManagement from "../Shared/ExerciseManagement";
+import CreateCompetition from "./pages/createCompetition";
+import CreateCompetitionSubscription from "@/app/Profile/CreateSubscription/page";
 
 const AdminDashboard: FC = () => {
     const router = useRouter();
@@ -99,9 +101,6 @@ const AdminDashboard: FC = () => {
 
                 <StatsGrid
                     studentsData={studentsData}
-                    professorsData={professorsData}
-                    groupsData={groupsData}
-                    onCardClick={handleCardClick}
                 />
 
                 {activeMenu === "Main" ? (
@@ -148,6 +147,10 @@ const AdminDashboard: FC = () => {
                     </Tabs>
                 ) : activeMenu === "Exercise" ? (
                     <ExerciseManagement />
+                ) : activeMenu === "CreateCompetition" ? (
+                    <CreateCompetition />
+                ) : activeMenu === "CreateSubscription" ? (
+                    <CreateCompetitionSubscription />
                 ) : (
                     <></>
                 )}

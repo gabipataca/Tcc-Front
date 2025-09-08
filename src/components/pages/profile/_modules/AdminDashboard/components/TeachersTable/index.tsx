@@ -27,7 +27,6 @@ const TeachersTable: FC = () => {
         </div>
 
         <div className="relative mt-2">
-          {" "}
           {/* Ajustado de mt-4 para mt-2 */}
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#4F85A6] w-5 h-5" />
           <Input
@@ -40,19 +39,18 @@ const TeachersTable: FC = () => {
       </CardHeader>
 
       <CardContent className="p-0">
-        {" "}
         {/* Removido o padding padrão do CardContent para a tabela */}
         <div className="rounded-md border border-[#e9edee]">
           <Table>
             <TableHeader>
               <TableRow className="bg-[#e9edee] hover:bg-[#e9edee]">
-                <TableHead className="text-lg text-[#3f3c40] font-semibold w-[25%]">Professor</TableHead>{" "}
+                <TableHead className="text-lg text-[#3f3c40] font-semibold w-[25%]">Professor</TableHead>
                 {/* Ajustado para text-lg e largura */}
-                <TableHead className="text-lg text-[#3f3c40] font-semibold w-[20%]">Departamento</TableHead>{" "}
+                <TableHead className="text-lg text-[#3f3c40] font-semibold w-[20%]">Departamento</TableHead>
                 {/* Ajustado para text-lg e largura */}
-                <TableHead className="text-lg text-[#3f3c40] font-semibold w-[18%]">Exercícios Enviados</TableHead>{" "}
+                <TableHead className="text-lg text-[#3f3c40] font-semibold w-[18%]">Exercícios Enviados</TableHead>
                 {/* Ajustado para text-lg e largura */}
-                <TableHead className="text-right text-lg text-[#3f3c40] font-semibold w-[15%]">Ações</TableHead>{" "}
+                <TableHead className="text-right text-lg text-[#3f3c40] font-semibold w-[15%]">Ações</TableHead>
                 {/* Ajustado para text-lg e largura */}
               </TableRow>
             </TableHeader>

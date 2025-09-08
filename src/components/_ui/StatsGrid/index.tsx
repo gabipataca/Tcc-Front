@@ -1,6 +1,6 @@
 "use client";
 
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import { 
     Package,
     ClipboardPlus,
@@ -8,6 +8,7 @@ import {
     UserX,
 } from "lucide-react";
 import StatsCard from "../../pages/profile/components/StatsCard";
+import { useProfileMenuContext } from "@/components/pages/profile/contexts/ProfileMenuContext";
 
 interface DataProps {
     id: number | string;
@@ -16,26 +17,22 @@ interface DataProps {
 
 interface StatsGridProps {
     studentsData: DataProps[];
-    professorsData: DataProps[];
-    groupsData: DataProps[];
-    onCardClick: (tab: string) => void;
 }
 
 const StatsGrid: FC<StatsGridProps> = ({
     studentsData,
-    professorsData,
-    groupsData,
-    onCardClick,
 }) => {
+
+    const { toggleMenu } = useProfileMenuContext();
     
-    const stats = [
+    const stats = useMemo(() => ([
         {
             id: "exercises",
             title: "Exercícios",
             value: 20,
             description: "Exercícios disponíveis",
             icon: Package,
-            action: () => onCardClick("Exercise"),
+            action: () => toggleMenu("Exercise"),
         },
         {
             id: "create_marathon_registration",
@@ -43,7 +40,7 @@ const StatsGrid: FC<StatsGridProps> = ({
             value: "",
             description: "Abrir inscrições para maratona",
             icon: ClipboardPlus,
-            action: () => onCardClick("create_subscription"),
+            action: () => toggleMenu("CreateSubscription"),
         },
         {
             id: "create_marathon",
@@ -51,17 +48,17 @@ const StatsGrid: FC<StatsGridProps> = ({
             value: "",
             description: "Configurar uma nova maratona",
             icon: Trophy,
-            action: () =>onCardClick("create_competition"),
+            action: () => toggleMenu("CreateCompetition"),
         },
         {
-            id: "inactive_students",
-            title: "Alunos Inativos",
+            id: "statistics",
+            title: "Estatísticas",
             value: 2, 
             description: "Não acessam há 30 dias",
             icon: UserX,
             action: () => {},
         },
-    ];
+    ]), [toggleMenu]);
 
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">

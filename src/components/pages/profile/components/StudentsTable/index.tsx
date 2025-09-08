@@ -46,7 +46,7 @@ const StudentsTable: FC = () => {
         </div>
 
         <div className="flex gap-4 mt-2">
-          {" "}
+          
           {/* Ajustado de mt-4 para mt-2 */}
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#4F85A6] w-5 h-5" />
@@ -83,31 +83,31 @@ const StudentsTable: FC = () => {
       </CardHeader>
 
       <CardContent className="p-0">
-        {" "}
+        
         
         <div className="rounded-md border border-[#e9edee]">
           <Table>
             <TableHeader>
               <TableRow className="bg-[#e9edee] hover:bg-[#e9edee]">
                 <TableHead className="w-12 text-base text-[#3f3c40] px-2">
-                  {" "}
+                  
                   <Checkbox
                     checked={selectedStudents.length === filteredStudents.length && filteredStudents.length > 0}
                     onCheckedChange={handleSelectAll}
                     className="border-[#4F85A6] data-[state=checked]:bg-[#4F85A6]"
                   />
                 </TableHead>
-                <TableHead className="text-lg text-[#3f3c40] font-semibold w-[19%]">Aluno</TableHead>{" "}
+                <TableHead className="text-lg text-[#3f3c40] font-semibold w-[19%]">Aluno</TableHead>
                 {/* Ajustado para text-lg e largura */}
-                <TableHead className="text-lg text-[#3f3c40] font-semibold w-[10%]">RA</TableHead>{" "}
+                <TableHead className="text-lg text-[#3f3c40] font-semibold w-[10%]">RA</TableHead>
                 {/* Ajustado para text-lg e largura */}
-                <TableHead className="text-lg text-[#3f3c40] font-semibold w-[20%]">Grupo</TableHead>{" "}
+                <TableHead className="text-lg text-[#3f3c40] font-semibold w-[20%]">Grupo</TableHead>
                 {/* Ajustado para text-lg e largura */}
-                <TableHead className="text-lg text-[#3f3c40] font-semibold w-[16%]">Status</TableHead>{" "}
+                <TableHead className="text-lg text-[#3f3c40] font-semibold w-[16%]">Status</TableHead>
                 {/* Ajustado para text-lg e largura */}
-                <TableHead className="text-lg text-[#3f3c40] font-semibold w-[20%]">Data de Ingresso</TableHead>{" "}
+                <TableHead className="text-lg text-[#3f3c40] font-semibold w-[20%]">Data de Ingresso</TableHead>
                 {/* Ajustado para text-lg e largura */}
-                <TableHead className="text-right text-lg text-[#3f3c40] font-semibold w-[10%]">Ações</TableHead>{" "}
+                <TableHead className="text-right text-lg text-[#3f3c40] font-semibold w-[10%]">Ações</TableHead>
                 {/* Ajustado para text-lg e largura */}
               </TableRow>
             </TableHeader>

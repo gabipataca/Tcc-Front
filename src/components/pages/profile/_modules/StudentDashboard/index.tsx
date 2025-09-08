@@ -61,26 +61,16 @@ const StudentDashboard: React.FC = () => {
                         <div className="max-w-full space-y-8">
                             {/* Information Cards */}
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                {user && (
-                                    <StudentInfoSection info={user} />
-                                )}
-                                {groupInfo && (
-                                    <GroupInfoSection info={groupInfo} />
-                                )}
+                                <StudentInfoSection info={user} />
+                                <GroupInfoSection info={groupInfo} />
                             </div>
 
                             {/* Tables */}
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                {competitionHistory.length > 0 && (
-                                    <CompetitionHistorySection
-                                        history={competitionHistory}
-                                    />
-                                )}
-                                {championTeams.length > 0 && (
-                                    <ChampionTeamsSection
-                                        teams={championTeams}
-                                    />
-                                )}
+                                <CompetitionHistorySection
+                                    history={competitionHistory}
+                                />
+                                <ChampionTeamsSection teams={championTeams} />
                             </div>
                         </div>
                     </main>

@@ -38,7 +38,7 @@ const StatsCard: FC<StatsCardProps> = ({
                     <span className="text-[#4F85A6] font-semibold">
                         +{trend}%
                     </span>
-                )}{" "}
+                )}
                 {description}
             </p>
         </CardContent>
