@@ -75,7 +75,7 @@ const CompetitionHistorySection: React.FC<{
                 </Table>
             </div>
 
-            {history.length == 0 && (
+            {history.length === 0 && (
                 <div className="h-40 w-full flex justify-center items-center">
                     <p className="text-slate-600 text-3xl">
                         Nenhuma participação
