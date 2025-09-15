@@ -3,9 +3,10 @@ import { ApiRequestOptions } from "./types";
 
 /**
  * Base URL for the API. This should be set in your environment variables.
- * @remarks It can be either `API_URL` or `NEXT_PUBLIC_API_URL` depending on the access context, either server-side or client-side.
+ * @remarks It can be either `PRIVATE_API_URL` or `NEXT_PUBLIC_API_URL` depending on the access context, either server-side or client-side.
  */
-const API_URL = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL;
+const API_URL = process.env.PRIVATE_API_URL || "";
+
 
 const apiClient = axios.create({
     baseURL: API_URL,
@@ -34,6 +35,7 @@ export async function apiRequest<T, X = unknown>(
 ) {
     const { method = "GET", data, cookies, params } = options;
     const cookieHeader = cookies ? Object.entries(cookies).map(([key, value]) => `${key}=${value}`).join('; ') : undefined;
+
 
     return await apiClient.request<T>({
         url: url,

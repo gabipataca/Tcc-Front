@@ -92,7 +92,7 @@ export const useExerciseManagement = () => {
     const handleRemoveExercise = useCallback(
         async (indexToRemove: number) => {
             try {
-                //await deleteExercise(exercises[indexToRemove].id);
+                await deleteExercise(exercises[indexToRemove].id);
             } catch (error) {
                 console.error("Error removing exercise:", error);
             }

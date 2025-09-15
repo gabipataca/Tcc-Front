@@ -13,6 +13,7 @@ import {
     TableRow,
 } from "@/components/_ui/TableAdm";
 import { ChampionTeam } from "../../types";
+import { Trophy } from "lucide-react";
 
 const ChampionTeamsSection: React.FC<{ teams: ChampionTeam[] }> = ({
     teams,
@@ -20,7 +21,7 @@ const ChampionTeamsSection: React.FC<{ teams: ChampionTeam[] }> = ({
     <Card className="shadow-lg border-0 bg-gradient-to-br from-white to-slate-50">
         <CardHeader className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-t-lg border-b border-yellow-100">
             <CardTitle className="text-2xl text-[#4F85A6] text-center flex items-center justify-center gap-3">
-                <div className="h-6 w-6 bg-yellow-600 rounded-full" />
+                <Trophy className="h-6 w-6 text-yellow-600" />
                 Equipes Campeãs
             </CardTitle>
         </CardHeader>
@@ -58,6 +59,14 @@ const ChampionTeamsSection: React.FC<{ teams: ChampionTeam[] }> = ({
                         ))}
                     </TableBody>
                 </Table>
+
+                {teams.length === 0 && (
+                    <div className="h-40 w-full flex justify-center items-center">
+                        <p className="text-slate-600 text-3xl">
+                            Nenhum registro
+                        </p>
+                    </div>
+                )}
             </div>
         </CardContent>
     </Card>

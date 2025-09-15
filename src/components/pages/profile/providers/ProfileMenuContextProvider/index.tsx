@@ -9,7 +9,7 @@ import { ProfileMenuType } from "../../contexts/ProfileMenuContext/types";
 
 
 const ProfileMenuContextProvider: FC<ProfileMenuContextProviderProps> = ({ children }) => {
-    const [activeMenu, setActiveMenu] = useState<ProfileMenuType>("Exercise");
+    const [activeMenu, setActiveMenu] = useState<ProfileMenuType>("Main");
 
 
     const toggleMenu = (menu: ProfileMenuType) => {

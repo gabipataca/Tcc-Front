@@ -1,11 +1,11 @@
 "use client";
 
 import type React from "react";
-
 import { FC, useState } from "react";
 import { FaUserCircle, FaSignOutAlt } from "react-icons/fa";
-import { Users, UserCheck, Menu } from "lucide-react";
+import { Users, UserCheck, Menu, Package, ChevronLeft } from "lucide-react";
 import { ButtonAdm } from "@/components/_ui/ButtonAdm";
+import Button from "@/components/_ui/Button";
 import {
     Tabs,
     TabsContent,
@@ -79,7 +79,6 @@ const Navbar = () => {
         <div className="bg-[#4F85A6] text-white shadow-lg">
             <div className="flex flex-col max-h-screen">
                 <div className="flex justify-between items-center h-16 px-6">
-                    {/* Desktop Navigation */}
                     <nav className="hidden lg:flex items-center space-x-1">
                         {navLinks.map((link, index) => (
                             <div key={link.label} className="flex items-center">
@@ -99,7 +98,6 @@ const Navbar = () => {
                         ))}
                     </nav>
 
-                    {/* Mobile Navigation */}
                     <div className="lg:hidden flex items-center justify-between w-full">
                         <Sheet open={isOpen} onOpenChange={setIsOpen}>
                             <SheetTrigger asChild>
@@ -151,69 +149,115 @@ const Navbar = () => {
 
 const TeacherDashboard: FC = () => {
     const { activeMenu, toggleMenu } = useProfileMenu();
+    const [activeTab, setActiveTab] = useState("students");
+
+
+    const stats = [
+        {
+            id: "exercises",
+            title: "Exercícios",
+            value: 20,
+            description: "Exercícios disponíveis",
+            icon: Package,
+            action: () => toggleMenu("Exercise"),
+        },
+        {
+            id: "students",
+            title: "Total de Alunos",
+            value: studentsData.length,
+            description: "Ativos no ultimo mês",
+            icon: Users,
+            action: () => toggleMenu("Main"),
+        },
+        {
+            id: "groups",
+            title: "Grupos Ativos",
+            value: groupsData.filter((g) => g.status === "active").length,
+            description: "Ativos no ultimo mês",
+            icon: UserCheck,
+            action: () => toggleMenu("Main"),
+        },
+    ];
 
     return (
         <div className="flex-1">
             <div className="container mx-auto p-6 space-y-6">
-                {/* Header */}
-                <div className="flex items-center justify-between">
-                    <div>
+                <div className="flex items-center gap-8">
+                    {activeMenu !== "Main" && (
+                        <Button
+                            type="button"
+                            style="ghost"
+                            size="default"
+                            onClick={() => toggleMenu("Main")}
+                        >
+                            <ChevronLeft className="w-6 h-auto mr-2" />
+                        </Button>
+                    )}
+                    <div className="mr-auto">
                         <h1 className="text-4xl font-bold text-[#3f3c40] py-2">
-                            Dashboard Administrativo
+                            Dashboard do Professor
                         </h1>
                         <p className="text-lg text-[#4F85A6]">
-                            Gerencie alunos e grupos
+                            Gerencie alunos, grupos e exercícios
                         </p>
                     </div>
                 </div>
 
-                {/* Stats Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <StatsCard
-                        title="Total de Alunos"
-                        value={studentsData.length}
-                        description="Ativos no ultimo mês"
-                        icon={Users}
-                    />
-                    <StatsCard
-                        title="Grupos Ativos"
-                        value={
-                            groupsData.filter((g) => g.status === "active")
-                                .length
-                        }
-                        description="Ativos no ultimo mês"
-                        icon={UserCheck}
-                    />
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {stats.map((stat) => (
+                        <div
+                            key={stat.id}
+                            onClick={stat.action}
+                            className="cursor-pointer transition-transform duration-200 hover:scale-105"
+                        >
+                            <StatsCard
+                                title={stat.title}
+                                value={stat.value}
+                                description={stat.description}
+                                icon={stat.icon}
+                                className="h-full"
+                            />
+                        </div>
+                    ))}
                 </div>
-                
-                {(activeMenu === "Main") ? (
-                <Tabs defaultValue="students" className="space-y-6">
-                    <TabsList className="grid w-full grid-cols-2 bg-white border border-[#e9edee]">
-                        <TabsTrigger
+
+                {activeMenu === "Main" ? (
+                    <Tabs
+                        value={activeTab}
+                        onValueChange={setActiveTab}
+                        className="space-y-6"
+                    >
+                        <TabsList className="grid w-full grid-cols-2 bg-white border border-[#e9edee]">
+                            <TabsTrigger
+                                value="students"
+                                className="data-[state=active]:bg-[#4F85A6] data-[state=active]:text-white text-base text-[#3f3c40] px-1 py-0.5"
+                            >
+                                Alunos
+                            </TabsTrigger>
+                            <TabsTrigger
+                                value="groups"
+                                className="data-[state=active]:bg-[#4F85A6] data-[state=active]:text-white text-base text-[#3f3c40] px-3 py-0.5"
+                            >
+                                Grupos
+                            </TabsTrigger>
+                        </TabsList>
+
+                        <TabsContent
                             value="students"
-                            className="data-[state=active]:bg-[#4F85A6] data-[state=active]:text-white text-base text-[#3f3c40] px-1 py-0.5"
+                            className="space-y-0 mt-0"
                         >
-                            Alunos
-                        </TabsTrigger>
-                        <TabsTrigger
-                            value="groups"
-                            className="data-[state=active]:bg-[#4F85A6] data-[state=active]:text-white text-base text-[#3f3c40] px-3 py-0.5"
-                        >
-                            Grupos
-                        </TabsTrigger>
-                    </TabsList>
+                            <StudentsTable />
+                        </TabsContent>
 
-                    <TabsContent value="students" className="space-y-0 mt-0">
-                        <StudentsTable />
-                    </TabsContent>
-
-                    <TabsContent value="groups" className="space-y-0 mt-0">
-                        <GroupsTable />
-                    </TabsContent>
-                </Tabs>
-                ) : (activeMenu === "Exercise") ? (
+                        <TabsContent value="groups" className="space-y-0 mt-0">
+                            <GroupsTable />
+                        </TabsContent>
+                    </Tabs>
+                ) : activeMenu === "Exercise" ? (
                     <ExerciseManagement />
-                ) : <></>}
+                ) : (
+                    <></>
+                )}
             </div>
         </div>
     );

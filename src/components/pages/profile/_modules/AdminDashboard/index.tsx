@@ -1,13 +1,10 @@
 "use client";
 
 import { FC, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
-    Users,
-    GraduationCap,
-    UserCheck,
     Edit,
-    Package,
-    ArrowLeft,
+    ChevronLeft,
 } from "lucide-react";
 import { ButtonAdm } from "@/components/_ui/ButtonAdm";
 import {
@@ -16,19 +13,21 @@ import {
     TabsList,
     TabsTrigger,
 } from "@/components/_ui/Tabs";
-import SideMenu from "@/components/_ui/SideMenu";
-import Navbar from "@/components/_ui/Navbar";
-import StatsCard from "../../components/StatsCard";
-import { groupsData, professorsData, studentsData } from "../../hooks/mockData";
-import StudentsTable from "../../components/StudentsTable";
-import TeachersTable from "./components/TeachersTable";
-import GroupsTable from "../../components/GroupsTable";
-import AccessCodeDialog from "./components/AccessCodeDialog";
-import useProfileMenu from "../../hooks/useProfileMenu";
-import ExerciseManagement from "../Shared/ExerciseManagement";
 import Button from "@/components/_ui/Button";
+import AccessCodeDialog from "./components/AccessCodeDialog";
+import StatsGrid from "@/components/_ui/StatsGrid";
+import TeachersTable from "./components/TeachersTable";
+import StudentsTable from "../../components/StudentsTable";
+import GroupsTable from "../../components/GroupsTable";
+import useProfileMenu from "../../hooks/useProfileMenu";
+import { groupsData, professorsData, studentsData } from "../../hooks/mockData";
+import ExerciseManagement from "../Shared/ExerciseManagement";
+import CreateCompetition from "./pages/createCompetition";
+import CreateCompetitionSubscription from "@/app/Profile/CreateSubscription/page";
 
 const AdminDashboard: FC = () => {
+    const router = useRouter();
+    const [activeTab, setActiveTab] = useState("students");
     const [accessCodeDialog, setAccessCodeDialog] = useState<{
         isOpen: boolean;
         code: string;
@@ -39,21 +38,36 @@ const AdminDashboard: FC = () => {
 
     const { activeMenu, toggleMenu } = useProfileMenu();
 
+    const handleCardClick = (identifier: string) => {
+        if (identifier === "create_subscription") {
+            router.push("/Profile/CreateSubscription");
+        } else if (identifier === "create_competition") {
+            router.push("/Profile/CreateCompetition");
+        } else if (identifier === "Exercise") {
+            toggleMenu("Exercise");
+        } else {
+            if (activeMenu !== "Main") {
+                toggleMenu("Main");
+            }
+            setActiveTab(identifier);
+        }
+    };
+
     return (
         <div className="flex-1">
             <div className="container mx-auto p-6 space-y-6">
-                {/* Header */}
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-evenly gap-8">
                     {activeMenu !== "Main" && (
                         <Button
                             type="button"
                             style="ghost"
+                            size="default"
                             onClick={() => toggleMenu("Main")}
                         >
-                            <ArrowLeft className="w-4 h-4 mr-2" />
+                            <ChevronLeft className="w-6 h-auto mr-2" />
                         </Button>
                     )}
-                    <div>
+                    <div className="mr-auto">
                         <h1 className="text-4xl font-bold text-[#3f3c40] py-2">
                             Dashboard Administrativo
                         </h1>
@@ -85,39 +99,16 @@ const AdminDashboard: FC = () => {
                     </div>
                 </div>
 
-                {/* Stats Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <StatsCard
-                        title="Exercícios"
-                        value={20}
-                        description="Exercícios disponíveis"
-                        icon={Package}
-                    />
-                    <StatsCard
-                        title="Total de Alunos"
-                        value={studentsData.length}
-                        description="Ativos no ultimo mês"
-                        icon={Users}
-                    />
-                    <StatsCard
-                        title="Professores Ativos"
-                        value={professorsData.length}
-                        description="professores cadastrados"
-                        icon={GraduationCap}
-                    />
-                    <StatsCard
-                        title="Grupos Ativos"
-                        value={
-                            groupsData.filter((g) => g.status === "active")
-                                .length
-                        }
-                        description="Ativos no ultimo mês"
-                        icon={UserCheck}
-                    />
-                </div>
+                <StatsGrid
+                    studentsData={studentsData}
+                />
 
                 {activeMenu === "Main" ? (
-                    <Tabs defaultValue="students" className="space-y-6">
+                    <Tabs
+                        value={activeTab}
+                        onValueChange={setActiveTab}
+                        className="space-y-6"
+                    >
                         <TabsList className="grid w-full grid-cols-3 bg-white border border-[#e9edee]">
                             <TabsTrigger
                                 value="students"
@@ -138,38 +129,31 @@ const AdminDashboard: FC = () => {
                                 Grupos
                             </TabsTrigger>
                         </TabsList>
-
                         <TabsContent
                             value="students"
                             className="space-y-0 mt-0"
                         >
-                            {" "}
-                            {/* Ajustado de space-y-6 para space-y-0 e mt-0 */}
                             <StudentsTable />
                         </TabsContent>
-
                         <TabsContent
                             value="professors"
                             className="space-y-0 mt-0"
                         >
-                            {" "}
-                            {/* Ajustado de space-y-6 para space-y-0 e mt-0 */}
                             <TeachersTable />
                         </TabsContent>
-
                         <TabsContent value="groups" className="space-y-0 mt-0">
-                            {" "}
-                            {/* Ajustado de space-y-6 para space-y-0 e mt-0 */}
                             <GroupsTable />
                         </TabsContent>
                     </Tabs>
                 ) : activeMenu === "Exercise" ? (
                     <ExerciseManagement />
+                ) : activeMenu === "CreateCompetition" ? (
+                    <CreateCompetition />
+                ) : activeMenu === "CreateSubscription" ? (
+                    <CreateCompetitionSubscription />
                 ) : (
                     <></>
                 )}
-
-                {/* Side Menu */}
 
                 <AccessCodeDialog
                     isOpen={accessCodeDialog.isOpen}

@@ -172,7 +172,7 @@ export default function ManualCorrection() {
                             {/* Paginação */}
                             <div className="flex items-center justify-between px-6 py-4 border-t">
                                 <div className="text-sm text-gray-500">
-                                    Mostrando {startIndex + 1} a {Math.min(endIndex, submissions.length)} de {submissions.length}{" "}
+                                    Mostrando {startIndex + 1} a {Math.min(endIndex, submissions.length)} de {submissions.length}
                                     submissões
                                 </div>
                                 <div className="flex items-center gap-2">

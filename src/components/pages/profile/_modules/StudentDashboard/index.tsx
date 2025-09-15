@@ -8,6 +8,7 @@ import GroupInfoSection from "./components/GroupInfoSection";
 import CompetitionHistorySection from "./components/CompetitionHistorySection";
 import ChampionTeamsSection from "./components/ChampionsTeamsSection";
 import { useUser } from "@/contexts/UserContext";
+import { Trophy, Users } from "lucide-react";
 
 const StudentDashboard: React.FC = () => {
     const { user } = useUser();
@@ -40,7 +41,7 @@ const StudentDashboard: React.FC = () => {
                                     rounded
                                     className="text-xl"
                                 >
-                                    <div className="h-4 w-4 mr-2 bg-gray-400 rounded-full" />
+                                    <Users className="h-4 w-4 mr-2" />
                                     Criar Grupo
                                 </Button>
                                 <Button
@@ -49,7 +50,7 @@ const StudentDashboard: React.FC = () => {
                                     rounded
                                     className="text-xl"
                                 >
-                                    <div className="h-4 w-4 mr-2 bg-gray-400 rounded-full" />
+                                    <Trophy className="h-4 w-4 mr-2" />
                                     Iniciar Maratona
                                 </Button>
                             </div>
@@ -61,26 +62,16 @@ const StudentDashboard: React.FC = () => {
                         <div className="max-w-full space-y-8">
                             {/* Information Cards */}
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                {user && (
-                                    <StudentInfoSection info={user} />
-                                )}
-                                {groupInfo && (
-                                    <GroupInfoSection info={groupInfo} />
-                                )}
+                                <StudentInfoSection info={user} />
+                                <GroupInfoSection info={groupInfo} />
                             </div>
 
                             {/* Tables */}
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                {competitionHistory.length > 0 && (
-                                    <CompetitionHistorySection
-                                        history={competitionHistory}
-                                    />
-                                )}
-                                {championTeams.length > 0 && (
-                                    <ChampionTeamsSection
-                                        teams={championTeams}
-                                    />
-                                )}
+                                <CompetitionHistorySection
+                                    history={competitionHistory}
+                                />
+                                <ChampionTeamsSection teams={championTeams} />
                             </div>
                         </div>
                     </main>

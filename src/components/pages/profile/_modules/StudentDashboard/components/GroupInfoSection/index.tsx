@@ -7,13 +7,14 @@ import {
 } from "@/components/_ui/Card";
 import { GroupInfo } from "../../types";
 import Button from "@/components/_ui/Button";
+import { Edit, Plus, Trophy, Users } from "lucide-react";
 
-const GroupInfoSection: React.FC<{ info: GroupInfo }> = ({ info }) => (
+const GroupInfoSection: React.FC<{ info?: GroupInfo }> = ({ info }) => (
     <Card className="shadow-lg hover:shadow-xl transition-all duration-300 border-0 bg-gradient-to-br from-white to-slate-50">
         <CardHeader className="pb-4 bg-gradient-to-r from-[#4F85A6]/5 to-[#3C6B88]/5 rounded-t-lg">
             <CardTitle className="text-2xl text-[#4F85A6] flex items-center gap-3">
                 <div className="w-10 h-10 bg-[#4F85A6]/10 rounded-full flex items-center justify-center">
-                    <div className="h-5 w-5 bg-gray-400 rounded-full" />
+                    <Users className="h-5 w-5 text-[#4F85A6]" />
                 </div>
                 Informações do Grupo
             </CardTitle>
@@ -22,7 +23,7 @@ const GroupInfoSection: React.FC<{ info: GroupInfo }> = ({ info }) => (
             <div className="space-y-4">
                 <div className="p-4 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100">
                     <div className="flex items-center gap-3 mb-3 pl-10">
-                        <div className="h-5 w-5 bg-blue-600 rounded-full" />
+                        <Trophy className="h-5 w-5 text-blue-600" />
                         <span className=" text-2xl font-medium text-slate-700">
                             Nome do Grupo
                         </span>
@@ -32,14 +33,14 @@ const GroupInfoSection: React.FC<{ info: GroupInfo }> = ({ info }) => (
                             variant="secondary"
                             className="bg-[#4F85A6] text-white hover:bg-[#3C6B88] text-xl"
                         >
-                            {info.name}
+                            {info?.name}
                         </Badge>
                     </div>
                 </div>
 
                 <div className=" px-10 pl-25 p-4 rounded-lg bg-gradient-to-r from-green-50 to-emerald-50 border border-green-100">
                     <div className="flex items-center gap-3 mb-3">
-                        <div className="h-5 w-5 bg-green-600 rounded-full" />
+                        <Users className="h-5 w-5 text-green-600" />
                         <span className=" text-2xl font-medium text-slate-700">
                             Integrantes do Grupo
                         </span>
@@ -62,7 +63,7 @@ const GroupInfoSection: React.FC<{ info: GroupInfo }> = ({ info }) => (
                                 <span className="text-2xl font-medium">
                                     {member.name}
                                 </span>
-                                {info.isLeader && index === 0 && (
+                                {info?.isLeader && index === 0 && (
                                     <Badge
                                         variant="outline"
                                         className="text-lg"
@@ -78,11 +79,11 @@ const GroupInfoSection: React.FC<{ info: GroupInfo }> = ({ info }) => (
 
             <div className="pt-4 flex justify-end gap-2">
                 <Button style="light-success" size="sm" className=" text-xl">
-                    <div className="h-4 w-4 mr-2 bg-gray-400 rounded-full" />
+                    <Plus className="h-4 w-4 mr-2" />
                     Adicionar
                 </Button>
                 <Button style="outline" size="sm" className=" text-xl">
-                    <div className="h-4 w-4 mr-2 bg-gray-400 rounded-full" />
+                    <Edit className="h-4 w-4 mr-2" />
                     Editar
                 </Button>
             </div>

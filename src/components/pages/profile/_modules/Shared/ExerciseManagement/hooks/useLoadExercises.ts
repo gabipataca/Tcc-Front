@@ -26,6 +26,8 @@ const useLoadExercises = () => {
 
     const addExercise = useCallback(async (exercise: CreateExerciseRequest) => {
         try {
+            
+            exercise.estimatedTime = "00:00:00";
             const response = await ExerciseService.createExercise(exercise);
             const data = response.data!;
             setExercises((prev) => [...prev, data]);
@@ -64,9 +66,9 @@ const useLoadExercises = () => {
 
     const updateExercise = useCallback(async (exercise: EditExerciseRequest) => {
         try {
-            //const response = await ExerciseService.updateExercise(exercise);
-            //const data = response.data!;
-            setExercises((prev) => prev.map((ex) => (ex.id === exercise.id ? { ...ex, ...exercise } : ex)));
+            const response = await ExerciseService.updateExercise(exercise);
+            const data = response.data!;
+            setExercises((prev) => prev.map((ex) => (ex.id === exercise.id ? { ...ex, ...data } : ex)));
         } catch (error) {
             console.error("Error updating exercise:", error);
         }
