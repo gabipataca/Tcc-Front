@@ -7,7 +7,6 @@ import { ApiRequestOptions } from "./types";
  */
 const API_URL = process.env.PRIVATE_API_URL || "";
 
-console.log(API_URL);
 
 const apiClient = axios.create({
     baseURL: API_URL,
