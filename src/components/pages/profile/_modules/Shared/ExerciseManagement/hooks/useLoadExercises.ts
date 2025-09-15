@@ -26,7 +26,7 @@ const useLoadExercises = () => {
 
     const addExercise = useCallback(async (exercise: CreateExerciseRequest) => {
         try {
-            console.log(exercise);
+            
             exercise.estimatedTime = "00:00:00";
             const response = await ExerciseService.createExercise(exercise);
             const data = response.data!;
