@@ -60,7 +60,7 @@ const useLoadExercises = () => {
     }, []);
 
     useEffect(() => {
-        if(search == "") return;
+        if(search === "") return;
 
         if (searchTimeout) {
             clearTimeout(searchTimeout);
