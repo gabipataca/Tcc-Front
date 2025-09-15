@@ -36,7 +36,6 @@ export async function apiRequest<T, X = unknown>(
     const { method = "GET", data, cookies, params } = options;
     const cookieHeader = cookies ? Object.entries(cookies).map(([key, value]) => `${key}=${value}`).join('; ') : undefined;
 
-    console.log(apiClient.defaults.baseURL);
 
     return await apiClient.request<T>({
         url: url,
