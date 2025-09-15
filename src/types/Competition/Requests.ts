@@ -7,7 +7,7 @@ export interface CreateCompetitionRequest {
     endInscriptions: Date;
     stopRanking: Date;
     blockSubmissions?: Date;
-    submissionPenalty: string; // TimeSpan pode ser representado como string (ex: "00:30:00")
+    submissionPenalty: string; // TimeSpan can be represented as string (e.g., "00:30:00")
     maxExercises: number;
     maxSubmissionSize: number;
     exerciseIds: number[];
