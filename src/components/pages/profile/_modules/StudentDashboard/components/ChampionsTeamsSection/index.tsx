@@ -60,7 +60,7 @@ const ChampionTeamsSection: React.FC<{ teams: ChampionTeam[] }> = ({
                     </TableBody>
                 </Table>
 
-                {teams.length == 0 && (
+                {teams.length === 0 && (
                     <div className="h-40 w-full flex justify-center items-center">
                         <p className="text-slate-600 text-3xl">
                             Nenhum registro
