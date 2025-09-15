@@ -32,6 +32,13 @@ export interface InputProps {
     onBlur?: (e?: FocusEvent) => void;
 
     /**
+     * Callback function triggered when the input value changes.
+     * @param e The change event object.
+     * @returns void
+     */
+    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+
+    /**
      * Placeholder text displayed in the input when it is empty.
      */
     placeholder?: string;

@@ -95,6 +95,7 @@ const ExerciseManagement: React.FC = () => {
                                         Pesquisar Exercício
                                     </label>
                                     <Input
+                                        name="search"
                                         type="text"
                                         placeholder="Digite o nome do exercício..."
                                         value={searchTerm}

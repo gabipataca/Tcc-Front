@@ -76,8 +76,10 @@ const Navbar: FC = () => {
           {/* Logout Button */}
           <Button
             className="text-white hover:bg-white/10 hover:text-white transition-all duration-200 ml-auto lg:ml-0"
+            type="link"
+            linkHref="/logout"
           >
-            <FaSignOutAlt size={20} />
+            <FaSignOutAlt className="fill-white" size={20} />
             <span className="sr-only">Sair</span>
           </Button>
         </div>

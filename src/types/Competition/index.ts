@@ -38,6 +38,26 @@ export interface Competition {
      * @remarks This penalty is only applued if the submission is not accepted.
      */
     submissionPenalty: number;
+
+    /**
+     * Maximum number of exercises allowed in the competition.
+     */
+    maxExercises: number;
+
+    /**
+     * Maximum size of submissions in kb.
+     */
+    maxSubmissionSize: number;
+
+    /**
+     * Date when inscriptions for the competition start.
+     */
+    startInscriptions: Date;
+
+    /**
+     * Date when inscriptions for the competition end.
+     */
+    endInscriptions: Date;
 }
 
 /**

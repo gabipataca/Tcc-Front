@@ -151,17 +151,6 @@ const TeacherDashboard: FC = () => {
     const { activeMenu, toggleMenu } = useProfileMenu();
     const [activeTab, setActiveTab] = useState("students");
 
-    const handleCardClick = (identifier: string) => {
-        if (activeMenu !== "Main") {
-            toggleMenu("Main");
-        }
-
-        if (identifier === "Exercise") {
-            toggleMenu("Exercise");
-        } else if (identifier) {
-            setActiveTab(identifier);
-        }
-    };
 
     const stats = [
         {
@@ -170,7 +159,7 @@ const TeacherDashboard: FC = () => {
             value: 20,
             description: "Exercícios disponíveis",
             icon: Package,
-            action: () => handleCardClick("Exercise"),
+            action: () => toggleMenu("Exercise"),
         },
         {
             id: "students",
@@ -178,7 +167,7 @@ const TeacherDashboard: FC = () => {
             value: studentsData.length,
             description: "Ativos no ultimo mês",
             icon: Users,
-            action: () => handleCardClick("students"),
+            action: () => toggleMenu("Main"),
         },
         {
             id: "groups",
@@ -186,7 +175,7 @@ const TeacherDashboard: FC = () => {
             value: groupsData.filter((g) => g.status === "active").length,
             description: "Ativos no ultimo mês",
             icon: UserCheck,
-            action: () => handleCardClick("groups"),
+            action: () => toggleMenu("Main"),
         },
     ];
 

@@ -42,3 +42,13 @@ export interface User {
      */
     role: "Admin" | "Teacher" | "Student";
 }
+
+
+export interface GenericUserInfo {
+    id: string;
+    email: string;
+    name: string;
+    joinYear: number;
+    createdAt: string;
+    lastLoggedAt: string;
+}

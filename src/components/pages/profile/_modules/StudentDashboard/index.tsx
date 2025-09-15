@@ -8,6 +8,7 @@ import GroupInfoSection from "./components/GroupInfoSection";
 import CompetitionHistorySection from "./components/CompetitionHistorySection";
 import ChampionTeamsSection from "./components/ChampionsTeamsSection";
 import { useUser } from "@/contexts/UserContext";
+import { Trophy, Users } from "lucide-react";
 
 const StudentDashboard: React.FC = () => {
     const { user } = useUser();
@@ -40,7 +41,7 @@ const StudentDashboard: React.FC = () => {
                                     rounded
                                     className="text-xl"
                                 >
-                                    <div className="h-4 w-4 mr-2 bg-gray-400 rounded-full" />
+                                    <Users className="h-4 w-4 mr-2" />
                                     Criar Grupo
                                 </Button>
                                 <Button
@@ -49,7 +50,7 @@ const StudentDashboard: React.FC = () => {
                                     rounded
                                     className="text-xl"
                                 >
-                                    <div className="h-4 w-4 mr-2 bg-gray-400 rounded-full" />
+                                    <Trophy className="h-4 w-4 mr-2" />
                                     Iniciar Maratona
                                 </Button>
                             </div>

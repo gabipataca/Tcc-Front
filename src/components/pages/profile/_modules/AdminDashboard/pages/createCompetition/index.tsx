@@ -12,6 +12,7 @@ import { Badge } from "@/components/_ui/Badge";
 import { Checkbox } from "@/components/_ui/Checkbox";
 import { Controller } from "react-hook-form";
 import useCreateCompetition from "./hooks/useCreateCompetition";
+import { ChangeEvent } from "react";
 
 const CreateCompetition: React.FC = () => {
     const {
@@ -20,14 +21,15 @@ const CreateCompetition: React.FC = () => {
         onSubmit,
         errors,
         exerciseCount,
-        setExerciseTitleFilter,
-        exerciseTitleFilter,
         selectedExercises,
         toggleExercise,
-        filteredExercises,
         isExerciseSelectionValid,
         isFormValid,
         isSubmitting,
+        search,
+        setSearch,
+        exercises,
+        currentPage,
     } = useCreateCompetition();
 
     return (
@@ -296,21 +298,21 @@ const CreateCompetition: React.FC = () => {
                                             <Input
                                                 type="text"
                                                 placeholder="Digite o título do exercício"
-                                                value={exerciseTitleFilter}
-                                                onChange={(e) => setExerciseTitleFilter(e.target.value)}
+                                                value={search}
+                                                onChange={(e: ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
                                                 className="border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-xl h-16 px-6"
                                             />
                                         </div>
 
                                         <div className="max-h-96 overflow-y-auto border border-[#e9edee] rounded-lg p-8 space-y-6">
-                                            {filteredExercises.map((exercise) => (
-                                                <div key={exercise} className="flex items-center space-x-6 p-4 hover:bg-[#e9edee]/50 rounded">
+                                            {exercises.map((exercise) => (
+                                                <div key={exercise.id} className="flex items-center space-x-6 p-4 hover:bg-[#e9edee]/50 rounded">
                                                     <Checkbox
-                                                        checked={selectedExercises.includes(exercise)}
-                                                        onCheckedChange={() => toggleExercise(exercise)}
+                                                        checked={selectedExercises.includes(exercise.id)}
+                                                        onCheckedChange={() => toggleExercise(exercise.id)}
                                                         className="border-[#4F85A6] data-[state=checked]:bg-[#4F85A6] w-6 h-6"
                                                     />
-                                                    <label className="text-xl text-[#3f3c40] cursor-pointer flex-1">{exercise}</label>
+                                                    <label className="text-xl text-[#3f3c40] cursor-pointer flex-1">{exercise.title}</label>
                                                 </div>
                                             ))}
                                         </div>

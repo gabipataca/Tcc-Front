@@ -2,6 +2,7 @@ import { useState, useCallback, useMemo } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
+import useLoadExercises from "./useLoadExercises";
 
 interface CompetitionFormInputs {
     competitionName: string;
@@ -57,28 +58,22 @@ const schema = z
         }
     });
 
-const exercisesMock = [
-    "Exercício 1 - Título exemplo",
-    "Exercício 2 - Título exemplo",
-    "Exercício 3 - Título exemplo",
-    "Exercício 4 - Outro exemplo",
-    "Exercício 5 - Mais um título",
-    "Exercício 6 - Desafio de lógica",
-    "Exercício 7 - Algoritmo complexo",
-    "Exercício 8 - Estruturas de dados",
-    "Exercício 9 - Programação dinâmica",
-    "Exercício 10 - Grafos",
-    "Exercício 11 - Backtracking",
-    "Exercício 12 - Geometria computacional",
-    "Exercício 13 - Teoria dos números",
-    "Exercício 14 - Strings e regex",
-    "Exercício 15 - Programação orientada a objetos",
-];
-
 const useCreateCompetition = () => {
-    const [exerciseTitleFilter, setExerciseTitleFilter] = useState("");
-    const [selectedExercises, setSelectedExercises] = useState<string[]>([]);
+    const [selectedExercises, setSelectedExercises] = useState<number[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const {
+        exercises,
+        isLoading,
+        maxPages,
+        pageSize,
+        currentPage,
+        search,
+        togglePage,
+        loadExercises,
+        setSearch,
+        totalExercises,
+    } = useLoadExercises();
 
     const {
         handleSubmit,
@@ -105,11 +100,11 @@ const useCreateCompetition = () => {
     const watchedExerciseCount = watch("exerciseCount");
 
     const toggleExercise = useCallback(
-        (exercise: string) => {
+        (exerciseId: number) => {
             setSelectedExercises((prev) => {
-                const newSelection = prev.includes(exercise)
-                    ? prev.filter((e) => e !== exercise)
-                    : [...prev, exercise];
+                const newSelection = prev.includes(exerciseId)
+                    ? prev.filter((e) => e !== exerciseId)
+                    : [...prev, exerciseId];
 
                 if (newSelection.length > watchedExerciseCount) {
                     return newSelection.slice(0, watchedExerciseCount);
@@ -119,14 +114,6 @@ const useCreateCompetition = () => {
         },
         [watchedExerciseCount]
     );
-
-    const filteredExercises = useMemo(() => {
-        return exercisesMock
-            .filter((ex) =>
-                ex.toLowerCase().includes(exerciseTitleFilter.toLowerCase())
-            )
-            .slice(0, watchedExerciseCount);
-    }, [exerciseTitleFilter, watchedExerciseCount]);
 
     const isExerciseSelectionValid = useMemo(() => {
         return selectedExercises.length === watchedExerciseCount;
@@ -145,6 +132,9 @@ const useCreateCompetition = () => {
 
         try {
             alert("Maratona configurada (verifique o console para os dados)!");
+
+            
+
         } catch (error) {
             console.error("Erro ao criar competição:", error);
             alert("Ocorreu um erro ao criar a maratona. Tente novamente.");
@@ -155,19 +145,23 @@ const useCreateCompetition = () => {
 
     return {
         control,
+        exercises,
         handleSubmit,
         onSubmit,
         errors,
         exerciseCount: watchedExerciseCount,
-        setExerciseTitleFilter,
-        exerciseTitleFilter,
         selectedExercises,
         toggleExercise,
-        filteredExercises,
         isExerciseSelectionValid,
         isFormValid,
         isSubmitting,
         trigger,
+        currentPage,
+        isLoading,
+        maxPages,
+        pageSize,
+        search,
+        setSearch,
     };
 };
 

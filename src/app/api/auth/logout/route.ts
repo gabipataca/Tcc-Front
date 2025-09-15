@@ -57,9 +57,6 @@ export async function GET(req: NextRequest) {
         );
     }
 
-    console.log(res.data);
-    console.log(res.status);
-
     cookie.delete("CompetitionAuthToken");
 
     return NextResponse.json(
