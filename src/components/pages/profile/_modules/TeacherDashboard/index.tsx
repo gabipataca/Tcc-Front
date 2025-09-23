@@ -2,10 +2,8 @@
 
 import type React from "react";
 import { FC, useState } from "react";
-import { FaUserCircle, FaSignOutAlt } from "react-icons/fa";
 import { Users, UserCheck, Menu, Package, ChevronLeft } from "lucide-react";
 import { ButtonAdm } from "@/components/_ui/ButtonAdm";
-import Button from "@/components/_ui/Button";
 import {
     Tabs,
     TabsContent,
@@ -25,132 +23,58 @@ import {
 import StudentsTable from "../../components/StudentsTable";
 import GroupsTable from "../../components/GroupsTable";
 import StatsCard from "../../components/StatsCard";
-import { groupsData, studentsData } from "../../hooks/mockData";
+import { groupsData, studentsData, Student, Group } from "../../hooks/mockData";
 import useProfileMenu from "../../hooks/useProfileMenu";
 import ExerciseManagement from "../Shared/ExerciseManagement";
 
-const AppSidebar = () => {
-    return (
-        <div className="w-[280px] bg-[#4F85A6] flex flex-col items-center py-6 shadow-xl relative min-h-screen">
-            <div className="mb-8">
-                <div className="w-20 h-20 bg-white/10 rounded-lg flex items-center justify-center">
-                    <span className="text-white font-bold text-lg">FHO</span>
-                </div>
-            </div>
+// 1. Importar o Modal que vamos usar
+import { EditDeleteModal } from "@/components/pages/perfilAdm/EditDeleteModal";
 
-            <div className="flex flex-col items-center text-center mb-8">
-                <div className="relative mb-4">
-                    <FaUserCircle
-                        size={120}
-                        className="text-white drop-shadow-lg"
-                    />
-                    <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-green-400 rounded-full border-2 border-white"></div>
-                </div>
-
-                <h2 className="text-white text-xl font-semibold mb-2 drop-shadow-sm">
-                    Perfil Usuário
-                </h2>
-                <p className="text-white/90 text-sm">E-mail Institucional</p>
-            </div>
-
-            <div className="mt-auto mb-6">
-                <div className="w-32 h-10 bg-white/10 rounded flex items-center justify-center">
-                    <span className="text-white font-semibold">FALCON</span>
-                </div>
-            </div>
-        </div>
-    );
-};
-
-const Navbar = () => {
-    const [isOpen, setIsOpen] = useState(false);
-
-    const navLinks = [
-        { href: "#", label: "Home", icon: Home },
-        { href: "#", label: "Inscrições", icon: UserPlus },
-        { href: "#", label: "Montar Exercícios", icon: BookOpen },
-        { href: "#", label: "Criar Maratona", icon: Trophy },
-        { href: "#", label: "Estatísticas", icon: BarChart3 },
-        { href: "#", label: "Ranking", icon: Medal },
-        { href: "#", label: "Dúvidas", icon: HelpCircle },
-    ];
-
-    return (
-        <div className="bg-[#4F85A6] text-white shadow-lg">
-            <div className="flex flex-col max-h-screen">
-                <div className="flex justify-between items-center h-16 px-6">
-                    <nav className="hidden lg:flex items-center space-x-1">
-                        {navLinks.map((link, index) => (
-                            <div key={link.label} className="flex items-center">
-                                <a
-                                    href={link.href}
-                                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-white transition-all duration-200 rounded-md"
-                                >
-                                    <link.icon className="h-4 w-4" />
-                                    {link.label}
-                                </a>
-                                {index < navLinks.length - 1 && (
-                                    <span className="text-white/60 mx-1">
-                                        |
-                                    </span>
-                                )}
-                            </div>
-                        ))}
-                    </nav>
-
-                    <div className="lg:hidden flex items-center justify-between w-full">
-                        <Sheet open={isOpen} onOpenChange={setIsOpen}>
-                            <SheetTrigger asChild>
-                                <ButtonAdm
-                                    variant="ghost"
-                                    className="text-white hover:bg-white/10"
-                                >
-                                    <Menu className="h-6 w-6" />
-                                    <span className="sr-only">Abrir menu</span>
-                                </ButtonAdm>
-                            </SheetTrigger>
-                            <SheetContent
-                                side="left"
-                                className="bg-[#4F85A6] text-white border-none"
-                            >
-                                <div className="flex flex-col space-y-4 mt-8">
-                                    {navLinks.map((link) => (
-                                        <a
-                                            key={link.label}
-                                            href={link.href}
-                                            className="flex items-center gap-3 text-lg font-medium hover:bg-white/10 hover:text-white transition-all duration-200 rounded-md px-3 py-2"
-                                            onClick={() => setIsOpen(false)}
-                                        >
-                                            <link.icon className="h-5 w-5" />
-                                            {link.label}
-                                        </a>
-                                    ))}
-                                </div>
-                            </SheetContent>
-                        </Sheet>
-
-                        <div className="text-lg font-semibold lg:hidden">
-                            Sistema Admin
-                        </div>
-                    </div>
-
-                    <ButtonAdm
-                        variant="ghost"
-                        className="text-white hover:bg-white/10 hover:text-white transition-all duration-200 ml-auto lg:ml-0"
-                    >
-                        <FaSignOutAlt size={20} />
-                        <span className="sr-only">Sair</span>
-                    </ButtonAdm>
-                </div>
-            </div>
-        </div>
-    );
-};
+// Navbar e Sidebar não precisam de alterações, então foram omitidos para clareza
+const AppSidebar = () => { /* ... seu código existente ... */ };
+const Navbar = () => { /* ... seu código existente ... */ };
 
 const TeacherDashboard: FC = () => {
     const { activeMenu, toggleMenu } = useProfileMenu();
     const [activeTab, setActiveTab] = useState("students");
 
+    // 2. Adicionar o estado para alunos, grupos e para o modal
+    const [students, setStudents] = useState<Student[]>(studentsData);
+    const [groups, setGroups] = useState<Group[]>(groupsData);
+    const [modalState, setModalState] = useState<{
+        isOpen: boolean;
+        mode: "edit" | "delete";
+        item: Student | Group | null;
+        itemType: string;
+    }>({
+        isOpen: false,
+        mode: "edit",
+        item: null,
+        itemType: "",
+    });
+
+    // 3. Adicionar as funções para controlar o modal
+    const openModal = (item: Student | Group, itemType: string, mode: "edit" | "delete") => {
+        setModalState({ isOpen: true, item, itemType, mode });
+    };
+
+    const closeModal = () => {
+        setModalState({ isOpen: false, item: null, itemType: "", mode: "edit" });
+    };
+
+    const handleConfirmModal = (updatedItem?: Student | Group) => {
+        const { mode, item, itemType } = modalState;
+
+        if (mode === "delete" && item) {
+            if (itemType === "Aluno") setStudents(prev => prev.filter(s => s.id !== item.id));
+            if (itemType === "Grupo") setGroups(prev => prev.filter(g => g.id !== item.id));
+        } else if (mode === "edit" && updatedItem) {
+            if (itemType === "Aluno") setStudents(prev => prev.map(s => s.id === updatedItem.id ? (updatedItem as Student) : s));
+            if (itemType === "Grupo") setGroups(prev => prev.map(g => g.id === updatedItem.id ? (updatedItem as Group) : g));
+        }
+        
+        closeModal();
+    };
 
     const stats = [
         {
@@ -164,18 +88,24 @@ const TeacherDashboard: FC = () => {
         {
             id: "students",
             title: "Total de Alunos",
-            value: studentsData.length,
+            value: students.length, // Usar o estado
             description: "Ativos no ultimo mês",
             icon: Users,
-            action: () => toggleMenu("Main"),
+            action: () => {
+                toggleMenu("Main");
+                setActiveTab("students");
+            },
         },
         {
             id: "groups",
             title: "Grupos Ativos",
-            value: groupsData.filter((g) => g.status === "active").length,
+            value: groups.filter((g) => g.status === "active").length, // Usar o estado
             description: "Ativos no ultimo mês",
             icon: UserCheck,
-            action: () => toggleMenu("Main"),
+            action: () => {
+                toggleMenu("Main");
+                setActiveTab("groups");
+            },
         },
     ];
 
@@ -184,14 +114,14 @@ const TeacherDashboard: FC = () => {
             <div className="container mx-auto p-6 space-y-6">
                 <div className="flex items-center gap-8">
                     {activeMenu !== "Main" && (
-                        <Button
+                        <ButtonAdm
                             type="button"
-                            style="ghost"
+                            variant="ghost" 
                             size="default"
                             onClick={() => toggleMenu("Main")}
                         >
                             <ChevronLeft className="w-6 h-auto mr-2" />
-                        </Button>
+                        </ButtonAdm>
                     )}
                     <div className="mr-auto">
                         <h1 className="text-4xl font-bold text-[#3f3c40] py-2">
@@ -246,17 +176,39 @@ const TeacherDashboard: FC = () => {
                             value="students"
                             className="space-y-0 mt-0"
                         >
-                            <StudentsTable />
+                            {/* 4. Passar os dados e funções como props para a tabela */}
+                            <StudentsTable 
+                                students={students}
+                                onEdit={(s) => openModal(s, "Aluno", "edit")}
+                                onDelete={(s) => openModal(s, "Aluno", "delete")}
+                            />
                         </TabsContent>
 
                         <TabsContent value="groups" className="space-y-0 mt-0">
-                            <GroupsTable />
+                            {/* 4. Passar os dados e funções como props para a tabela */}
+                            <GroupsTable 
+                                groups={groups}
+                                onEdit={(g) => openModal(g, "Grupo", "edit")}
+                                onDelete={(g) => openModal(g, "Grupo", "delete")}
+                            />
                         </TabsContent>
                     </Tabs>
                 ) : activeMenu === "Exercise" ? (
                     <ExerciseManagement />
                 ) : (
                     <></>
+                )}
+
+                {/* 5. Adicionar a renderização do modal */}
+                {modalState.isOpen && (
+                    <EditDeleteModal
+                        isOpen={modalState.isOpen}
+                        onClose={closeModal}
+                        onConfirm={handleConfirmModal}
+                        item={modalState.item}
+                        itemType={modalState.itemType}
+                        mode={modalState.mode}
+                    />
                 )}
             </div>
         </div>

@@ -1,5 +1,6 @@
 import type React from "react";
-import { FileText, Plus, Filter, Edit, Trash2, Search } from "lucide-react";
+import { useRef } from "react";
+import { FileText, Plus, Filter, Edit, Trash2, Search, Upload } from "lucide-react";
 import {
     Card,
     CardContent,
@@ -11,11 +12,12 @@ import Input from "@/components/_ui/Input";
 import { ButtonAdm } from "@/components/_ui/ButtonAdm";
 import { Badge } from "@/components/_ui/Badge";
 import { useExerciseManagement } from "./hooks/useExerciseManagement";
-import { Textarea } from "@/components/_ui/Textarea";
 import EditExerciseModal from "./components/EditExerciseModal";
 import { exerciseTypeOptions } from "./constants";
 import CustomDropdown from "@/components/_ui/Dropdown";
 import { ExerciseType } from "@/types/Exercise";
+import { Textarea } from "@/components/_ui/Textarea";
+
 
 const ExerciseManagement: React.FC = () => {
     const {
@@ -37,14 +39,16 @@ const ExerciseManagement: React.FC = () => {
         cancelEdit,
         filteredExercises,
         getTypeColor,
-        description,
-        setDescription,
         inputValues,
         setInputValues,
         outputValues,
         setOutputValues,
-        
+        pdfFile,
+        handleFileChange,
+
     } = useExerciseManagement();
+
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     return (
         <>
@@ -226,20 +230,30 @@ const ExerciseManagement: React.FC = () => {
                                     <h4 className="text-xl font-medium text-[#3f3c40]">
                                         Conteúdo do Exercício
                                     </h4>
-
                                     <div className="space-y-3">
                                         <label className="block text-lg font-medium text-[#3f3c40]">
-                                            Descrição:
+                                            Anexo (PDF):
                                         </label>
-                                        <Textarea
-                                            placeholder="Digite a descrição do exercício..."
-                                            value={description}
-                                            onChange={(e) =>
-                                                setDescription(e.target.value)
-                                            }
-                                            className="border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-lg min-h-[120px] p-4"
+                                      
+                                        <ButtonAdm
+                                            variant="outline"
+                                            onClick={() => fileInputRef.current?.click()}
+                                            className="w-full border-[#4F85A6] text-[#4F85A6] hover:bg-[#4F85A6]/10 text-lg h-16 flex items-center justify-center"
+                                        >
+                                            <Upload className="w-5 h-5 mr-3" />
+                                        
+                                            {pdfFile ? pdfFile.name : "Selecionar Arquivo PDF"}
+                                        </ButtonAdm>
+                                     
+                                        <input
+                                            type="file"
+                                            accept=".pdf"
+                                            ref={fileInputRef}
+                                            onChange={handleFileChange}
+                                            className="hidden"
                                         />
                                     </div>
+
 
                                     <div className="space-y-3">
                                         <label className="block text-lg font-medium text-[#3f3c40]">

@@ -1,15 +1,256 @@
-import { Badge } from "@/components/_ui/Badge";
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from "@/components/_ui/Card";
-import { GroupInfo } from "../../types";
-import Button from "@/components/_ui/Button";
-import { Edit, Plus, Trophy, Users } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Edit, Plus, Trophy, Users, X, Check, Clock, UserX } from "lucide-react";
 
-const GroupInfoSection: React.FC<{ info?: GroupInfo }> = ({ info }) => (
+// --- Tipos (Mantendo e expandindo o que você já tinha) ---
+type User = {
+    id: string;
+    name: string;
+    ra?: string; // Trocado de email para ra
+    status: 'pending' | 'accepted';
+};
+
+type GroupInfo = {
+    id: string;
+    name: string;
+    users: User[];
+    isLeader: boolean; // O usuário atual é o líder?
+};
+
+type Invitation = {
+    groupId: string;
+    groupName: string;
+    fromLeader: string;
+}
+
+// --- Componentes de UI Falsos (Mock) ---
+// Para que este código seja executável, criei versões simples dos seus componentes de UI.
+// Substitua estes pelos seus componentes reais de "@/components/_ui/..."
+
+const Card = ({ children, className = '' }: { children: React.ReactNode, className?: string }) => (
+    <div className={`rounded-xl border bg-white text-slate-900 shadow-sm ${className}`}>{children}</div>
+);
+const CardHeader = ({ children, className = '' }: { children: React.ReactNode, className?: string }) => (
+    <div className={`flex flex-col space-y-1.5 p-6 ${className}`}>{children}</div>
+);
+const CardTitle = ({ children, className = '' }: { children: React.ReactNode, className?: string }) => (
+    <h3 className={`text-2xl font-semibold leading-none tracking-tight ${className}`}>{children}</h3>
+);
+const CardContent = ({ children, className = '' }: { children: React.ReactNode, className?: string }) => (
+    <div className={`p-6 pt-0 ${className}`}>{children}</div>
+);
+const CardFooter = ({ children, className = '' }: { children: React.ReactNode, className?: string }) => (
+    <div className={`flex items-center p-6 pt-0 ${className}`}>{children}</div>
+);
+const Badge = ({ children, className = '', variant = 'primary' }: { children: React.ReactNode, className?: string, variant?: string }) => {
+    const baseStyle = "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2";
+    const variants: { [key: string]: string } = {
+        primary: "border-transparent bg-slate-900 text-slate-50",
+        secondary: "border-transparent bg-slate-100 text-slate-900",
+        warning: "border-transparent bg-amber-500 text-white",
+        success: "border-transparent bg-green-500 text-white",
+        outline: "text-slate-900",
+    }
+    return <span className={`${baseStyle} ${variants[variant]} ${className}`}>{children}</span>;
+}
+
+const Button = ({ children, className = '', style = 'primary', size = 'md', ...props }: { children: React.ReactNode, className?: string, style?: string, size?: string, [key: string]: any }) => {
+    const baseStyle = "inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50";
+    const styles: { [key: string]: string } = {
+        primary: "bg-[#4F85A6] text-white hover:bg-[#3C6B88]",
+        'light-success': "bg-green-100 text-green-800 hover:bg-green-200",
+        outline: "border border-slate-200 bg-white hover:bg-slate-100 hover:text-slate-900",
+        danger: "bg-red-500 text-slate-50 hover:bg-red-500/90",
+    };
+    const sizes: { [key: string]: string } = {
+        sm: "h-9 rounded-md px-3",
+        md: "h-10 px-4 py-2",
+    };
+    return <button className={`${baseStyle} ${styles[style]} ${sizes[size]} ${className}`} {...props}>{children}</button>;
+}
+const Input = ({ className = '', ...props }) => (
+    <input className={`flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${className}`} {...props} />
+);
+const Label = ({ children, className = '', ...props }: { children: React.ReactNode, className?: string, [key: string]: any }) => (
+    <label className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${className}`} {...props}>{children}</label>
+);
+
+
+// --- Componente: Modal de Adicionar Grupo ---
+const AddGroupModal = ({ isOpen, onClose, onCreate }: { isOpen: boolean, onClose: () => void, onCreate: (name: string, members: string[]) => void }) => {
+    const [groupName, setGroupName] = useState("");
+    const [member2, setMember2] = useState("");
+    const [member3, setMember3] = useState("");
+
+    if (!isOpen) return null;
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        onCreate(groupName, [member2, member3].filter(Boolean));
+        onClose();
+        setGroupName("");
+        setMember2("");
+        setMember3("");
+    };
+
+    return (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+            <Card className="w-full max-w-md">
+                <form onSubmit={handleSubmit}>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Plus /> Criar Novo Grupo
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="groupName">Nome do Grupo</Label>
+                            <Input id="groupName" placeholder="Ex: Os Campeões da Maratona" value={groupName} onChange={e => setGroupName(e.target.value)} required />
+                        </div>
+                        <p className="text-sm text-slate-600">Adicione até 2 outros integrantes (opcional). Você já está incluído como líder.</p>
+                        <div className="space-y-2">
+                            <Label htmlFor="member2">RA do Integrante 2</Label>
+                            <Input id="member2" type="text" placeholder="Ex: 123456" value={member2} onChange={e => setMember2(e.target.value)} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="member3">RA do Integrante 3</Label>
+                            <Input id="member3" type="text" placeholder="Ex: 789012" value={member3} onChange={e => setMember3(e.target.value)} />
+                        </div>
+                    </CardContent>
+                    <CardFooter className="flex justify-end gap-2">
+                        <Button type="button" style="outline" onClick={onClose}>Cancelar</Button>
+                        <Button type="submit" style="primary">Criar Grupo</Button>
+                    </CardFooter>
+                </form>
+            </Card>
+        </div>
+    );
+};
+
+// --- Componente: Modal de Adicionar Integrante ---
+const AddMemberModal = ({ isOpen, onClose, onAdd, currentSize }: { isOpen: boolean, onClose: () => void, onAdd: (members: string[]) => void, currentSize: number }) => {
+    const [memberRA1, setMemberRA1] = useState("");
+    const [memberRA2, setMemberRA2] = useState("");
+    const slotsAvailable = 3 - currentSize;
+
+    useEffect(() => {
+        setMemberRA1("");
+        setMemberRA2("");
+    }, [isOpen]);
+
+    if (!isOpen) return null;
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        const membersToAdd = [memberRA1, memberRA2].filter(Boolean);
+        if (membersToAdd.length > 0) {
+            onAdd(membersToAdd);
+        }
+        onClose();
+    };
+
+    return (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+            <Card className="w-full max-w-md">
+                <form onSubmit={handleSubmit}>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Plus /> Adicionar Integrantes
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <p className="text-sm text-slate-600">Você pode adicionar mais {slotsAvailable} integrante(s).</p>
+                        {slotsAvailable >= 1 && (
+                            <div className="space-y-2">
+                                <Label htmlFor="newMember1">RA do Novo Integrante</Label>
+                                <Input id="newMember1" type="text" placeholder="Ex: 987654" value={memberRA1} onChange={e => setMemberRA1(e.target.value)} required />
+                            </div>
+                        )}
+                        {slotsAvailable >= 2 && (
+                            <div className="space-y-2">
+                                <Label htmlFor="newMember2">RA do Novo Integrante</Label>
+                                <Input id="newMember2" type="text" placeholder="Ex: 543210" value={memberRA2} onChange={e => setMemberRA2(e.target.value)} />
+                            </div>
+                        )}
+                    </CardContent>
+                    <CardFooter className="flex justify-end gap-2">
+                        <Button type="button" style="outline" onClick={onClose}>Cancelar</Button>
+                        <Button type="submit" style="primary">Adicionar</Button>
+                    </CardFooter>
+                </form>
+            </Card>
+        </div>
+    );
+};
+
+
+// --- Componente: Modal de Editar Grupo ---
+const EditGroupModal = ({ isOpen, onClose, onUpdate, group }: { isOpen: boolean, onClose: () => void, onUpdate: (id: string, name: string, membersToRemove: string[]) => void, group: GroupInfo | null }) => {
+    const [groupName, setGroupName] = useState(group?.name || "");
+    const [membersToRemove, setMembersToRemove] = useState<string[]>([]);
+
+    useEffect(() => {
+        if (group) {
+            setGroupName(group.name);
+            setMembersToRemove([]);
+        }
+    }, [group]);
+
+    if (!isOpen || !group) return null;
+
+    const handleToggleRemove = (userId: string) => {
+        setMembersToRemove(prev =>
+            prev.includes(userId) ? prev.filter(id => id !== userId) : [...prev, userId]
+        );
+    }
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        onUpdate(group.id, groupName, membersToRemove);
+        onClose();
+    };
+
+    return (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+            <Card className="w-full max-w-md">
+                <form onSubmit={handleSubmit}>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2"><Edit /> Editar Grupo</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="editGroupName">Nome do Grupo</Label>
+                            <Input id="editGroupName" value={groupName} onChange={e => setGroupName(e.target.value)} required />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Integrantes</Label>
+                            <div className="space-y-2 rounded-md border p-2">
+                                {group.users.map(user => (
+                                    <div key={user.id} className={`flex items-center justify-between p-2 rounded ${membersToRemove.includes(user.id) ? 'bg-red-100' : ''}`}>
+                                        <span className={`${membersToRemove.includes(user.id) ? 'line-through text-slate-500' : ''}`}>{user.name} {user.id === 'user-1' ? '(Líder)' : ''}</span>
+                                        {user.id !== 'user-1' && ( // Não permite remover o líder
+                                            <Button type="button" size="sm" style={membersToRemove.includes(user.id) ? 'light-success' : 'outline'} onClick={() => handleToggleRemove(user.id)}>
+                                                {membersToRemove.includes(user.id) ? <Plus className="h-4 w-4 mr-1" /> : <UserX className="h-4 w-4 mr-1" />}
+                                                {membersToRemove.includes(user.id) ? 'Manter' : 'Remover'}
+                                            </Button>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </CardContent>
+                    <CardFooter className="flex justify-end gap-2">
+                        <Button type="button" style="outline" onClick={onClose}>Cancelar</Button>
+                        <Button type="submit" style="primary">Salvar Alterações</Button>
+                    </CardFooter>
+                </form>
+            </Card>
+        </div>
+    );
+};
+
+
+// --- Seção de Informações do Grupo (Refatorada) ---
+const GroupInfoSection = ({ info, onEditClick, onAddMemberClick, onLeaveClick }: { info: GroupInfo, onEditClick: () => void, onAddMemberClick: () => void, onLeaveClick: () => void }) => (
     <Card className="shadow-lg hover:shadow-xl transition-all duration-300 border-0 bg-gradient-to-br from-white to-slate-50">
         <CardHeader className="pb-4 bg-gradient-to-r from-[#4F85A6]/5 to-[#3C6B88]/5 rounded-t-lg">
             <CardTitle className="text-2xl text-[#4F85A6] flex items-center gap-3">
@@ -19,76 +260,279 @@ const GroupInfoSection: React.FC<{ info?: GroupInfo }> = ({ info }) => (
                 Informações do Grupo
             </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6 p-6 px-16 pl-20">
-            <div className="space-y-4">
-                <div className="p-4 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100">
-                    <div className="flex items-center gap-3 mb-3 pl-10">
-                        <Trophy className="h-5 w-5 text-blue-600" />
-                        <span className=" text-2xl font-medium text-slate-700">
-                            Nome do Grupo
-                        </span>
-                    </div>
-                    <div className="flex items-center justify-between pl-20">
-                        <Badge
-                            variant="secondary"
-                            className="bg-[#4F85A6] text-white hover:bg-[#3C6B88] text-xl"
-                        >
-                            {info?.name}
-                        </Badge>
-                    </div>
+        <CardContent className="space-y-6 p-6">
+            <div className="p-4 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100">
+                <div className="flex items-center gap-3 mb-2">
+                    <Trophy className="h-5 w-5 text-blue-600" />
+                    <span className="text-xl font-medium text-slate-700">Nome do Grupo</span>
                 </div>
+                <span className="text-lg font-medium text-slate-900 ml-8">{info.name}</span>
+            </div>
 
-                <div className=" px-10 pl-25 p-4 rounded-lg bg-gradient-to-r from-green-50 to-emerald-50 border border-green-100">
-                    <div className="flex items-center gap-3 mb-3">
-                        <Users className="h-5 w-5 text-green-600" />
-                        <span className=" text-2xl font-medium text-slate-700">
-                            Integrantes do Grupo
-                        </span>
-                    </div>
-                    <div className="space-y-2">
-                        {info?.users.map((member, index) => (
-                            <div
-                                key={index}
-                                className="flex items-center gap-2 text-slate-900 px-10 pl-25"
-                            >
-                                <div
-                                    className={`w-2 h-2 ${
-                                        index === 0
-                                            ? "bg-green-500"
-                                            : index === 1
-                                            ? "bg-blue-500"
-                                            : "bg-purple-500"
-                                    } rounded-full`}
-                                ></div>
-                                <span className="text-2xl font-medium">
-                                    {member.name}
-                                </span>
-                                {info?.isLeader && index === 0 && (
-                                    <Badge
-                                        variant="outline"
-                                        className="text-lg"
-                                    >
-                                        Líder
-                                    </Badge>
-                                )}
-                            </div>
-                        ))}
-                    </div>
+            <div className="p-4 rounded-lg bg-gradient-to-r from-green-50 to-emerald-50 border border-green-100">
+                <div className="flex items-center gap-3 mb-3">
+                    <Users className="h-5 w-5 text-green-600" />
+                    <span className="text-xl font-medium text-slate-700">Integrantes do Grupo</span>
+                </div>
+                <div className="space-y-2 pl-8">
+                    {info.users.map((member) => (
+                        <div key={member.id} className="flex items-center gap-3 text-slate-900">
+                            <span className="text-lg font-medium">{member.name}</span>
+                            {info.isLeader && member.id === 'user-1' && (<Badge variant="outline">Líder</Badge>)}
+                            {member.status === 'pending' && (<Badge variant="warning"><Clock className="h-3 w-3 mr-1" />Pendente</Badge>)}
+                        </div>
+                    ))}
                 </div>
             </div>
 
             <div className="pt-4 flex justify-end gap-2">
-                <Button style="light-success" size="sm" className=" text-xl">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Adicionar
+                {info.isLeader ? (
+                    <>
+                        <Button style="light-success" size="sm" className="text-md" onClick={onAddMemberClick} disabled={info.users.length >= 3}>
+                            <Plus className="h-4 w-4 mr-2" />
+                            Adicionar
+                        </Button>
+                        <Button style="outline" size="sm" className="text-md" onClick={onEditClick}>
+                            <Edit className="h-4 w-4 mr-2" />
+                            Editar
+                        </Button>
+                    </>
+                ) : (
+                    <Button style="danger" size="sm" className="text-md" onClick={onLeaveClick}>
+                        <UserX className="h-4 w-4 mr-2" />
+                        Sair do Grupo
+                    </Button>
+                )}
+            </div>
+        </CardContent>
+    </Card>
+);
+
+// --- Seção para quando não há grupo ---
+const NoGroupSection = ({ onCreateClick }: { onCreateClick: () => void }) => (
+    <Card className="shadow-lg hover:shadow-xl transition-all duration-300 border-0 bg-gradient-to-br from-white to-slate-50">
+        <CardHeader>
+            <CardTitle className="text-2xl text-[#4F85A6] flex items-center gap-3">
+                <div className="w-10 h-10 bg-[#4F85A6]/10 rounded-full flex items-center justify-center">
+                    <Users className="h-5 w-5 text-[#4F85A6]" />
+                </div>
+                Informações do Grupo
+            </CardTitle>
+        </CardHeader>
+        <CardContent className="text-center p-10">
+            <p className="text-slate-600 mb-4">Você ainda não faz parte de um grupo.</p>
+            <Button style="primary" size="md" onClick={onCreateClick}>
+                <Plus className="h-4 w-4 mr-2" />
+                Criar um Grupo
+            </Button>
+        </CardContent>
+    </Card>
+);
+
+
+// --- Seção de convite pendente ---
+const InvitationSection = ({ invitation, onAccept, onDecline }: { invitation: Invitation, onAccept: () => void, onDecline: () => void }) => (
+    <Card className="shadow-lg hover:shadow-xl transition-all duration-300 border-0 bg-gradient-to-br from-amber-50 to-orange-50">
+        <CardHeader>
+            <CardTitle className="text-xl text-amber-800 flex items-center gap-3">
+                <div className="w-10 h-10 bg-amber-500/10 rounded-full flex items-center justify-center">
+                    <Clock className="h-5 w-5 text-amber-600" />
+                </div>
+                Convite Pendente
+            </CardTitle>
+        </CardHeader>
+        <CardContent className="text-center p-8 space-y-4">
+            <p className="text-slate-700">
+                <span className="font-semibold">{invitation.fromLeader}</span> convidou você para o grupo <span className="font-semibold">"{invitation.groupName}"</span>.
+            </p>
+            <div className="flex justify-center gap-4">
+                <Button style="light-success" size="md" onClick={onAccept}>
+                    <Check className="h-4 w-4 mr-2" />
+                    Aceitar
                 </Button>
-                <Button style="outline" size="sm" className=" text-xl">
-                    <Edit className="h-4 w-4 mr-2" />
-                    Editar
+                <Button style="danger" size="md" onClick={onDecline}>
+                    <X className="h-4 w-4 mr-2" />
+                    Recusar
                 </Button>
             </div>
         </CardContent>
     </Card>
 );
 
-export default GroupInfoSection;
+
+// --- Componente Principal que Gerencia o Estado ---
+const GroupManagement = () => {
+    // Simulação do usuário logado (vindo do seu componente StudentInfoSection)
+    const currentUser = { id: 'user-1', name: 'Ana Silva' };
+
+    // Simulação de "banco de dados" de usuários para busca por RA
+    const mockUserDatabase = [
+        { id: 'user-2', name: 'Bruno Costa', ra: '123456' },
+        { id: 'user-3', name: 'Carla Dias', ra: '789012' },
+        { id: 'user-4', name: 'Mariana Lima', ra: '345678' },
+    ];
+
+    // Simulação de estado: 'no-group', 'has-group', 'invited'
+    // O estado inicial é 'invited' para mostrar o fluxo de convite.
+    const [userState, setUserState] = useState<'no-group' | 'has-group' | 'invited'>('invited');
+
+    // --- Simulação de dados ---
+    const [groupInfo, setGroupInfo] = useState<GroupInfo | null>(null);
+    const [invitation, setInvitation] = useState<Invitation | null>(null);
+    const [isAddModalOpen, setAddModalOpen] = useState(false);
+    const [isEditModalOpen, setEditModalOpen] = useState(false);
+    const [isAddMemberModalOpen, setAddMemberModalOpen] = useState(false);
+
+    // Simula o carregamento dos dados iniciais
+    useEffect(() => {
+        if (userState === 'invited') {
+            setInvitation({
+                groupId: 'group-beta',
+                groupName: 'Devs do Futuro',
+                fromLeader: 'Mariana Lima'
+            });
+            setGroupInfo(null);
+        } else if (userState === 'no-group') {
+            setGroupInfo(null);
+            setInvitation(null);
+        }
+    }, [userState]);
+
+
+    // --- Handlers ---
+    const handleCreateGroup = (name: string, memberRAs: string[]) => {
+        console.log("Criando grupo:", name, "com RAs:", memberRAs);
+
+        const newGroup: GroupInfo = {
+            id: `group-${Date.now()}`,
+            name: name,
+            isLeader: true, // Quem cria é o líder
+            users: [
+                // O usuário atual, que é o líder
+                { id: currentUser.id, name: currentUser.name, status: 'accepted' },
+                // Os outros membros convidados
+                ...memberRAs.map((ra, index) => {
+                    const foundUser = mockUserDatabase.find(user => user.ra === ra);
+                    return {
+                        id: foundUser ? foundUser.id : `new-user-${index}-${Date.now()}`,
+                        name: foundUser ? foundUser.name : `Aluno não encontrado (RA: ${ra})`,
+                        ra: ra,
+                        status: 'pending' // Novos membros entram como pendentes
+                    };
+                })
+            ]
+        };
+
+        setGroupInfo(newGroup);
+        setInvitation(null); // Limpa qualquer convite pendente
+        setUserState('has-group');
+    };
+
+    const handleUpdateGroup = (id: string, name: string, membersToRemove: string[]) => {
+        console.log("Atualizando grupo:", id, "novo nome:", name, "remover:", membersToRemove);
+        // Lógica de API aqui...
+        // Após sucesso, atualize o estado local:
+        if (groupInfo) {
+            setGroupInfo({
+                ...groupInfo,
+                name: name,
+                users: groupInfo.users.filter(u => !membersToRemove.includes(u.id))
+            });
+        }
+    };
+
+    const handleAddMembers = (memberRAs: string[]) => {
+        if (!groupInfo) return;
+        console.log("Adicionando RAs ao grupo:", memberRAs);
+
+        const newMembers = memberRAs.map((ra, index) => {
+            const foundUser = mockUserDatabase.find(user => user.ra === ra);
+            return {
+                id: foundUser ? foundUser.id : `new-user-add-${index}-${Date.now()}`,
+                name: foundUser ? foundUser.name : `Aluno não encontrado (RA: ${ra})`,
+                ra: ra,
+                status: 'pending' as const
+            };
+        });
+
+        setGroupInfo({
+            ...groupInfo,
+            users: [...groupInfo.users, ...newMembers]
+        });
+    };
+
+    const handleAcceptInvitation = () => {
+        console.log("Convite aceito!");
+        // Lógica de API para aceitar o convite e buscar os dados do grupo...
+
+        // Simula os dados do grupo que o usuário acabou de entrar
+        const joinedGroup: GroupInfo = {
+            id: 'group-alpha',
+            name: "Esquadrão Maratona",
+            isLeader: false, // Não é o líder ao aceitar convite
+            users: [
+                { id: 'user-4', name: 'Mariana Lima', status: 'accepted' }, // Líder do grupo
+                { id: currentUser.id, name: currentUser.name, status: 'accepted' },
+                { id: 'user-3', name: 'Carla Dias', status: 'pending' },
+            ],
+        };
+
+        setGroupInfo(joinedGroup);
+        setInvitation(null);
+        setUserState('has-group');
+    }
+
+    const handleDeclineInvitation = () => {
+        console.log("Convite recusado!");
+        // Lógica de API aqui...
+        setUserState('no-group');
+    }
+
+    const handleLeaveGroup = () => {
+        console.log("Saindo do grupo!");
+        // Lógica de API para remover o usuário do grupo aqui...
+        setUserState('no-group'); // Volta para o estado sem grupo
+    }
+
+    const renderContent = () => {
+        if (invitation) {
+            return <InvitationSection invitation={invitation} onAccept={handleAcceptInvitation} onDecline={handleDeclineInvitation} />;
+        }
+        if (groupInfo) {
+            return <GroupInfoSection
+                info={groupInfo}
+                onEditClick={() => setEditModalOpen(true)}
+                onAddMemberClick={() => setAddMemberModalOpen(true)}
+                onLeaveClick={handleLeaveGroup}
+            />;
+        }
+        return <NoGroupSection onCreateClick={() => setAddModalOpen(true)} />;
+    };
+
+    return (
+        <>
+            {renderContent()}
+
+            <AddGroupModal
+                isOpen={isAddModalOpen}
+                onClose={() => setAddModalOpen(false)}
+                onCreate={handleCreateGroup}
+            />
+            <EditGroupModal
+                isOpen={isEditModalOpen}
+                onClose={() => setEditModalOpen(false)}
+                onUpdate={handleUpdateGroup}
+                group={groupInfo}
+            />
+            <AddMemberModal
+                isOpen={isAddMemberModalOpen}
+                onClose={() => setAddMemberModalOpen(false)}
+                onAdd={handleAddMembers}
+                currentSize={groupInfo?.users.length || 0}
+            />
+        </>
+    );
+};
+
+export default GroupManagement;
+

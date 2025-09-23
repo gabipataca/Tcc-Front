@@ -1,6 +1,7 @@
 "use client";
 
 import type React from "react";
+import { useState } from "react"; // Importar o useState
 import Button from "@/components/_ui/Button";
 import { useStudentDashboardData } from "./hooks/useStudentDashboardData";
 import StudentInfoSection from "./components/StudentInfoSection";
@@ -15,6 +16,29 @@ const StudentDashboard: React.FC = () => {
 
     const { groupInfo, competitionHistory, championTeams } =
         useStudentDashboardData();
+
+    // --- Lógica dos Botões ---
+    // Simula se as inscrições para a maratona estão abertas.
+    // Mude para 'false' para ver o botão desabilitado.
+    const [isRegistrationOpen, setIsRegistrationOpen] = useState(true);
+
+    // Simula se o aluno atual já se inscreveu na maratona.
+    const [isUserRegistered, setIsUserRegistered] = useState(false);
+
+    const handleRegistrationClick = () => {
+        // Em uma aplicação real, você usaria um router para navegar.
+        // Ex: router.push('/inscricao');
+        alert("Redirecionando para a página de inscrição...");
+    };
+
+    const handleStartMarathonClick = () => {
+        if (isUserRegistered) {
+            alert("Iniciando maratona... Boa sorte!");
+            // Lógica para iniciar a maratona
+        } else {
+            alert("Você precisa se inscrever na maratona antes de iniciá-la.");
+        }
+    };
 
     return (
         <>
@@ -40,15 +64,18 @@ const StudentDashboard: React.FC = () => {
                                     style="primary"
                                     rounded
                                     className="text-xl"
+                                    onClick={handleRegistrationClick}
+                                    disabled={!isRegistrationOpen}
                                 >
                                     <Users className="h-4 w-4 mr-2" />
-                                    Criar Grupo
+                                    Realizar Inscrição
                                 </Button>
                                 <Button
                                     type="button"
                                     style="success"
                                     rounded
                                     className="text-xl"
+                                    onClick={handleStartMarathonClick}
                                 >
                                     <Trophy className="h-4 w-4 mr-2" />
                                     Iniciar Maratona
@@ -82,3 +109,4 @@ const StudentDashboard: React.FC = () => {
 };
 
 export default StudentDashboard;
+
