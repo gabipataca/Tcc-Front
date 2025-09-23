@@ -37,9 +37,7 @@ export interface ExerciseOutput {
      */
     judgeUuid: string | null;
 
-    inputs: ExerciseInput[];
-
-    outputs: ExerciseOutput[];
+    output: string;
 }
 
 /**
@@ -98,7 +96,7 @@ export interface Exercise {
     /**
      * Type of the exercise.
      */
-    exerciseType: ExerciseType;
+    exerciseTypeId: ExerciseType;
 
     /**
      * Description of the exercise.

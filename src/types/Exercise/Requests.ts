@@ -45,7 +45,7 @@ export interface CreateExerciseRequest {
     /**
      * Type of the exercise.
      */
-    exerciseType: ExerciseType;
+    exerciseTypeId: ExerciseType;
 
     /**
      * Description of the exercise.

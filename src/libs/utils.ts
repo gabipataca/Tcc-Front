@@ -22,3 +22,13 @@ export const parseDate = (dateStr: string): Date | null => {
   
   return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
 }
+
+
+export const toBase64 = (str: string): string => {
+    return Buffer.from(str, "utf-8").toString("base64");
+};
+
+
+export const fromBase64 = (base64: string): string => {
+    return Buffer.from(base64, "base64").toString("utf-8");
+};

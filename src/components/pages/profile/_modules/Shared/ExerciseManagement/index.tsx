@@ -43,7 +43,6 @@ const ExerciseManagement: React.FC = () => {
         setInputValues,
         outputValues,
         setOutputValues,
-        
     } = useExerciseManagement();
 
     return (
@@ -84,8 +83,20 @@ const ExerciseManagement: React.FC = () => {
                                     </label>
                                     <CustomDropdown
                                         options={exerciseTypeOptions}
-                                        value={exerciseTypeOptions.find(option => option.label === filter)?.value ?? null}
-                                        onChange={(val: ExerciseType) => setFilter(exerciseTypeOptions.find(option => option.value === val)?.label ?? "Todos")}
+                                        value={
+                                            exerciseTypeOptions.find(
+                                                (option) =>
+                                                    option.value === filter
+                                            )?.value ?? null
+                                        }
+                                        onChange={(val: ExerciseType) =>
+                                            setFilter(
+                                                exerciseTypeOptions.find(
+                                                    (option) =>
+                                                        option.value === val
+                                                )?.value ?? null
+                                            )
+                                        }
                                         type="normalDropdown"
                                     />
                                 </div>
@@ -114,7 +125,7 @@ const ExerciseManagement: React.FC = () => {
                                                 Nenhum exercício encontrado
                                             </p>
                                             <p className="text-lg text-[#3f3c40] mt-2">
-                                                {filter === "Todos"
+                                                {filter === null
                                                     ? "Adicione um novo exercício"
                                                     : `Nenhum exercício do tipo "${filter}"`}
                                             </p>
@@ -132,10 +143,14 @@ const ExerciseManagement: React.FC = () => {
                                                         </h4>
                                                         <Badge
                                                             className={`${getTypeColor(
-                                                                exercise.exerciseType
+                                                                exercise.exerciseTypeId
                                                             )} text-lg px-3 py-1`}
                                                         >
-                                                            {exerciseTypeOptions.find(option => option.value === exercise.exerciseType)?.label ?? ""}
+                                                            {exerciseTypeOptions.find(
+                                                                (option) =>
+                                                                    option.value ===
+                                                                    exercise.exerciseTypeId
+                                                            )?.label ?? ""}
                                                         </Badge>
                                                     </div>
                                                     <div className="flex space-x-3 ml-4">
@@ -145,7 +160,6 @@ const ExerciseManagement: React.FC = () => {
                                                             className="hover:bg-[#9abbd6]/20 text-[#4F85A6] p-3"
                                                             onClick={() =>
                                                                 startEdit(
-                                                                    index,
                                                                     exercise
                                                                 )
                                                             }
@@ -217,7 +231,9 @@ const ExerciseManagement: React.FC = () => {
                                     <CustomDropdown
                                         options={exerciseTypeOptions}
                                         value={type}
-                                        onChange={(value: ExerciseType) => setType(value)}
+                                        onChange={(value: ExerciseType) =>
+                                            setType(value)
+                                        }
                                         type="normalDropdown"
                                     />
                                 </div>
@@ -285,7 +301,6 @@ const ExerciseManagement: React.FC = () => {
                     </div>
                 </div>
             </div>
-
 
             {showEditExerciseModal && editingExercise && (
                 <EditExerciseModal

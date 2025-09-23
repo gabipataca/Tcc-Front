@@ -1,3 +1,4 @@
+import { toBase64 } from "@/libs/utils";
 import {
     CreateExerciseInputRequest,
     CreateExerciseOutputRequest,
@@ -19,12 +20,12 @@ export const processCreateExerciseValues = (
         .filter((s) => s.length > 0);
 
     const inputs: CreateExerciseInputRequest[] = inputStrings.map((s, idx) => ({
-        input: s,
+        input: toBase64(s),
         exerciseId: null,
         orderId: idx,
     }));
     const outputs: CreateExerciseOutputRequest[] = outputStrings.map(
-        (s, idx) => ({ output: s, exerciseId: null, orderId: idx })
+        (s, idx) => ({ output: toBase64(s), exerciseId: null, orderId: idx })
     );
 
     return { inputs, outputs };
@@ -45,12 +46,12 @@ export const processEditExerciseValues = (
         .filter((s) => s.length > 0);
 
     const inputs: EditExerciseInputRequest[] = inputStrings.map((s, idx) => ({
-        input: s,
+        input: toBase64(s),
         exerciseId: null,
         orderId: idx,
     }));
     const outputs: EditExerciseOutputRequest[] = outputStrings.map(
-        (s, idx) => ({ output: s, exerciseId: null, orderId: idx })
+        (s, idx) => ({ output: toBase64(s), exerciseId: null, orderId: idx })
     );
 
     return { inputs, outputs };

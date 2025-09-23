@@ -37,7 +37,7 @@ const CreateCompetition: React.FC = () => {
     return (
         <>
 
-            <div className="flex relative">
+            <div className="flex">
                 {(isSubmitting) && (
                     <Loading size="lg" variant="overlay" />
                 )}
@@ -100,9 +100,7 @@ const CreateCompetition: React.FC = () => {
                                                         />
                                                     )}
                                                 />
-                                                {errors.startDate && (
-                                                    <p className="text-red-500 text-sm mt-1">{errors.startDate.message}</p>
-                                                )}
+                                                
                                             </div>
                                             <div>
                                                 <label className="block text-xl font-medium text-[#3f3c40] mb-4">Hora de Início</label>

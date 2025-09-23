@@ -3,6 +3,7 @@ import z from "zod";
 import { ExerciseType } from "@/types/Exercise";
 import { SubmitErrorHandler, useForm } from "react-hook-form";
 import { useCallback } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const schema = z.object({
     id: z.number().min(1),
@@ -50,7 +51,6 @@ const useEditExerciseModal = (
             outputs: data.outputs,
         },
         mode: "onBlur",
-        // @ts-expect-error : Irrelevant
         resolver: zodResolver(schema),
     });
 

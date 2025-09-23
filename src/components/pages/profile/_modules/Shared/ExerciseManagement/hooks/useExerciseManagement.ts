@@ -2,13 +2,13 @@ import { Exercise, ExerciseType } from "@/types/Exercise";
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { EditExerciseRequestFormValues } from "../types";
 import { exerciseTypeOptions } from "../constants";
-import {
-    CreateExerciseRequest,
-} from "@/types/Exercise/Requests";
+import { CreateExerciseRequest } from "@/types/Exercise/Requests";
 import useLoadExercises from "./useLoadExercises";
-import { processCreateExerciseValues, processEditExerciseValues } from "../functions";
-
-
+import {
+    processCreateExerciseValues,
+    processEditExerciseValues,
+} from "../functions";
+import { useSnackbar } from "notistack";
 
 export const useExerciseManagement = () => {
     const {
@@ -29,10 +29,14 @@ export const useExerciseManagement = () => {
     const [inputValues, setInputValues] = useState<string>("");
     const [outputValues, setOutputValues] = useState<string>("");
 
-    const [filter, setFilter] = useState<string>("Todos");
+    const [filter, setFilter] = useState<ExerciseType | null>(null);
     const [searchTerm, setSearchTerm] = useState<string>("");
 
-    const [editingExercise, setEditingExercise] = useState<Exercise | null>(null);
+    const [editingExercise, setEditingExercise] = useState<Exercise | null>(
+        null
+    );
+
+    const { enqueueSnackbar } = useSnackbar();
 
     const [showEditExerciseModal, setShowEditExerciseModal] = useState(false);
 
@@ -74,11 +78,14 @@ export const useExerciseManagement = () => {
             return;
         }
 
-        const { inputs, outputs } = processCreateExerciseValues(inputValues, outputValues);
+        const { inputs, outputs } = processCreateExerciseValues(
+            inputValues,
+            outputValues
+        );
 
         const newExercise: CreateExerciseRequest = {
             title,
-            exerciseType: type,
+            exerciseTypeId: type,
             description,
             estimatedTime: 0,
             judgeUuid: null,
@@ -93,41 +100,63 @@ export const useExerciseManagement = () => {
         async (indexToRemove: number) => {
             try {
                 await deleteExercise(exercises[indexToRemove].id);
+                enqueueSnackbar("Exercício removido com sucesso!", {
+                    variant: "success",
+                    anchorOrigin: {
+                        vertical: "bottom",
+                        horizontal: "right",
+                    },
+                    autoHideDuration: 2500,
+                });
+                
             } catch (error) {
                 console.error("Error removing exercise:", error);
+                enqueueSnackbar("Erro ao tentar remover exercício!", {
+                    variant: "error",
+                    anchorOrigin: {
+                        vertical: "bottom",
+                        horizontal: "right",
+                    },
+                    autoHideDuration: 2500,
+                });
             }
         },
-        [deleteExercise, exercises]
+        [deleteExercise, enqueueSnackbar, exercises]
     );
 
     const startEdit = useCallback(
         (exercise: Exercise) => {
-            setEditingExercise({...exercise});
+            setEditingExercise({ ...exercise });
             toggleEditExerciseModal();
         },
         [toggleEditExerciseModal]
     );
 
-    const saveEdit = useCallback(async (exercise: EditExerciseRequestFormValues) => {
-        if (!editingExercise || editingExercise.id == -1) return;
+    const saveEdit = useCallback(
+        async (exercise: EditExerciseRequestFormValues) => {
+            if (!editingExercise || editingExercise.id == -1) return;
 
-        const {outputs, inputs} = processEditExerciseValues(exercise.inputs, exercise.outputs);
+            const { outputs, inputs } = processEditExerciseValues(
+                exercise.inputs,
+                exercise.outputs
+            );
 
-        await updateExercise({
-            id: exercise.id,
-            description: exercise.description,
-            judgeUuid: exercise.judgeUuid,
-            inputs: inputs,
-            outputs: outputs,
-            exerciseType: exercise.exerciseType,
-            title: exercise.title,
-            createdAt: exercise.createdAt,
-            estimatedTime: exercise.estimatedTime,
-        });
+            await updateExercise({
+                id: exercise.id,
+                description: exercise.description,
+                judgeUuid: exercise.judgeUuid,
+                inputs: inputs,
+                outputs: outputs,
+                exerciseType: exercise.exerciseType,
+                title: exercise.title,
+                createdAt: exercise.createdAt,
+                estimatedTime: exercise.estimatedTime,
+            });
 
-        
-        toggleEditExerciseModal();
-    }, [editingExercise, toggleEditExerciseModal, updateExercise]);
+            toggleEditExerciseModal();
+        },
+        [editingExercise, toggleEditExerciseModal, updateExercise]
+    );
 
     const handleLoadExercises = useCallback(async () => {
         await loadExercises(searchTerm);
@@ -140,10 +169,11 @@ export const useExerciseManagement = () => {
 
     const filteredExercises = useMemo(() => {
         return exercises.filter((exercise) => {
+            console.log(exercise.exerciseTypeId)
             const matchesFilter =
-                filter === "Todos" ||
-                exercise.exerciseType ===
-                    exerciseTypeOptions.find((x) => x.label === filter)?.value;
+                filter === null ||
+                exercise.exerciseTypeId ===
+                    exerciseTypeOptions.find((x) => x.value === filter)?.value;
             const matchesSearch = exercise.title
                 .toLowerCase()
                 .includes(searchTerm.toLowerCase());
@@ -163,11 +193,11 @@ export const useExerciseManagement = () => {
 
         setSearchTimeout(
             setTimeout(() => {
-                //handleLoadExercises();
+                handleLoadExercises();
             }, 1000)
         );
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [handleLoadExercises, searchTerm]);
+    }, [searchTerm]);
 
     return {
         title,

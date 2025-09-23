@@ -10,6 +10,7 @@ import { Controller } from "react-hook-form";
 import { EditExerciseModalProps } from "./types";
 import useEditExerciseModal from "./hooks/useEditExerciseModal";
 import { processExercise } from "./functions";
+import { ExerciseType } from "@/types/Exercise";
 
 const EditExerciseModal: React.FC<EditExerciseModalProps> = ({
     open,
@@ -18,11 +19,16 @@ const EditExerciseModal: React.FC<EditExerciseModalProps> = ({
     saveEdit,
     cancelEdit,
 }) => {
-    const { editExerciseControl, handleValidConfirm, handleInvalidConfirm, handleEditSubmit } = useEditExerciseModal(
+    const {
+        editExerciseControl,
+        handleValidConfirm,
+        handleInvalidConfirm,
+        handleEditSubmit,
+    } = useEditExerciseModal(
         processExercise(editingExercise),
         saveEdit,
         cancelEdit,
-        onClose,
+        onClose
     );
 
     return (
@@ -45,7 +51,10 @@ const EditExerciseModal: React.FC<EditExerciseModalProps> = ({
                 </>
             }
             hasCancelButton={true}
-            onConfirm={handleEditSubmit(handleValidConfirm, handleInvalidConfirm)}
+            onConfirm={handleEditSubmit(
+                handleValidConfirm,
+                handleInvalidConfirm
+            )}
             onCancel={cancelEdit}
             bodyContent={
                 <>
@@ -94,16 +103,20 @@ const EditExerciseModal: React.FC<EditExerciseModalProps> = ({
                         <Controller
                             control={editExerciseControl}
                             name="exerciseType"
-                            defaultValue={editingExercise.exerciseType}
+                            defaultValue={editingExercise.exerciseTypeId}
                             render={({ field, fieldState }) => (
                                 <CustomDropdown
-                                    type="selectDropdown"
+                                    type="normalDropdown"
                                     options={exerciseTypeOptions}
                                     errored={fieldState.error != undefined}
                                     errorMessage={
                                         fieldState.error?.message ?? ""
                                     }
                                     {...field}
+                                    value={exerciseTypeOptions.find(
+                                        (option) =>
+                                            option.value === field.value
+                                    )?.value || 1}
                                 />
                             )}
                         />

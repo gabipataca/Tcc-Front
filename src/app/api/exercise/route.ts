@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
 
     let res;
     try {
-        res = await apiRequest<ServerSideResponse<GetExercisesResponse>>("/Exercise", {
+        res = await apiRequest<GetExercisesResponse>("/Exercise", {
             method: "GET",
             params: { page, pageSize, search },
             cookies: req.cookies.toString()
@@ -25,14 +25,17 @@ export async function GET(req: NextRequest) {
         );
     }
 
-    return NextResponse.json(res.data, { status: res.status });
+    return NextResponse.json({
+        data: res.data,
+        status: res.status
+    } satisfies ServerSideResponse<GetExercisesResponse>, { status: res.status });
 }
 
 export async function POST(req: NextRequest) {
     const body = await req.json() as CreateExerciseRequest;
     let res;
     try {
-        res = await apiRequest<ServerSideResponse<Exercise>>("/Exercise", {
+        res = await apiRequest<Exercise>("/Exercise", {
             method: "POST",
             data: body,
             cookies: req.cookies.toString()
@@ -44,5 +47,8 @@ export async function POST(req: NextRequest) {
         );
     }
 
-    return NextResponse.json(res.data, { status: res.status });
+    return NextResponse.json({
+        data: res.data,
+        status: 201
+    } satisfies ServerSideResponse<Exercise>, { status: 201 });
 }
