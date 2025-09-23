@@ -14,7 +14,8 @@ export async function GET(req: NextRequest) {
     try {
         res = await apiRequest<ServerSideResponse<GetGroupsResponse>>("/Group", {
             method: "GET",
-            params: { page, pageSize, search }
+            params: { page, pageSize, search },
+            cookies: req.cookies.toString()
         });
     } catch (exc) {
         return NextResponse.json(
@@ -32,7 +33,8 @@ export async function POST(req: NextRequest) {
     try {
         res = await apiRequest<ServerSideResponse<CreateGroupResponse>>("/Group", {
             method: "POST",
-            data: body
+            data: body,
+            cookies: req.cookies.toString()
         });
     } catch (exc) {
         return NextResponse.json(

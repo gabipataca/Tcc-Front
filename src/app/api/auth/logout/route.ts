@@ -12,6 +12,8 @@ export async function GET(req: NextRequest) {
     const cookie = await cookies();
     const token = cookie.get("CompetitionAuthToken")?.value || null;
 
+    cookie.delete("CompetitionAuthToken");
+
     if(token == null) {
         return NextResponse.json(
             {
@@ -39,7 +41,7 @@ export async function GET(req: NextRequest) {
     }
     catch(exc) {
         console.error(exc);
-        console.error(res!.data);
+        console.error(res?.data);
 
         return NextResponse.json(
             {

@@ -26,7 +26,8 @@ export async function POST(req: NextRequest) {
     try {
         res = await apiRequest<ServerSideResponse<CreateCompetitionResponse>>("/Competition", {
             method: "POST",
-            data: body
+            data: body,
+            cookies: req.cookies.toString()
         });
     } catch {
         return NextResponse.json(
@@ -34,6 +35,7 @@ export async function POST(req: NextRequest) {
             { status: 500 }
         );
     }
+
     return NextResponse.json(res.data, { status: res.status });
 }
 

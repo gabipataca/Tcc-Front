@@ -15,7 +15,8 @@ export async function GET(req: NextRequest) {
     try {
         res = await apiRequest<ServerSideResponse<GetExercisesResponse>>("/Exercise", {
             method: "GET",
-            params: { page, pageSize, search }
+            params: { page, pageSize, search },
+            cookies: req.cookies.toString()
         });
     } catch (exc) {
         return NextResponse.json(
@@ -33,7 +34,8 @@ export async function POST(req: NextRequest) {
     try {
         res = await apiRequest<ServerSideResponse<Exercise>>("/Exercise", {
             method: "POST",
-            data: body
+            data: body,
+            cookies: req.cookies.toString()
         });
     } catch (exc) {
         return NextResponse.json(

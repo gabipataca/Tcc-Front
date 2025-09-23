@@ -3,6 +3,11 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import useLoadExercises from "./useLoadExercises";
+import CompetitionService from "@/services/CompetitionService";
+import { convertNumberToTimeSpan, parseDate } from "@/libs/utils";
+import { CreateCompetitionRequest } from "@/types/Competition/Requests";
+import { useSnackbar } from "notistack";
+import useProfileMenu from "@/components/pages/profile/hooks/useProfileMenu";
 
 interface CompetitionFormInputs {
     competitionName: string;
@@ -56,11 +61,36 @@ const schema = z
                 message: "O número de exercícios deve ser um número válido.",
             });
         }
+
+        if (data.startDate) {
+            const today = new Date(Date.now());
+            const startDateTime = parseDate(data.startDate);
+
+            if (startDateTime == null) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Data de início inválida.",
+                    path: ["startDate"],
+                });
+            } else {
+                if (startDateTime.getTime() < today.getTime()) {
+                    ctx.addIssue({
+                        code: z.ZodIssueCode.custom,
+                        message: "A data de início deve ser no futuro.",
+                        path: ["startDate"],
+                    });
+                }
+            }
+        }
     });
 
 const useCreateCompetition = () => {
     const [selectedExercises, setSelectedExercises] = useState<number[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+
+    const { toggleMenu } = useProfileMenu();
 
     const {
         exercises,
@@ -90,14 +120,14 @@ const useCreateCompetition = () => {
             stopAnswering: 85,
             stopScoreboard: 80,
             penalty: 30,
-            maxFileSize: 100,
+            maxFileSize: 20,
             exerciseCount: 2,
         },
         mode: "onChange",
         resolver: zodResolver(schema),
     });
 
-    const watchedExerciseCount = watch("exerciseCount");
+    const formValues = watch();
 
     const toggleExercise = useCallback(
         (exerciseId: number) => {
@@ -106,18 +136,18 @@ const useCreateCompetition = () => {
                     ? prev.filter((e) => e !== exerciseId)
                     : [...prev, exerciseId];
 
-                if (newSelection.length > watchedExerciseCount) {
-                    return newSelection.slice(0, watchedExerciseCount);
+                if (newSelection.length > formValues.exerciseCount) {
+                    return newSelection.slice(0, formValues.exerciseCount);
                 }
                 return newSelection;
             });
         },
-        [watchedExerciseCount]
+        [formValues.exerciseCount]
     );
 
     const isExerciseSelectionValid = useMemo(() => {
-        return selectedExercises.length === watchedExerciseCount;
-    }, [selectedExercises, watchedExerciseCount]);
+        return selectedExercises.length === formValues.exerciseCount;
+    }, [selectedExercises, formValues.exerciseCount]);
 
     const isFormValid = useMemo(() => {
         return isValid && isExerciseSelectionValid;
@@ -125,31 +155,67 @@ const useCreateCompetition = () => {
 
     const onSubmit: SubmitHandler<CompetitionFormInputs> = async (data) => {
         setIsSubmitting(true);
-        console.log("Configurações da Maratona:", {
-            ...data,
-            selectedExercises,
-        });
+        let errored = false;
 
         try {
-            alert("Maratona configurada (verifique o console para os dados)!");
+            const payload: CreateCompetitionRequest = {
+                name: data.competitionName,
+                startTime: new Date(
+                    `${data.startDate}T${data.startTime}:00`
+                ).toISOString(),
+                duration: convertNumberToTimeSpan(data.duration * 60),
+                blockSubmissions: convertNumberToTimeSpan(
+                    data.stopAnswering * 60
+                ),
+                stopRanking: convertNumberToTimeSpan(data.stopScoreboard * 60),
+                submissionPenalty: convertNumberToTimeSpan(data.penalty * 60),
+                maxSubmissionSize: data.maxFileSize,
+                maxExercises: data.exerciseCount,
+                exerciseIds: selectedExercises,
+                startInscriptions: null,
+                endInscriptions: null,
+            };
 
-            
+            //const res = await CompetitionService.createCompetition(payload);
 
+            //if(res.status == 201) {
+            await new Promise((resolve) => {
+                setTimeout(resolve, 1000);
+            });
+            enqueueSnackbar("Maratona criada com sucesso!", {
+                variant: "success",
+                autoHideDuration: 2500,
+                anchorOrigin: { vertical: "bottom", horizontal: "right" },
+            });
+            //}
         } catch (error) {
-            console.error("Erro ao criar competição:", error);
-            alert("Ocorreu um erro ao criar a maratona. Tente novamente.");
+            errored = true;
+            enqueueSnackbar(
+                "Ocorreu um erro ao criar a maratona. Tente novamente.",
+                {
+                    variant: "error",
+                    autoHideDuration: 2500,
+                    anchorOrigin: { vertical: "bottom", horizontal: "right" },
+                }
+            );
         } finally {
             setIsSubmitting(false);
+            if (!errored) {
+                setTimeout(() => {
+                    toggleMenu("Main");
+                }, 1500);
+            }
         }
     };
 
     return {
         control,
+        formValues,
         exercises,
         handleSubmit,
         onSubmit,
         errors,
-        exerciseCount: watchedExerciseCount,
+        exerciseCount: formValues.exerciseCount,
         selectedExercises,
         toggleExercise,
         isExerciseSelectionValid,

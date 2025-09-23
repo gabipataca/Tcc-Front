@@ -7,7 +7,6 @@ import { ApiRequestOptions } from "./types";
  */
 const API_URL = process.env.PRIVATE_API_URL || "";
 
-
 const apiClient = axios.create({
     baseURL: API_URL,
     withCredentials: true, // Ensures cookies are sent with requests
@@ -34,8 +33,18 @@ export async function apiRequest<T, X = unknown>(
     options: ApiRequestOptions<X>
 ) {
     const { method = "GET", data, cookies, params } = options;
-    const cookieHeader = cookies ? Object.entries(cookies).map(([key, value]) => `${key}=${value}`).join('; ') : undefined;
 
+    let cookieHeader: string | undefined = undefined;
+
+    if (cookies && typeof cookies === "string") {
+        cookieHeader = cookies;
+    } else {
+        cookieHeader = cookies
+            ? Object.entries(cookies)
+                  .map(([key, value]) => `${key}=${value}`)
+                  .join("; ")
+            : undefined;
+    }
 
     return await apiClient.request<T>({
         url: url,
@@ -47,7 +56,7 @@ export async function apiRequest<T, X = unknown>(
             referrerPolicy: "origin-when-cross-origin",
             credentials: "include",
         },
-        ...(cookies) ? { headers: { Cookie: cookieHeader } } : {},
+        ...(cookies ? { headers: { Cookie: cookieHeader } } : {}),
 
         signal: options.signal,
     });

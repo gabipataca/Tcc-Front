@@ -10,12 +10,13 @@ export async function PUT(req: NextRequest, { params }: { params: { groupId: str
     try {
         res = await apiRequest<ServerSideResponse<UpdateGroupResponse>>(`/Group/${params.groupId}`, {
             method: "PUT",
-            data: body
+            data: body,
+            cookies: req.cookies.toString()
         });
     } catch (exc) {
         return NextResponse.json(
             { message: "Erro ao atualizar grupo.", status: 500 },
-            { status: 500 }
+            { status: 500 },
         );
     }
 

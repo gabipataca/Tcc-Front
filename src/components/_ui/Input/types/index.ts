@@ -46,7 +46,7 @@ export interface InputProps {
     /**
      * The type of input, e.g., "text", "number", "email", or "password".
      */
-    type: "text" | "number" | "email" | "password" | "time";
+    type: "text" | "number" | "email" | "password" | "time" | "date";
 
     /**
      * Label text for the input.

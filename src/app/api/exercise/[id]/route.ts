@@ -8,7 +8,8 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     let res;
     try {
         res = await apiRequest<ServerSideResponse<void>>(`/Exercise/${params.id}`, {
-            method: "DELETE"
+            method: "DELETE",
+            cookies: req.cookies.toString()
         });
     } catch (exc) {
         return NextResponse.json(
@@ -26,7 +27,8 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     try {
         res = await apiRequest<ServerSideResponse<Exercise>>(`/Exercise/${params.id}`, {
             method: "PUT",
-            data: body
+            data: body,
+            cookies: req.cookies.toString()
         });
     } catch (exc) {
         return NextResponse.json(

@@ -13,7 +13,8 @@ export async function GET(req: NextRequest) {
     try {
         res = await apiRequest<ServerSideResponse<GetUsersResponse>>("/User", {
             method: "GET",
-            params: { page, pageSize, search }
+            params: { page, pageSize, search },
+            cookies: req.cookies.toString()
         });
     } catch (exc) {
         return NextResponse.json(

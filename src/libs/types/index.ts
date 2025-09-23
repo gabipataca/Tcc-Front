@@ -20,7 +20,7 @@ export interface ApiRequestOptions<T> {
      * Optional cookies to be sent with the request, formatted as a string. Only available at server-side.
      * @remarks This is useful for server-side rendering (SSR) scenarios where cookies need to be validated on the server.
      */
-    cookies?: Record<string, string>;
+    cookies?: Record<string, string> | string;
 
     /**
      * Optional headers to include in the API request.

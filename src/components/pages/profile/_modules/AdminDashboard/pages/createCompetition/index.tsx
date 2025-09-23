@@ -13,6 +13,7 @@ import { Checkbox } from "@/components/_ui/Checkbox";
 import { Controller } from "react-hook-form";
 import useCreateCompetition from "./hooks/useCreateCompetition";
 import { ChangeEvent } from "react";
+import Loading from "@/components/_ui/Loading";
 
 const CreateCompetition: React.FC = () => {
     const {
@@ -29,14 +30,18 @@ const CreateCompetition: React.FC = () => {
         search,
         setSearch,
         exercises,
+        formValues,
         currentPage,
     } = useCreateCompetition();
 
     return (
         <>
 
-            <div className="flex">
-
+            <div className="flex relative">
+                {(isSubmitting) && (
+                    <Loading size="lg" variant="overlay" />
+                )}
+                
                 <div className="flex-1">
                     <div className="container mx-auto p-8 space-y-12">
                         <div className="flex items-center justify-between">
@@ -86,10 +91,11 @@ const CreateCompetition: React.FC = () => {
                                                 <Controller
                                                     name="startDate"
                                                     control={control}
-                                                    render={({ field }) => (
+                                                    render={({ field, fieldState }) => (
                                                         <Input
                                                             type="date"
                                                             {...field}
+                                                            error={errors.startDate}
                                                             className="border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-xl h-16 px-6"
                                                         />
                                                     )}
@@ -339,28 +345,28 @@ const CreateCompetition: React.FC = () => {
                                             <div className="flex justify-between items-center">
                                                 <span className="text-lg text-[#4F85A6]">Nome:</span>
                                                 <span className="text-lg text-[#3f3c40] font-medium">
-                                                    {control._formValues.competitionName || "Não definido"}
+                                                    {formValues.competitionName || "Não definido"}
                                                 </span>
                                             </div>
 
                                             <div className="flex justify-between items-center">
                                                 <span className="text-lg text-[#4F85A6]">Data:</span>
                                                 <span className="text-lg text-[#3f3c40] font-medium">
-                                                    {control._formValues.startDate || "Não definida"}
+                                                    {formValues.startDate || "Não definida"}
                                                 </span>
                                             </div>
 
                                             <div className="flex justify-between items-center">
                                                 <span className="text-lg text-[#4F85A6]">Hora:</span>
                                                 <span className="text-lg text-[#3f3c40] font-medium">
-                                                    {control._formValues.startTime || "Não definida"}
+                                                    {formValues.startTime || "Não definida"}
                                                 </span>
                                             </div>
 
                                             <div className="flex justify-between items-center">
                                                 <span className="text-lg text-[#4F85A6]">Duração:</span>
                                                 <span className="text-lg text-[#3f3c40] font-medium">
-                                                    {control._formValues.duration ? `${control._formValues.duration} min` : "Não definida"}
+                                                    {formValues.duration ? `${formValues.duration} min` : "Não definida"}
                                                 </span>
                                             </div>
 
@@ -382,8 +388,9 @@ const CreateCompetition: React.FC = () => {
                                         <div className="pt-8 border-t border-[#e9edee]">
                                             <ButtonAdm
                                                 type="submit"
-                                                disabled={!isFormValid || isSubmitting}
+                                                //disabled={!isFormValid || isSubmitting}
                                                 className="w-full bg-[#4F85A6] hover:bg-[#3f3c40] text-white disabled:opacity-50 disabled:cursor-not-allowed text-xl h-10"
+                                                onClick={handleSubmit(onSubmit)}
                                             >
                                                 {isSubmitting ? "Criando..." : "Criar Maratona"}
                                                 <Trophy className="w-6 h-6 ml-3" />
