@@ -1,6 +1,6 @@
 import { fromBase64 } from "@/libs/utils";
 import ExerciseService from "@/services/ExerciseService";
-import { Exercise } from "@/types/Exercise";
+import { Exercise, ExerciseType } from "@/types/Exercise";
 import {
     CreateExerciseRequest,
     EditExerciseRequest,
@@ -9,9 +9,13 @@ import { useSnackbar } from "notistack";
 import { useCallback, useState } from "react";
 
 const useLoadExercises = () => {
+    const [loadingExercises, setLoadingExercises] = useState<boolean>(false);
     const [exercises, setExercises] = useState<Exercise[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [totalPages, setTotalPages] = useState<number>(1);
+    const [exerciseTypeFilter, setExerciseTypeFilter] = useState<ExerciseType | null>(
+        null
+    );
     const [controllerSignal, setControllerSignal] =
         useState<AbortController | null>(null);
 
@@ -29,12 +33,22 @@ const useLoadExercises = () => {
         }
     }, [currentPage]);
 
+    const toggleExerciseTypeFilter = useCallback(
+        (type: ExerciseType | null) => {
+            setExerciseTypeFilter(type);
+        },
+        []
+    );
+    
+    const toggleLoadingExercises = useCallback(() => {
+        setLoadingExercises((prev) => !prev);
+    }, []);
+
     const addExercise = useCallback(
         async (exercise: CreateExerciseRequest) => {
             try {
+                setLoadingExercises(true);
                 const response = await ExerciseService.createExercise(exercise);
-
-                console.log(response.status);
 
                 if (response.status !== 201) {
                     enqueueSnackbar("Erro ao tentar criar exercício.", {
@@ -57,14 +71,17 @@ const useLoadExercises = () => {
                 });
             } catch (error) {
                 console.error("Error adding exercise:", error);
+            } finally {
+                setLoadingExercises(false);
             }
         },
         [enqueueSnackbar]
     );
 
     const loadExercises = useCallback(
-        async (searchTerm: string) => {
+        async (searchTerm: string, exerciseType: ExerciseType | null) => {
             try {
+                setLoadingExercises(true);
                 if (controllerSignal) {
                     controllerSignal.abort();
                     setControllerSignal(null);
@@ -77,6 +94,7 @@ const useLoadExercises = () => {
                     currentPage,
                     10,
                     searchTerm,
+                    exerciseType,
                     controller.signal
                 );
                 const data = response.data!;
@@ -97,9 +115,19 @@ const useLoadExercises = () => {
                 setTotalPages(data.totalPages);
             } catch (error) {
                 console.error("Error loading exercises:", error);
+                enqueueSnackbar("Erro ao carregar exercícios.", {
+                    variant: "error",
+                    autoHideDuration: 3000,
+                    anchorOrigin: {
+                        horizontal: "right",
+                        vertical: "bottom",
+                    },
+                });
+            } finally {
+                setLoadingExercises(false);
             }
         },
-        [currentPage, controllerSignal]
+        [controllerSignal, currentPage, enqueueSnackbar]
     );
 
     const deleteExercise = useCallback(async (id: number) => {
@@ -114,18 +142,32 @@ const useLoadExercises = () => {
     const updateExercise = useCallback(
         async (exercise: EditExerciseRequest) => {
             try {
-                const response = await ExerciseService.updateExercise(exercise);
-                const data = response.data!;
-                setExercises((prev) =>
-                    prev.map((ex) =>
-                        ex.id === exercise.id ? { ...ex, ...data } : ex
-                    )
-                );
+                const data = await ExerciseService.updateExercise(exercise);
+                const exercisesCopy = exercises.filter((ex) => ex.id !== data.id);
+                exercisesCopy.push(data);
+                exercisesCopy.sort((a, b) => (a.id! < b.id! ? -1 : 1));
+                setExercises([...exercisesCopy]);
+                enqueueSnackbar("Exercício atualizado com sucesso!", {
+                    variant: "success",
+                    anchorOrigin: {
+                        vertical: "bottom",
+                        horizontal: "right",
+                    },
+                    autoHideDuration: 2500,
+                });
             } catch (error) {
                 console.error("Error updating exercise:", error);
+                enqueueSnackbar("Erro ao tentar atualizar exercício!", {
+                    variant: "error",
+                    anchorOrigin: {
+                        vertical: "bottom",
+                        horizontal: "right",
+                    },
+                    autoHideDuration: 2500,
+                });
             }
         },
-        [setExercises]
+        [enqueueSnackbar, exercises]
     );
 
     return {
@@ -140,6 +182,10 @@ const useLoadExercises = () => {
         updateExercise,
         controllerSignal,
         setControllerSignal,
+        toggleExerciseTypeFilter,
+        exerciseTypeFilter,
+        loadingExercises,
+        toggleLoadingExercises,
     };
 };
 

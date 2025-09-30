@@ -1,10 +1,10 @@
 import { Exercise } from "@/types/Exercise";
-import { EditExerciseRequestFormValues } from "../../../types";
+import { EditExerciseRequest } from "@/types/Exercise/Requests";
 
 export interface EditExerciseModalProps {
     open: boolean;
     onClose: () => void;
     editingExercise: Exercise;
-    saveEdit: (exercise: EditExerciseRequestFormValues) => Promise<void>;
+    saveEdit: (exercise: EditExerciseRequest) => Promise<void>;
     cancelEdit: () => void;
 }

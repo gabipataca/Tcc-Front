@@ -146,7 +146,7 @@ export interface EditExerciseRequest {
     /**
      * Type of the exercise.
      */
-    exerciseType: ExerciseType;
+    exerciseTypeId: ExerciseType;
 
     /**
      * Description of the exercise.

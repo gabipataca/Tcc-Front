@@ -41,10 +41,35 @@ export interface ServerSideResponse<T> {
     data?: T;
 }
 
+
+/**
+ * Represents a paginated result set returned from the server.
+ *
+ * @template T - The type of the items in the paginated result.
+ */
 export interface PagedResult<T> {
+    /**
+     * The items on the current page.
+     */
     items: T[];
+
+    /**
+     * The total number of items available.
+     */
     totalCount: number;
+
+    /**
+     * The current page number (1-based).
+     */
     page: number;
+
+    /**
+     * The total number of pages available.
+     */
     totalPages: number;
+
+    /**
+     * The number of items per page.
+     */
     pageSize: number;
 }

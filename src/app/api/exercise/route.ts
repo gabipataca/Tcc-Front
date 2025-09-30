@@ -10,12 +10,13 @@ export async function GET(req: NextRequest) {
     const page = Number(searchParams.get("page")) || 1;
     const pageSize = Number(searchParams.get("pageSize")) || 10;
     const search = searchParams.get("search") || "";
+    const exerciseType = searchParams.get("exerciseType") || null;
 
     let res;
     try {
         res = await apiRequest<GetExercisesResponse>("/Exercise", {
             method: "GET",
-            params: { page, pageSize, search },
+            params: { page, pageSize, search, exerciseType },
             cookies: req.cookies.toString()
         });
     } catch (exc) {

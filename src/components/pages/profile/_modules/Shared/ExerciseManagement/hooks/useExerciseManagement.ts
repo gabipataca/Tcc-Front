@@ -1,12 +1,13 @@
 import { Exercise, ExerciseType } from "@/types/Exercise";
 import { useState, useMemo, useCallback, useEffect } from "react";
-import { EditExerciseRequestFormValues } from "../types";
 import { exerciseTypeOptions } from "../constants";
-import { CreateExerciseRequest } from "@/types/Exercise/Requests";
+import {
+    CreateExerciseRequest,
+    EditExerciseRequest,
+} from "@/types/Exercise/Requests";
 import useLoadExercises from "./useLoadExercises";
 import {
     processCreateExerciseValues,
-    processEditExerciseValues,
 } from "../functions";
 import { useSnackbar } from "notistack";
 
@@ -21,7 +22,13 @@ export const useExerciseManagement = () => {
         addExercise,
         deleteExercise,
         updateExercise,
+        exerciseTypeFilter,
+        toggleExerciseTypeFilter,
+        loadingExercises,
+        toggleLoadingExercises,
     } = useLoadExercises();
+
+    const [loadingAddExercise, setLoadingAddExercise] = useState(false);
 
     const [title, setTitle] = useState<string>("");
     const [type, setType] = useState<ExerciseType>(1);
@@ -29,7 +36,6 @@ export const useExerciseManagement = () => {
     const [inputValues, setInputValues] = useState<string>("");
     const [outputValues, setOutputValues] = useState<string>("");
 
-    const [filter, setFilter] = useState<ExerciseType | null>(null);
     const [searchTerm, setSearchTerm] = useState<string>("");
 
     const [editingExercise, setEditingExercise] = useState<Exercise | null>(
@@ -108,7 +114,6 @@ export const useExerciseManagement = () => {
                     },
                     autoHideDuration: 2500,
                 });
-                
             } catch (error) {
                 console.error("Error removing exercise:", error);
                 enqueueSnackbar("Erro ao tentar remover exercício!", {
@@ -133,21 +138,16 @@ export const useExerciseManagement = () => {
     );
 
     const saveEdit = useCallback(
-        async (exercise: EditExerciseRequestFormValues) => {
+        async (exercise: EditExerciseRequest) => {
             if (!editingExercise || editingExercise.id == -1) return;
-
-            const { outputs, inputs } = processEditExerciseValues(
-                exercise.inputs,
-                exercise.outputs
-            );
 
             await updateExercise({
                 id: exercise.id,
                 description: exercise.description,
-                judgeUuid: exercise.judgeUuid,
-                inputs: inputs,
-                outputs: outputs,
-                exerciseType: exercise.exerciseType,
+                judgeUuid: exercise.judgeUuid!,
+                inputs: exercise.inputs,
+                outputs: exercise.outputs,
+                exerciseTypeId: exercise.exerciseTypeId,
                 title: exercise.title,
                 createdAt: exercise.createdAt,
                 estimatedTime: exercise.estimatedTime,
@@ -159,33 +159,21 @@ export const useExerciseManagement = () => {
     );
 
     const handleLoadExercises = useCallback(async () => {
-        await loadExercises(searchTerm);
-    }, [loadExercises, searchTerm]);
+        await loadExercises(searchTerm, exerciseTypeFilter);
+    }, [loadExercises, searchTerm, exerciseTypeFilter]);
 
     const cancelEdit = useCallback(() => {
         toggleEditExerciseModal();
         setEditingExercise(null);
     }, [toggleEditExerciseModal]);
 
-    const filteredExercises = useMemo(() => {
-        return exercises.filter((exercise) => {
-            console.log(exercise.exerciseTypeId)
-            const matchesFilter =
-                filter === null ||
-                exercise.exerciseTypeId ===
-                    exerciseTypeOptions.find((x) => x.value === filter)?.value;
-            const matchesSearch = exercise.title
-                .toLowerCase()
-                .includes(searchTerm.toLowerCase());
-            return matchesFilter && matchesSearch;
-        });
-    }, [exercises, filter, searchTerm]);
-
     const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(
         null
     );
 
     useEffect(() => {
+        if(loadingExercises) return;
+
         if (searchTimeout) {
             clearTimeout(searchTimeout);
             setSearchTimeout(null);
@@ -199,13 +187,26 @@ export const useExerciseManagement = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchTerm]);
 
+    useEffect(() => {
+        if(loadingExercises) return;
+
+        if(searchTimeout) {
+            clearTimeout(searchTimeout);
+            setSearchTimeout(null);
+        }
+
+        handleLoadExercises();
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [exerciseTypeFilter]);
+
     return {
         title,
         setTitle,
         type,
         setType,
-        filter,
-        setFilter,
+        exerciseTypeFilter,
+        toggleExerciseTypeFilter,
         searchTerm,
         setSearchTerm,
         editingExercise,
@@ -217,7 +218,7 @@ export const useExerciseManagement = () => {
         saveEdit,
         cancelEdit,
         filterOptions,
-        filteredExercises,
+        exercises,
         getTypeColor,
         description,
         setDescription,
@@ -230,5 +231,6 @@ export const useExerciseManagement = () => {
         nextPage,
         prevPage,
         handleLoadExercises,
+        loadingExercises,
     };
 };

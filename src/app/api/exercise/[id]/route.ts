@@ -4,10 +4,11 @@ import { Exercise } from "@/types/Exercise";
 import { ServerSideResponse } from "@/types/Global";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     let res;
+    const exerciseId = (await params).id;
     try {
-        res = await apiRequest<ServerSideResponse<void>>(`/Exercise/${params.id}`, {
+        res = await apiRequest<ServerSideResponse<void>>(`/Exercise/${exerciseId}`, {
             method: "DELETE",
             cookies: req.cookies.toString()
         });
@@ -21,11 +22,12 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     return NextResponse.json(res.data, { status: res.status });
 }
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }): Promise<NextResponse> {
     const body = await req.json() as EditExerciseRequest;
     let res;
+    const exerciseId = (await params).id;
     try {
-        res = await apiRequest<ServerSideResponse<Exercise>>(`/Exercise/${params.id}`, {
+        res = await apiRequest<ServerSideResponse<Exercise>>(`/Exercise/${exerciseId}`, {
             method: "PUT",
             data: body,
             cookies: req.cookies.toString()
@@ -36,6 +38,8 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
             { status: 500 }
         );
     }
+
+    console.log(res.data);
 
     return NextResponse.json(res.data, { status: res.status });
 }
