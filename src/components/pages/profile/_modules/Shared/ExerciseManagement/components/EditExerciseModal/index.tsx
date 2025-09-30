@@ -9,7 +9,7 @@ import { exerciseTypeOptions } from "../../constants";
 import { Controller } from "react-hook-form";
 import { EditExerciseModalProps } from "./types";
 import useEditExerciseModal from "./hooks/useEditExerciseModal";
-import { processExercise } from "./functions";
+import { ExerciseType } from "@/types/Exercise";
 
 const EditExerciseModal: React.FC<EditExerciseModalProps> = ({
     open,
@@ -18,11 +18,21 @@ const EditExerciseModal: React.FC<EditExerciseModalProps> = ({
     saveEdit,
     cancelEdit,
 }) => {
-    const { editExerciseControl, handleValidConfirm, handleInvalidConfirm, handleEditSubmit } = useEditExerciseModal(
-        processExercise(editingExercise),
+    const {
+        editExerciseControl,
+        handleValidConfirm,
+        handleInvalidConfirm,
+        handleEditSubmit,
+        handleOnInputChange,
+        handleOnOutputChange,
+        handleOnTitleChange,
+        handleOnDescriptionChange,
+        handleOnExerciseTypeChange,
+    } = useEditExerciseModal(
+        editingExercise,
         saveEdit,
         cancelEdit,
-        onClose,
+        onClose
     );
 
     return (
@@ -45,7 +55,10 @@ const EditExerciseModal: React.FC<EditExerciseModalProps> = ({
                 </>
             }
             hasCancelButton={true}
-            onConfirm={handleEditSubmit(handleValidConfirm, handleInvalidConfirm)}
+            onConfirm={handleEditSubmit(
+                handleValidConfirm,
+                handleInvalidConfirm
+            )}
             onCancel={cancelEdit}
             bodyContent={
                 <>
@@ -64,25 +77,7 @@ const EditExerciseModal: React.FC<EditExerciseModalProps> = ({
                                     className={`border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-xl h-16 px-6 ${
                                         fieldState.error ? "border-red-500" : ""
                                     }`}
-                                />
-                            )}
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-xl font-medium text-[#3f3c40] mb-4">
-                            Título do Exercício
-                        </label>
-                        <Controller
-                            control={editExerciseControl}
-                            name="title"
-                            defaultValue={editingExercise.title || ""}
-                            render={({ field, fieldState }) => (
-                                <Input
-                                    type="text"
-                                    {...field}
-                                    className={`border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-xl h-16 px-6 ${
-                                        fieldState.error ? "border-red-500" : ""
-                                    }`}
+                                    onChange={(e) => handleOnTitleChange(e.target.value)}
                                 />
                             )}
                         />
@@ -94,16 +89,21 @@ const EditExerciseModal: React.FC<EditExerciseModalProps> = ({
                         <Controller
                             control={editExerciseControl}
                             name="exerciseType"
-                            defaultValue={editingExercise.exerciseType}
+                            defaultValue={editingExercise.exerciseTypeId}
                             render={({ field, fieldState }) => (
                                 <CustomDropdown
-                                    type="selectDropdown"
+                                    type="normalDropdown"
                                     options={exerciseTypeOptions}
                                     errored={fieldState.error != undefined}
                                     errorMessage={
                                         fieldState.error?.message ?? ""
                                     }
                                     {...field}
+                                    value={exerciseTypeOptions.find(
+                                        (option) =>
+                                            option.value === field.value
+                                    )?.value || 1}
+                                    onChange={(value) => handleOnExerciseTypeChange(value as ExerciseType)}
                                 />
                             )}
                         />
@@ -130,6 +130,7 @@ const EditExerciseModal: React.FC<EditExerciseModalProps> = ({
                                                 ? "border-red-500"
                                                 : ""
                                         }`}
+                                        onChange={(e) => handleOnDescriptionChange(e.target.value)}
                                     />
                                 )}
                             />
@@ -151,6 +152,16 @@ const EditExerciseModal: React.FC<EditExerciseModalProps> = ({
                                                 ? "border-red-500"
                                                 : ""
                                         }`}
+                                        onChange={(e) => {
+                                            const value = e.target.value;
+                                            const cursorPos = e.target.selectionStart;
+
+                                            const beforeCursor = value.slice(0, cursorPos);
+                                            const currentLine = beforeCursor.split("\n").length - 1;
+
+                                            const lines = value.split("\n");
+                                            handleOnInputChange(lines[currentLine], currentLine);
+                                        }}
                                     />
                                 )}
                             />
@@ -173,6 +184,16 @@ const EditExerciseModal: React.FC<EditExerciseModalProps> = ({
                                                 ? "border-red-500"
                                                 : ""
                                         }`}
+                                        onChange={(e) => {
+                                            const value = e.target.value;
+                                            const cursorPos = e.target.selectionStart;
+
+                                            const beforeCursor = value.slice(0, cursorPos);
+                                            const currentLine = beforeCursor.split("\n").length - 1;
+
+                                            const lines = value.split("\n");
+                                            handleOnOutputChange(lines[currentLine], currentLine);
+                                        }}
                                     />
                                 )}
                             />

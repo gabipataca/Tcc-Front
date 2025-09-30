@@ -18,6 +18,8 @@ import CustomDropdown from "@/components/_ui/Dropdown";
 import { ExerciseType } from "@/types/Exercise";
 import { Textarea } from "@/components/_ui/Textarea";
 
+import { useMemo } from "react";
+import Loading from "@/components/_ui/Loading";
 
 const ExerciseManagement: React.FC = () => {
     const {
@@ -25,8 +27,8 @@ const ExerciseManagement: React.FC = () => {
         setTitle,
         type,
         setType,
-        filter,
-        setFilter,
+        exerciseTypeFilter,
+        toggleExerciseTypeFilter,
         searchTerm,
         setSearchTerm,
         showEditExerciseModal,
@@ -37,7 +39,7 @@ const ExerciseManagement: React.FC = () => {
         startEdit,
         saveEdit,
         cancelEdit,
-        filteredExercises,
+        exercises,
         getTypeColor,
         inputValues,
         setInputValues,
@@ -45,10 +47,18 @@ const ExerciseManagement: React.FC = () => {
         setOutputValues,
         pdfFile,
         handleFileChange,
-
+loadingExercises,
     } = useExerciseManagement();
 
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const exerciseTypeLabel = useMemo(() => {
+        return (
+            exerciseTypeOptions.find(
+                (option) => option.value === exerciseTypeFilter
+            )?.label ?? "Todos"
+        );
+    }, [exerciseTypeFilter]);
 
     return (
         <>
@@ -88,8 +98,21 @@ const ExerciseManagement: React.FC = () => {
                                     </label>
                                     <CustomDropdown
                                         options={exerciseTypeOptions}
-                                        value={exerciseTypeOptions.find(option => option.label === filter)?.value ?? null}
-                                        onChange={(val: ExerciseType) => setFilter(exerciseTypeOptions.find(option => option.value === val)?.label ?? "Todos")}
+                                        value={
+                                            exerciseTypeOptions.find(
+                                                (option) =>
+                                                    option.value ===
+                                                    exerciseTypeFilter
+                                            )?.value ?? null
+                                        }
+                                        onChange={(val: ExerciseType) =>
+                                            toggleExerciseTypeFilter(
+                                                exerciseTypeOptions.find(
+                                                    (option) =>
+                                                        option.value === val
+                                                )?.value ?? null
+                                            )
+                                        }
                                         type="normalDropdown"
                                     />
                                 </div>
@@ -110,69 +133,74 @@ const ExerciseManagement: React.FC = () => {
                                     />
                                 </div>
 
-                                <div className="max-h-96 overflow-y-auto border border-[#e9edee] rounded-lg p-6 space-y-4">
-                                    {filteredExercises.length === 0 ? (
-                                        <div className="text-center py-12">
-                                            <FileText className="h-16 w-16 text-[#9abbd6] mx-auto mb-4" />
-                                            <p className="text-xl text-[#4F85A6]">
-                                                Nenhum exercício encontrado
-                                            </p>
-                                            <p className="text-lg text-[#3f3c40] mt-2">
-                                                {filter === "Todos"
-                                                    ? "Adicione um novo exercício"
-                                                    : `Nenhum exercício do tipo "${filter}"`}
-                                            </p>
-                                        </div>
-                                    ) : (
-                                        filteredExercises.map(
-                                            (exercise, index) => (
-                                                <div
-                                                    key={index}
-                                                    className="flex justify-between items-center p-4 border-b border-[#e9edee] hover:bg-[#e9edee]/30 rounded transition-colors"
-                                                >
-                                                    <div className="flex-1">
-                                                        <h4 className="text-xl font-medium text-[#3f3c40] mb-2">
-                                                            {exercise.title}
-                                                        </h4>
-                                                        <Badge
-                                                            className={`${getTypeColor(
-                                                                exercise.exerciseType
-                                                            )} text-lg px-3 py-1`}
-                                                        >
-                                                            {exerciseTypeOptions.find(option => option.value === exercise.exerciseType)?.label ?? ""}
-                                                        </Badge>
-                                                    </div>
-                                                    <div className="flex space-x-3 ml-4">
-                                                        <ButtonAdm
-                                                            variant="ghost"
-                                                            size="sm"
-                                                            className="hover:bg-[#9abbd6]/20 text-[#4F85A6] p-3"
-                                                            onClick={() =>
-                                                                startEdit(
-                                                                    index,
-                                                                    exercise
-                                                                )
-                                                            }
-                                                        >
-                                                            <Edit className="w-5 h-5" />
-                                                        </ButtonAdm>
-                                                        <ButtonAdm
-                                                            variant="ghost"
-                                                            size="sm"
-                                                            className="hover:bg-red-50 text-red-500 p-3"
-                                                            onClick={() =>
-                                                                handleRemoveExercise(
-                                                                    index
-                                                                )
-                                                            }
-                                                        >
-                                                            <Trash2 className="w-5 h-5" />
-                                                        </ButtonAdm>
-                                                    </div>
+                                <div className="max-h-96 min-h-32 overflow-y-auto border border-[#e9edee] rounded-lg p-6 space-y-4 relative">
+                                    {exercises.length === 0 &&
+                                        !loadingExercises && (
+                                            <div className="text-center py-12">
+                                                <FileText className="h-16 w-16 text-[#9abbd6] mx-auto mb-4" />
+                                                <p className="text-xl text-[#4F85A6]">
+                                                    Nenhum exercício encontrado
+                                                </p>
+                                                <p className="text-lg text-[#3f3c40] mt-2">
+                                                    {exerciseTypeFilter === null
+                                                        ? "Adicione um novo exercício"
+                                                        : `Nenhum exercício do tipo "${exerciseTypeLabel}" encontrado.`}
+                                                </p>
+                                            </div>
+                                        )}
+                                    {!loadingExercises &&
+                                        exercises.length > 0 &&
+                                        exercises.map((exercise, index) => (
+                                            <div
+                                                key={`${exercise.id}-${index}`}
+                                                className="flex justify-between items-center p-4 border-b border-[#e9edee] hover:bg-[#e9edee]/30 rounded transition-colors"
+                                            >
+                                                <div className="flex-1">
+                                                    <h4 className="text-xl font-medium text-[#3f3c40] mb-2">
+                                                        {exercise.title}
+                                                    </h4>
+                                                    <Badge
+                                                        className={`${getTypeColor(
+                                                            exercise.exerciseTypeId
+                                                        )} text-lg px-3 py-1`}
+                                                    >
+                                                        {exerciseTypeOptions.find(
+                                                            (option) =>
+                                                                option.value ===
+                                                                exercise.exerciseTypeId
+                                                        )?.label ?? ""}
+                                                    </Badge>
                                                 </div>
-                                            )
-                                        )
-                                    )}
+                                                <div className="flex space-x-3 ml-4">
+                                                    <ButtonAdm
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="hover:bg-[#9abbd6]/20 text-[#4F85A6] p-3"
+                                                        onClick={() =>
+                                                            startEdit(exercise)
+                                                        }
+                                                    >
+                                                        <Edit className="w-5 h-5" />
+                                                    </ButtonAdm>
+                                                    <ButtonAdm
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="hover:bg-red-50 text-red-500 p-3"
+                                                        onClick={() =>
+                                                            handleRemoveExercise(
+                                                                index
+                                                            )
+                                                        }
+                                                    >
+                                                        <Trash2 className="w-5 h-5" />
+                                                    </ButtonAdm>
+                                                </div>
+                                            </div>
+                                        ))}
+
+                                        {loadingExercises && (
+                                            <Loading variant="spinner" size="md" />
+                                        )}
                                 </div>
 
                                 <div className="text-center">
@@ -180,7 +208,7 @@ const ExerciseManagement: React.FC = () => {
                                         variant="outline"
                                         className="text-lg px-4 py-2 border-[#4F85A6] text-[#4F85A6]"
                                     >
-                                        Total: {filteredExercises.length}
+                                        Total: {exercises.length}
                                         exercício(s)
                                     </Badge>
                                 </div>
@@ -221,7 +249,9 @@ const ExerciseManagement: React.FC = () => {
                                     <CustomDropdown
                                         options={exerciseTypeOptions}
                                         value={type}
-                                        onChange={(value: ExerciseType) => setType(value)}
+                                        onChange={(value: ExerciseType) =>
+                                            setType(value)
+                                        }
                                         type="normalDropdown"
                                     />
                                 </div>
@@ -299,7 +329,6 @@ const ExerciseManagement: React.FC = () => {
                     </div>
                 </div>
             </div>
-
 
             {showEditExerciseModal && editingExercise && (
                 <EditExerciseModal

@@ -1,5 +1,5 @@
 import { apiRequest } from "@/libs/apiClient";
-import { Exercise } from "@/types/Exercise";
+import { Exercise, ExerciseType } from "@/types/Exercise";
 import { CreateExerciseRequest, EditExerciseRequest } from "@/types/Exercise/Requests";
 import { GetExercisesResponse } from "@/types/Exercise/Responses";
 import { ServerSideResponse } from "@/types/Global";
@@ -9,6 +9,7 @@ class ExerciseService {
         page: number,
         pageSize: number,
         search: string,
+        exerciseType: ExerciseType | null,
         abortSignal: AbortSignal,
     ): Promise<ServerSideResponse<GetExercisesResponse>> {
         const response = await apiRequest<
@@ -19,6 +20,7 @@ class ExerciseService {
                 page,
                 pageSize,
                 search,
+                exerciseType,
             },
             signal: abortSignal,
         });
@@ -55,9 +57,9 @@ class ExerciseService {
 
     static async updateExercise(
         exercise: EditExerciseRequest
-    ): Promise<ServerSideResponse<Exercise>> {
+    ): Promise<Exercise> {
         const response = await apiRequest<
-            ServerSideResponse<Exercise>
+            Exercise
         >(`/api/exercise/${exercise.id}`, {
             method: "PUT",
             data: exercise,

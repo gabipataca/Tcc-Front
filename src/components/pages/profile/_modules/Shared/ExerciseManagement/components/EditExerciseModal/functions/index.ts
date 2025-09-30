@@ -8,8 +8,8 @@ export const processExercise = (exercise: Exercise): EditExerciseRequestFormValu
     inputs.sort((a, b) => a.id - b.id);
     outputs.sort((a, b) => a.id - b.id);
 
-    const inputsString = inputs.map(input => input.id).join("\n");
-    const outputsString = outputs.map(output => output.id).join("\n");
+    const inputsString = inputs.map(input => input.input).join("\n");
+    const outputsString = outputs.map(output => output.output).join("\n");
 
     return {
         id: exercise.id,
@@ -17,7 +17,7 @@ export const processExercise = (exercise: Exercise): EditExerciseRequestFormValu
         description: exercise.description,
         createdAt: exercise.createdAt,
         estimatedTime: exercise.estimatedTime,
-        exerciseType: exercise.exerciseType,
+        exerciseType: exercise.exerciseTypeId,
         judgeUuid: exercise.judgeUuid!,
         inputs: inputsString,
         outputs: outputsString,
