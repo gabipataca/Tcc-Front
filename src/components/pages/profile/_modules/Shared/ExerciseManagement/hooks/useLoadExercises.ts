@@ -1,3 +1,5 @@
+"use client"
+
 import { fromBase64 } from "@/libs/utils";
 import ExerciseService from "@/services/ExerciseService";
 import { Exercise, ExerciseType } from "@/types/Exercise";

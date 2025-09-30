@@ -1,7 +1,7 @@
+"use client"
+
 import { Exercise, ExerciseType } from "@/types/Exercise";
-import { useState, useMemo, useCallback, useEffect, ChangeEvent } from "react";
-import { EditExerciseRequestFormValues } from "../types";
-import { exerciseTypeOptions } from "../constants";
+import { useState, useCallback, useEffect, ChangeEvent } from "react";
 import {
     CreateExerciseRequest,
     EditExerciseRequest,
@@ -9,7 +9,6 @@ import {
 import useLoadExercises from "./useLoadExercises";
 import {
     processCreateExerciseValues,
-    processEditExerciseValues,
 } from "../functions";
 import { useSnackbar } from "notistack";
 
@@ -39,8 +38,6 @@ export const useExerciseManagement = () => {
     const [outputValues, setOutputValues] = useState<string>("");
     const [pdfFile, setPdfFile] = useState<File | null>(null);
 
-    // Estados de filtro e busca
-    const [filter, setFilter] = useState<string>("Todos");
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(
         null
@@ -103,7 +100,7 @@ export const useExerciseManagement = () => {
         const newExercise: CreateExerciseRequest = {
             title,
             exerciseTypeId: type,
-            description,
+            description: "",
             estimatedTime: 0,
             judgeUuid: null,
             inputs: inputs,
@@ -111,10 +108,11 @@ export const useExerciseManagement = () => {
         };
 
         await addExercise(newExercise);
-    }, [title, type, description, inputValues, outputValues, addExercise]);
+    }, [title, type, pdfFile, inputValues, outputValues, addExercise]);
 
     const handleRemoveExercise = useCallback(
         async (indexToRemove: number) => {
+            try{
             if (exercises && exercises[indexToRemove]) {
                 await deleteExercise(exercises[indexToRemove].id);
                 enqueueSnackbar("Exercício removido com sucesso!", {
@@ -125,6 +123,7 @@ export const useExerciseManagement = () => {
                     },
                     autoHideDuration: 2500,
                 });
+            }
             } catch (error) {
                 console.error("Error removing exercise:", error);
                 enqueueSnackbar("Erro ao tentar remover exercício!", {
@@ -178,10 +177,6 @@ export const useExerciseManagement = () => {
         setEditingExercise(null);
     }, [toggleEditExerciseModal]);
 
-    const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(
-        null
-    );
-
     useEffect(() => {
         if(loadingExercises) return;
 
@@ -229,10 +224,7 @@ export const useExerciseManagement = () => {
         startEdit,
         saveEdit,
         cancelEdit,
-        filterOptions,
         getTypeColor,
-        description,
-        setDescription,
         inputValues,
         setInputValues,
         outputValues,
