@@ -13,9 +13,8 @@ const useLoadExercises = () => {
     const [exercises, setExercises] = useState<Exercise[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [totalPages, setTotalPages] = useState<number>(1);
-    const [exerciseTypeFilter, setExerciseTypeFilter] = useState<ExerciseType | null>(
-        null
-    );
+    const [exerciseTypeFilter, setExerciseTypeFilter] =
+        useState<ExerciseType | null>(null);
     const [controllerSignal, setControllerSignal] =
         useState<AbortController | null>(null);
 
@@ -39,7 +38,7 @@ const useLoadExercises = () => {
         },
         []
     );
-    
+
     const toggleLoadingExercises = useCallback(() => {
         setLoadingExercises((prev) => !prev);
     }, []);
@@ -130,38 +129,25 @@ const useLoadExercises = () => {
         [controllerSignal, currentPage, enqueueSnackbar]
     );
 
-    const addExercise = useCallback(
-        async (exerciseData: FormData) => {
-            try {
-                await ExerciseService.createExercise(exerciseData);
-                await loadExercises("");
-            } catch (error) {
-                console.error("Error adding exercise:", error);
-                alert(
-                    "Falha ao criar o exercício. Verifique o console para mais detalhes."
-                );
-            }
-        },
-        [loadExercises]
-    );
-
     const deleteExercise = useCallback(
         async (id: number) => {
             try {
                 await ExerciseService.deleteExercise(id);
-                await loadExercises("");
+                setExercises((prev) => prev.filter((ex) => ex.id !== id));
             } catch (error) {
                 console.error("Error deleting exercise:", error);
             }
         },
-        [loadExercises]
+        [setExercises]
     );
 
     const updateExercise = useCallback(
         async (exercise: EditExerciseRequest) => {
             try {
                 const data = await ExerciseService.updateExercise(exercise);
-                const exercisesCopy = exercises.filter((ex) => ex.id !== data.id);
+                const exercisesCopy = exercises.filter(
+                    (ex) => ex.id !== data.id
+                );
                 exercisesCopy.push(data);
                 exercisesCopy.sort((a, b) => (a.id! < b.id! ? -1 : 1));
                 setExercises([...exercisesCopy]);
