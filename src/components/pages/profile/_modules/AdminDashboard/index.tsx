@@ -9,7 +9,7 @@ import Button from "@/components/_ui/Button";
 import AccessCodeDialog from "./components/AccessCodeDialog";
 import StatsGrid from "@/components/_ui/StatsGrid";
 import useProfileMenu from "../../hooks/useProfileMenu";
-import { groupsData, professorsData, studentsData, Student, Professor, Group } from "../../hooks/mockData";
+import { groupsData, professorsData, studentsData, Student, Professor, GroDup } from "../../hooks/mockData";
 import ExerciseManagement from "../Shared/ExerciseManagement";
 import CreateCompetition from "./pages/createCompetition";
 import CreateCompetitionSubscription from "@/app/Profile/CreateSubscription/page";

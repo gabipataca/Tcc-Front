@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from "react";
+import { useCompetition } from "@/contexts/CompetitionContext";
 
 interface CompetitionFormData {
     name: string;
@@ -17,7 +18,9 @@ export const useCompetitionForm = () => {
     const [initialDate, setInitialDate] = useState("");
     const [initialRegistration, setInitialRegistration] = useState("");
     const [endRegistration, setEndRegistration] = useState("");
-    const [status, setStatus] = useState("Fechado");
+    const [status, setStatus] = useState("Fechado"); // ✅ adicionado
+
+    const { addSubscription } = useCompetition();
 
     const handleSubmit = useCallback(
         (e: React.FormEvent) => {
@@ -31,6 +34,9 @@ export const useCompetitionForm = () => {
                 endRegistration,
                 status,
             };
+
+            addSubscription(dataCompetition);
+
             alert("Maratona criada com sucesso!");
         },
         [
@@ -41,6 +47,7 @@ export const useCompetitionForm = () => {
             initialRegistration,
             endRegistration,
             status,
+            addSubscription,
         ]
     );
 

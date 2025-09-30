@@ -3,8 +3,6 @@
 
 import type React from "react"
 import { Trophy, Users, Calendar, CheckCircle, FileText } from "lucide-react"
-import SideMenu from "@/components/_ui/SideMenu"
-import Navbar from "@/components/_ui/Navbar"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/_ui/Card"
 import Input from "@/components/_ui/Input"
 import { ButtonAdm } from "@/components/_ui/ButtonAdm"
@@ -12,7 +10,6 @@ import { Badge } from "@/components/_ui/Badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/_ui/Select"
 
 import { useCompetitionForm } from './hooks/useCreateSubscription'
-
 const CreateCompetitionSubscription: React.FC = () => {
   const {
     name,
@@ -84,29 +81,6 @@ const CreateCompetitionSubscription: React.FC = () => {
                         className="w-full min-h-32 border border-[#e9edee] rounded-md px-6 py-4 text-xl text-[#3f3c40] focus:border-[#4F85A6] focus:ring-2 focus:ring-[#4F85A6] focus:ring-offset-2 resize-none"
                         required
                       />
-                    </div>
-
-                    <div>
-                      <label className="block text-xl font-medium text-[#3f3c40] mb-4">Status da Maratona</label>
-                      <Select value={status} onValueChange={setStatus}>
-                        <SelectTrigger className="w-full border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-xl h-16 px-6">
-                          <SelectValue placeholder="Selecione o status" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-white border-[#e9edee]">
-                          <SelectItem value="Aberto" className="text-lg">
-                            <div className="flex items-center gap-3">
-                              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                              Aberto
-                            </div>
-                          </SelectItem>
-                          <SelectItem value="Fechado" className="text-lg">
-                            <div className="flex items-center gap-3">
-                              <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                              Fechado
-                            </div>
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
                     </div>
                   </CardContent>
                 </Card>
@@ -209,19 +183,7 @@ const CreateCompetitionSubscription: React.FC = () => {
                         <span className="text-lg text-[#3f3c40] font-medium">{name || "Não definido"}</span>
                       </div>
 
-                      <div className="flex justify-between items-center">
-                        <span className="text-lg text-[#4F85A6]">Status:</span>
-                        <Badge
-                          variant={status === "Aberto" ? "default" : "secondary"}
-                          className={
-                            status === "Aberto"
-                              ? "bg-green-500 text-white text-lg px-4 py-2"
-                              : "bg-red-500 text-white text-lg px-4 py-2"
-                          }
-                        >
-                          {status}
-                        </Badge>
-                      </div>
+                      
 
                       <div className="flex justify-between items-center">
                         <span className="text-lg text-[#4F85A6]">Max. Integrantes:</span>

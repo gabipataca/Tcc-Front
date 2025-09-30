@@ -111,6 +111,7 @@ const useCreateCompetition = () => {
         formState: { errors, isValid },
         trigger,
         watch,
+        setValue,
     } = useForm<CompetitionFormInputs>({
         defaultValues: {
             competitionName: "",
@@ -228,6 +229,7 @@ const useCreateCompetition = () => {
         pageSize,
         search,
         setSearch,
+        setValue,
     };
 };
 
