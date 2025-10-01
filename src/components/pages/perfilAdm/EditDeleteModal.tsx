@@ -50,7 +50,7 @@ export const EditDeleteModal = ({ isOpen, onClose, onConfirm, item, itemType, mo
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
-                        <ButtonAdm variant="outline" onClick={onClose} className="border-[#e9edee] text-[#3f3c40] hover:bg-[#e9edee]">
+                        <ButtonAdm variant="outline" onClick={onClose} className="border-[#e9edee] text-white bg-[#4F85A6] hover:bg-[#126396]">
                             Cancelar
                         </ButtonAdm>
                         <ButtonAdm onClick={() => onConfirm()} className="bg-red-500 hover:bg-red-600 text-white">
@@ -115,10 +115,10 @@ export const EditDeleteModal = ({ isOpen, onClose, onConfirm, item, itemType, mo
                     )}
                 </div>
                 <DialogFooter>
-                    <ButtonAdm variant="outline" onClick={onClose} className="border-[#e9edee] text-[#3f3c40] hover:bg-[#e9edee]">
+                    <ButtonAdm variant="outline" onClick={onClose} className="border-[#e9edee] text-white bg-[#4F85A6] hover:bg-[#126396]">
                         Cancelar
                     </ButtonAdm>
-                    <ButtonAdm onClick={handleSave} className="bg-[#4F85A6] hover:bg-[#3f3c40] text-white">
+                    <ButtonAdm onClick={handleSave} className="bg-[#4F85A6] hover:bg-[#126396] text-white">
                         <Edit className="w-4 h-4 mr-2" />
                         Salvar Alterações
                     </ButtonAdm>

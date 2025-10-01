@@ -99,7 +99,7 @@ const AdminDashboard: FC = () => {
                             <p className="text-sm text-[#4F85A6]">Código de Acesso Atual</p>
                             <p className="text-lg font-mono font-bold text-[#3f3c40]">{accessCodeDialog.code}</p>
                         </div>
-                        <ButtonAdm onClick={() => setAccessCodeDialog({ ...accessCodeDialog, isOpen: true })} className="bg-[#4F85A6] hover:bg-[#3f3c40] text-white">
+                        <ButtonAdm onClick={() => setAccessCodeDialog({ ...accessCodeDialog, isOpen: true })} className="bg-[#4F85A6] hover:bg-[#126396] text-white">
                             <Edit className="w-4 h-4 mr-2" />
                             Alterar Código
                         </ButtonAdm>
