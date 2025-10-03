@@ -1,4 +1,6 @@
-import { useState, useMemo, ChangeEvent } from "react";
+"use client";
+
+import { useMemo } from "react";
 
 type ErrorType =
     | "Compilation Error"
@@ -320,23 +322,8 @@ const mockWrongRows: WrongTeamData[] = [
     },
 ];
 
-const useSubmissions = () => {
-    const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
-    const [currentTable, setCurrentTable] = useState<"correct" | "wrong">(
-        "correct"
-    );
-
-    const handleChangePage = (event: unknown, newPage: number) => {
-        setPage(newPage);
-    };
-
-    const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
-        setRowsPerPage(+event.target.value);
-        setPage(0);
-    };
-
-    const displayedRows = useMemo(() => {
+const useSubmissions = (currentTable: "correct" | "wrong") => {
+    const rows = useMemo(() => {
         return currentTable === "correct" ? mockCorrectRows : mockWrongRows;
     }, [currentTable]);
 
@@ -351,15 +338,9 @@ const useSubmissions = () => {
     }, [currentTable]);
 
     return {
-        page,
-        rowsPerPage,
-        currentTable,
-        displayedRows,
+        rows,
         displayedColumns,
         title,
-        handleChangePage,
-        handleChangeRowsPerPage,
-        setCurrentTable,
     };
 };
 

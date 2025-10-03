@@ -1,6 +1,7 @@
+"use client";
+
 import { useState, useCallback, useMemo } from "react";
 import { Badge } from "@/components/_ui/Badge";
-import { Check, X, AlertCircle } from "lucide-react";
 
 interface ExerciseSubmission {
     id: string;
@@ -85,6 +86,52 @@ const mockData: ExerciseSubmission[] = [
         fileName: "algoritmo_lento.py",
         fileUrl: "#",
     },
+    // Novos dados adicionados
+    {
+        id: "9",
+        groupName: "DataDragons",
+        submissionTime: "2025-06-26 13:50:19",
+        status: "approved",
+        errorType: null,
+        fileName: "final_submission.go",
+        fileUrl: "#",
+    },
+    {
+        id: "10",
+        groupName: "KernelKrew",
+        submissionTime: "2025-06-26 13:45:07",
+        status: "rejected",
+        errorType: "Erro de Compilação",
+        fileName: "tentativa.rs",
+        fileUrl: "#",
+    },
+    {
+        id: "11",
+        groupName: "LogicLords",
+        submissionTime: "2025-06-26 13:40:51",
+        status: "pending",
+        errorType: null,
+        fileName: "problema_B.java",
+        fileUrl: "#",
+    },
+    {
+        id: "12",
+        groupName: "ScriptSquad",
+        submissionTime: "2025-06-26 13:35:28",
+        status: "approved",
+        errorType: null,
+        fileName: "quick_sort.js",
+        fileUrl: "#",
+    },
+    {
+        id: "13",
+        groupName: "RecursiveRangers",
+        submissionTime: "2025-06-26 13:30:05",
+        status: "rejected",
+        errorType: "Uso de Memória Excedido",
+        fileName: "memory_hog.cpp",
+        fileUrl: "#",
+    },
 ];
 
 const useManualCorrection = () => {
@@ -94,7 +141,7 @@ const useManualCorrection = () => {
         useState<ExerciseSubmission | null>(null);
     const [feedback, setFeedback] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 10;
+    const [itemsPerPage, setItemsPerPage] = useState(10);
 
     const handleApprove = useCallback((id: string) => {
         setSubmissions((prev) =>
@@ -191,6 +238,7 @@ const useManualCorrection = () => {
         currentPage,
         setCurrentPage,
         itemsPerPage,
+        setItemsPerPage,
         handleApprove,
         handleDownload,
         getStatusBadge,
