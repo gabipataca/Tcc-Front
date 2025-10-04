@@ -40,18 +40,18 @@ export default function ManualCorrection() {
   } = useManualCorrection()
 
   const handleChangePage = (_: unknown, newPage: number) => {
-    setCurrentPage(newPage + 1) // MUI uses 0-based index, our hook uses 1-based
+    setCurrentPage(newPage + 1)
   }
 
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setItemsPerPage(+event.target.value)
+    setItemsPerPage(Number.parseInt(event.target.value, 10))
     setCurrentPage(1)
   }
 
   return (
     <NavbarRankingAdm>
-      <div className="w-full bg-gray-100 min-h-screen p-4 pb-32">
-        <div className="max-w-7xl mx-auto">
+      <div className="w-full bg-gray-100 min-h-[calc(100vh-64px)] p-4 flex flex-col">
+        <div className="max-w-7xl mx-auto w-full flex-1 flex flex-col">
           {/* Título da página */}
           <div className="text-center mb-6">
             <h1 className="text-2xl font-bold text-[#4F85A6] mb-2">Correção Manual de Exercícios</h1>
@@ -59,9 +59,9 @@ export default function ManualCorrection() {
           </div>
 
           {/* Tabela de submissões */}
-          <Card className="shadow-lg mb-16">
-            <CardContent className="p-0">
-              <div className="overflow-x-auto">
+          <Card className="shadow-lg mb-4 flex-1 flex flex-col">
+            <CardContent className="p-0 flex-1 flex flex-col">
+              <div className="overflow-x-auto flex-1">
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-[#4F85A6] hover:bg-[#4F85A6]">

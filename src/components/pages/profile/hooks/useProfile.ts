@@ -27,7 +27,7 @@ const useProfile = () => {
             case "Student":
                 return StudentDashboard;
             default:
-                return AdminDashboard;
+                return TeacherDashboard;
         }
     }, [user]);
 

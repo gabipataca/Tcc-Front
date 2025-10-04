@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
         res = await apiRequest<GetExercisesResponse>("/Exercise", {
             method: "GET",
             params: { page, pageSize, search, exerciseType },
-            cookies: req.cookies.toString()
+            cookies: req.cookies.toString(),
         });
     } catch (exc) {
         return NextResponse.json(
@@ -26,20 +26,23 @@ export async function GET(req: NextRequest) {
         );
     }
 
-    return NextResponse.json({
-        data: res.data,
-        status: res.status
-    } satisfies ServerSideResponse<GetExercisesResponse>, { status: res.status });
+    return NextResponse.json(
+        {
+            data: res.data,
+            status: res.status,
+        } satisfies ServerSideResponse<GetExercisesResponse>,
+        { status: res.status }
+    );
 }
 
 export async function POST(req: NextRequest) {
-    const body = await req.json() as CreateExerciseRequest;
+    const body = (await req.json()) as CreateExerciseRequest;
     let res;
     try {
         res = await apiRequest<Exercise>("/Exercise", {
             method: "POST",
             data: body,
-            cookies: req.cookies.toString()
+            cookies: req.cookies.toString(),
         });
     } catch (exc) {
         return NextResponse.json(
@@ -48,8 +51,11 @@ export async function POST(req: NextRequest) {
         );
     }
 
-    return NextResponse.json({
-        data: res.data,
-        status: 201
-    } satisfies ServerSideResponse<Exercise>, { status: 201 });
+    return NextResponse.json(
+        {
+            data: res.data,
+            status: 201,
+        } satisfies ServerSideResponse<Exercise>,
+        { status: 201 }
+    );
 }

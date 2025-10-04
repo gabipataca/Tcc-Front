@@ -1,4 +1,3 @@
-
 "use client"
 
 import type React from "react"
@@ -8,8 +7,9 @@ import Input from "@/components/_ui/Input"
 import { ButtonAdm } from "@/components/_ui/ButtonAdm"
 import { Badge } from "@/components/_ui/Badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/_ui/Select"
+import { SnackbarProvider } from "notistack"
 
-import { useCompetitionForm } from './hooks/useCreateSubscription'
+import { useCompetitionForm } from "./hooks/useCreateSubscription"
 const CreateCompetitionSubscription: React.FC = () => {
   const {
     name,
@@ -31,10 +31,8 @@ const CreateCompetitionSubscription: React.FC = () => {
   } = useCompetitionForm()
 
   return (
-    
-
+    <SnackbarProvider maxSnack={3}>
       <div className="flex">
-
         <div className="flex-1">
           <div className="container mx-auto p-8 space-y-12">
             <div className="flex items-center justify-between">
@@ -183,8 +181,6 @@ const CreateCompetitionSubscription: React.FC = () => {
                         <span className="text-lg text-[#3f3c40] font-medium">{name || "Não definido"}</span>
                       </div>
 
-                      
-
                       <div className="flex justify-between items-center">
                         <span className="text-lg text-[#4F85A6]">Max. Integrantes:</span>
                         <Badge
@@ -255,6 +251,7 @@ const CreateCompetitionSubscription: React.FC = () => {
           </div>
         </div>
       </div>
+    </SnackbarProvider>
   )
 }
 

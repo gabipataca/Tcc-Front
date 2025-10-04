@@ -1,5 +1,10 @@
+"use client";
+
+import type React from "react";
+
 import { useState, useMemo, useCallback } from "react";
 import { useCompetition } from "@/contexts/CompetitionContext";
+import { useSnackbar } from "notistack";
 
 interface CompetitionFormData {
     name: string;
@@ -18,26 +23,40 @@ export const useCompetitionForm = () => {
     const [initialDate, setInitialDate] = useState("");
     const [initialRegistration, setInitialRegistration] = useState("");
     const [endRegistration, setEndRegistration] = useState("");
-    const [status, setStatus] = useState("Fechado"); // ✅ adicionado
+    const [status, setStatus] = useState("Fechado");
 
     const { addSubscription } = useCompetition();
+    const { enqueueSnackbar } = useSnackbar();
 
     const handleSubmit = useCallback(
         (e: React.FormEvent) => {
             e.preventDefault();
-            const dataCompetition: CompetitionFormData = {
-                name,
-                description,
-                maxMembers: Number(maxMembers),
-                initialDate,
-                initialRegistration,
-                endRegistration,
-                status,
-            };
 
-            addSubscription(dataCompetition);
+            try {
+                const dataCompetition: CompetitionFormData = {
+                    name,
+                    description,
+                    maxMembers: Number(maxMembers),
+                    initialDate,
+                    initialRegistration,
+                    endRegistration,
+                    status,
+                };
 
-            alert("Maratona criada com sucesso!");
+                addSubscription(dataCompetition);
+
+                enqueueSnackbar("Inscrição liberada com sucesso", {
+                    variant: "success",
+                    autoHideDuration: 2500,
+                    anchorOrigin: { vertical: "bottom", horizontal: "right" },
+                });
+            } catch (error) {
+                enqueueSnackbar("Erro ao liberar inscrição", {
+                    variant: "error",
+                    autoHideDuration: 2500,
+                    anchorOrigin: { vertical: "bottom", horizontal: "right" },
+                });
+            }
         },
         [
             name,
@@ -48,6 +67,7 @@ export const useCompetitionForm = () => {
             endRegistration,
             status,
             addSubscription,
+            enqueueSnackbar,
         ]
     );
 

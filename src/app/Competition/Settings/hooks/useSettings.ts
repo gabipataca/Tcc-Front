@@ -1,4 +1,7 @@
+"use client";
+
 import { useState, useCallback } from "react";
+import { useSnackbar } from "notistack";
 
 interface MarathonData {
     id: number;
@@ -25,6 +28,8 @@ const mockMarathonData: MarathonData = {
 };
 
 const useSettings = () => {
+    const { enqueueSnackbar } = useSnackbar();
+
     const [marathonName, setMarathonName] = useState(mockMarathonData.name);
     const [startDate, setStartDate] = useState(mockMarathonData.startDate);
     const [startTime, setStartTime] = useState(mockMarathonData.startTime);
@@ -40,22 +45,43 @@ const useSettings = () => {
         String(mockMarathonData.maxFileSize)
     );
     const [isMarathonActive, setIsMarathonActive] = useState(true);
+    const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
     const handleUpdateMarathon = useCallback(() => {
         if (!isMarathonActive) {
-            alert("A maratona já foi finalizada e não pode ser atualizada.");
+            enqueueSnackbar(
+                "A maratona já foi finalizada e não pode ser atualizada.",
+                {
+                    variant: "error",
+                    autoHideDuration: 2500,
+                    anchorOrigin: { vertical: "bottom", horizontal: "right" },
+                }
+            );
             return;
         }
 
-        console.log("Atualizando configurações da Maratona:", {
-            id: mockMarathonData.id,
-            duration: Number.parseInt(duration),
-            stopAnswering: Number.parseInt(stopAnswering),
-            stopScoreboard: Number.parseInt(stopScoreboard),
-            penalty: Number.parseInt(penalty),
-            maxFileSize: Number.parseInt(maxFileSize),
-        });
-        alert("Configurações da Maratona atualizadas!");
+        try {
+            console.log("Atualizando configurações da Maratona:", {
+                id: mockMarathonData.id,
+                duration: Number.parseInt(duration),
+                stopAnswering: Number.parseInt(stopAnswering),
+                stopScoreboard: Number.parseInt(stopScoreboard),
+                penalty: Number.parseInt(penalty),
+                maxFileSize: Number.parseInt(maxFileSize),
+            });
+
+            enqueueSnackbar("Configurações atualizadas com sucesso", {
+                variant: "success",
+                autoHideDuration: 2500,
+                anchorOrigin: { vertical: "bottom", horizontal: "right" },
+            });
+        } catch (error) {
+            enqueueSnackbar("Erro ao atualizar configurações", {
+                variant: "error",
+                autoHideDuration: 2500,
+                anchorOrigin: { vertical: "bottom", horizontal: "right" },
+            });
+        }
     }, [
         isMarathonActive,
         duration,
@@ -63,19 +89,24 @@ const useSettings = () => {
         stopScoreboard,
         penalty,
         maxFileSize,
+        enqueueSnackbar,
     ]);
 
     const handleStopMarathon = useCallback(() => {
         if (!isMarathonActive) {
-            alert("A maratona já foi finalizada.");
+            enqueueSnackbar("A maratona já foi finalizada.", {
+                variant: "error",
+                autoHideDuration: 2500,
+                anchorOrigin: { vertical: "bottom", horizontal: "right" },
+            });
             return;
         }
 
-        if (
-            window.confirm(
-                "Tem certeza que deseja FINALIZAR esta maratona agora?"
-            )
-        ) {
+        setShowConfirmDialog(true);
+    }, [isMarathonActive, enqueueSnackbar]);
+
+    const confirmStopMarathon = useCallback(() => {
+        try {
             const now = new Date();
             const currentHour = String(now.getHours()).padStart(2, "0");
             const currentMinute = String(now.getMinutes()).padStart(2, "0");
@@ -85,10 +116,23 @@ const useSettings = () => {
             console.log(
                 `Maratona ID ${mockMarathonData.id} finalizada às ${actualEndTime}.`
             );
-            alert(`Maratona finalizada em ${actualEndTime}!`);
+
+            enqueueSnackbar("Maratona finalizada com sucesso", {
+                variant: "success",
+                autoHideDuration: 2500,
+                anchorOrigin: { vertical: "bottom", horizontal: "right" },
+            });
+
             setIsMarathonActive(false);
+            setShowConfirmDialog(false);
+        } catch (error) {
+            enqueueSnackbar("Erro ao finalizar maratona", {
+                variant: "error",
+                autoHideDuration: 2500,
+                anchorOrigin: { vertical: "bottom", horizontal: "right" },
+            });
         }
-    }, [isMarathonActive]);
+    }, [enqueueSnackbar]);
 
     return {
         marathonName,
@@ -112,6 +156,9 @@ const useSettings = () => {
         handleUpdateMarathon,
         handleStopMarathon,
         mockMarathonData,
+        showConfirmDialog,
+        setShowConfirmDialog,
+        confirmStopMarathon,
     };
 };
 
