@@ -1,6 +1,6 @@
 import { apiRequest } from "@/libs/apiClient";
-import { ServerSideResponse } from "@/types/Global";
 import { GetUsersResponse } from "@/types/User/Responses";
+import { AxiosResponse } from "axios";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -9,9 +9,9 @@ export async function GET(req: NextRequest) {
     const pageSize = Number(searchParams.get("pageSize")) || 10;
     const search = searchParams.get("search") || "";
 
-    let res;
+    let res: AxiosResponse<GetUsersResponse>;
     try {
-        res = await apiRequest<ServerSideResponse<GetUsersResponse>>("/User", {
+        res = await apiRequest<GetUsersResponse>("/User", {
             method: "GET",
             params: { page, pageSize, search },
             cookies: req.cookies.toString()

@@ -3,9 +3,9 @@
 import React, { useState, useCallback } from "react";
 import Balao from "@/components/_ui/Balao";
 import Table from "@/components/_ui/Table";
-import TableHeader from "@/components/_ui/Table/components/TableHeader";
+import TableHead from "@/components/_ui/Table/components/TableHeader";
 import TableBody from "@/components/_ui/Table/components/TableBody";
-import TableHeaderItem from "@/components/_ui/Table/components/TableHeaderItem";
+import TableCell from "@/components/_ui/Table/components/TableHeaderItem";
 import TableRow from "@/components/_ui/Table/components/TableRow";
 import TableCell from "@/components/_ui/Table/components/TableCell";
 import { TableContainer as TableContainerMui, Box, Paper, Typography, Modal } from "@mui/material";
@@ -257,16 +257,16 @@ const RankingPage: React.FC = () => {
             {/* Tabela */}
             <TableContainerMui component={TableContainer}>
                 <Table>
-                    <TableHeader>
+                    <TableHead>
                         <TableRow>
                             {tableHeaderColumns.map((column, idx) => (
-                                <TableHeaderItem
+                                <TableCell
                                     key={`${column}-${idx}`}
                                     item={{ content: column, space: 1 }}
                                 />
                             ))}
                         </TableRow>
-                    </TableHeader>
+                    </TableHead>
 
                     <TableBody>
                         {data.map((rowData, idx) => (

@@ -14,5 +14,10 @@ export interface Group {
      */
     name: string;
 
+    /**
+     * Identifier of the group's leader (user ID).
+     */
+    leaderId: string;
+
     users: User[];
 }

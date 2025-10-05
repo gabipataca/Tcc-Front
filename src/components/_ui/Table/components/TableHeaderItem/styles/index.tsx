@@ -3,11 +3,11 @@
 import { styled } from '@mui/material/styles';
 import { TableCell } from "@mui/material";
 
-interface StyledTableHeaderItemProps {
+interface StyledTableCellProps {
     space: number;
 }
 
-export const StyledTableHeaderItem = styled(TableCell)<StyledTableHeaderItemProps>`
+export const StyledTableCell = styled(TableCell)<StyledTableCellProps>`
     color: var(--primary-text-color) !important;
     text-align: center !important;
 `;

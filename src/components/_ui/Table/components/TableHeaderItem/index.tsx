@@ -1,15 +1,22 @@
 "use client"
 
 import React from "react";
-import { StyledTableHeaderItem } from "./styles";
+import { StyledTableCell } from "./styles";
 import { TableHeaderItemProps } from "./types";
 
-const TableHeaderItem: React.FC<TableHeaderItemProps> = ({ item }) => {
-    return (
-        <StyledTableHeaderItem space={item.space}>
-            {item.content}
-        </StyledTableHeaderItem>
-    );
-};
 
-export default TableHeaderItem;
+import type { ForwardedRef } from "react";
+
+const TableCell = React.forwardRef<HTMLTableCellElement, TableHeaderItemProps>(
+    ({ item }, ref: ForwardedRef<HTMLTableCellElement>) => {
+        return (
+            <StyledTableCell ref={ref} space={item.space}>
+                {item.content}
+            </StyledTableCell>
+        );
+    }
+);
+
+TableCell.displayName = "TableHeaderItem";
+
+export default TableCell;

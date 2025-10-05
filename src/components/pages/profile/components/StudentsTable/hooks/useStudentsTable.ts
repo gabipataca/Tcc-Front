@@ -1,50 +1,88 @@
-import { useState } from "react";
-import { studentsData } from "../../../hooks/mockData";
+import { useEffect, useState } from "react";
+import userLoadUsers from "./useLoadUsers";
+import { GenericUserInfo } from "@/types/User";
 
 const useStudentsTable = () => {
-    const [selectedStudents, setSelectedStudents] = useState<number[]>([]);
+    const {
+        users,
+        currentPage,
+        totalPages,
+        nextPage,
+        prevPage,
+        loadUsers,
+        deleteUser,
+        updateUser,
+        controllerSignal,
+        setControllerSignal,
+        toggleUserTypeFilter,
+        userTypeFilter,
+        loadingUsers,
+        toggleLoadingUsers,
+        togglePage,
+    } = userLoadUsers();
+
+    const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
+    const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(
+        null
+    );
     const [statusFilter, setStatusFilter] = useState("all");
     const [deleteDialog, setDeleteDialog] = useState<{
         isOpen: boolean;
-        student: (typeof studentsData)[0] | null;
+        student: GenericUserInfo | null;
     }>({
         isOpen: false,
         student: null,
     });
 
-    const filteredStudents = studentsData.filter((student) => {
-        const matchesSearch =
-            student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            student.group.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesStatus =
-            statusFilter === "all" || student.status === statusFilter;
-        return matchesSearch && matchesStatus;
-    });
-
     const handleSelectAll = (checked: boolean) => {
-        setSelectedStudents(checked ? filteredStudents.map((s) => s.id) : []);
+        setSelectedUsers(checked ? users.map((s) => s.id) : []);
     };
 
-    const handleSelectStudent = (studentId: number, checked: boolean) => {
-        setSelectedStudents((prev) =>
+    const handleSelectUser = (userId: string, checked: boolean) => {
+        setSelectedUsers((prev) =>
             checked
-                ? [...prev, studentId]
-                : prev.filter((id) => id !== studentId)
+                ? [...prev, userId]
+                : prev.filter((id) => id !== userId)
         );
     };
 
+    useEffect(() => {
+        if (searchTimeout) {
+            clearTimeout(searchTimeout);
+        }
+
+        const timeoutEvent = setTimeout(() => {
+            loadUsers(searchTerm, userTypeFilter);
+        }, 500);
+
+        setSearchTimeout(timeoutEvent);
+
+        return () => {
+            if (searchTimeout) {
+                clearTimeout(searchTimeout);
+            }
+        };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [searchTerm, userTypeFilter]);
+
     return {
-        selectedStudents,
+        selectedUsers,
         searchTerm,
         statusFilter,
         deleteDialog,
-        filteredStudents,
+        users,
+        loadingUsers,
+        currentPage,
+        totalPages,
+        nextPage,
+        prevPage,
         setSearchTerm,
         setStatusFilter,
         setDeleteDialog,
         handleSelectAll,
-        handleSelectStudent,
+        handleSelectUser,
+        togglePage,
     };
 };
 

@@ -1,3 +1,8 @@
+import { Group } from "../Group";
+
+export type UserRole = "Admin" | "Teacher" | "Student";
+
+
 /**
  * Represents a user in the system.
  */
@@ -40,15 +45,17 @@ export interface User {
     /**
      * The role assigned to the user (Admin, Teacher, or Student).
      */
-    role: "Admin" | "Teacher" | "Student";
+    role: UserRole;
 }
 
 
 export interface GenericUserInfo {
     id: string;
+    ra: string;
     email: string;
     name: string;
     joinYear: number;
     createdAt: string;
     lastLoggedAt: string;
+    group: Group | null;
 }
