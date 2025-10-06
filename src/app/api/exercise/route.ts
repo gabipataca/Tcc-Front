@@ -72,8 +72,6 @@ export async function POST(req: NextRequest) {
         );
     }
 
-    console.log(res.data);
-
     return NextResponse.json(
         {
             data: res.data,

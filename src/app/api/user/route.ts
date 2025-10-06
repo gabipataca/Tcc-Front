@@ -1,4 +1,5 @@
 import { apiRequest } from "@/libs/apiClient";
+import { ServerSideResponse } from "@/types/Global";
 import { GetUsersResponse } from "@/types/User/Responses";
 import { AxiosResponse } from "axios";
 import { NextRequest, NextResponse } from "next/server";
@@ -8,12 +9,13 @@ export async function GET(req: NextRequest) {
     const page = Number(searchParams.get("page")) || 1;
     const pageSize = Number(searchParams.get("pageSize")) || 10;
     const search = searchParams.get("search") || "";
+    const role = searchParams.get("role") || null;
 
     let res: AxiosResponse<GetUsersResponse>;
     try {
         res = await apiRequest<GetUsersResponse>("/User", {
             method: "GET",
-            params: { page, pageSize, search },
+            params: { page, pageSize, search, role },
             cookies: req.cookies.toString()
         });
     } catch (exc) {
@@ -23,5 +25,8 @@ export async function GET(req: NextRequest) {
         );
     }
 
-    return NextResponse.json(res.data, { status: res.status });
+    return NextResponse.json({
+        data: res.data,
+        status: res.status,
+    } satisfies ServerSideResponse<GetUsersResponse>, { status: res.status });
 }

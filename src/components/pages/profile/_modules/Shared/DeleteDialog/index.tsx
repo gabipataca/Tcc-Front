@@ -13,6 +13,7 @@ import { ButtonAdm } from "@/components/_ui/ButtonAdm";
 import { Trash2 } from "lucide-react";
 import useDeleteDialog from "./hooks/useDeleteDialog";
 import Loading from "@/components/_ui/Loading";
+import Button from "@/components/_ui/Button";
 
 // Definindo as propriedades que o componente receberá
 interface DeleteDialogProps {
@@ -20,7 +21,7 @@ interface DeleteDialogProps {
     onClose: () => void;
     onConfirm: () => void;
     itemName: string;
-    itemType: string; // Ex: "aluno", "professor", "grupo"
+    itemType: string;
 }
 
 const DeleteDialog: FC<DeleteDialogProps> = ({
@@ -49,20 +50,21 @@ const DeleteDialog: FC<DeleteDialogProps> = ({
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter className="mt-4">
-                    <ButtonAdm
+                    <Button
                         onClick={handleClose}
                         variant="outline"
-                        className="border-[#e9edee] text-[#3f3c40] hover:bg-[#e9edee]"
+                        rounded
                     >
                         Cancelar
-                    </ButtonAdm>
-                    <ButtonAdm
+                    </Button>
+                    <Button
                         onClick={handleDelete}
-                        className="bg-red-500 hover:bg-red-600 text-white"
+                        variant="destructive"
+                        rounded
                     >
                         <Trash2 className="w-4 h-4 mr-2" />
                         Excluir
-                    </ButtonAdm>
+                    </Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

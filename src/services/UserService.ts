@@ -1,7 +1,7 @@
 
 import { apiRequest } from "@/libs/apiClient";
 import { ServerSideResponse } from "@/types/Global";
-import { GenericUserInfo, User } from "@/types/User";
+import { GenericUserInfo, User, UserRole } from "@/types/User";
 import { UserEditRequest } from "@/types/User/Requests";
 import { GetUsersResponse } from "@/types/User/Responses";
 
@@ -19,21 +19,22 @@ class UserService {
 
 
 
-    static async GetStudentUsers(
+    static async GetUsers(
         page: number,
         pageSize: number,
         search: string,
-        abortSignal: AbortSignal
-    ): Promise<GetUsersResponse> {
+        abortSignal: AbortSignal,
+        role: UserRole,
+    ): Promise<ServerSideResponse<GetUsersResponse>> {
         const response = await apiRequest<
-            GetUsersResponse
+            ServerSideResponse<GetUsersResponse>
         >(`/api/user`, {
             method: "GET",
             params: {
                 page,
                 pageSize,
                 search,
-                role: "Student",
+                role,
             },
             signal: abortSignal,
         });

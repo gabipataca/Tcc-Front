@@ -6,7 +6,7 @@ import { UserEditRequest } from "@/types/User/Requests";
 import { useSnackbar } from "notistack";
 import { useCallback, useEffect, useState } from "react";
 
-const useLoadUsers = () => {
+const useLoadUsers = (role: UserRole) => {
     const [loadingUsers, setLoadingUsers] = useState<boolean>(true);
     const [users, setUsers] = useState<GenericUserInfo[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(1);
@@ -62,15 +62,20 @@ const useLoadUsers = () => {
                 const controller = new AbortController();
                 setControllerSignal(controller);
 
-                const response = await UserService.GetStudentUsers(
+                const response = await UserService.GetUsers(
                     currentPage,
                     10,
                     searchTerm,
-                    controller.signal
+                    controller.signal,
+                    role,
                 );
 
-                setUsers(response.items);
-                setTotalPages(response.totalPages);
+                if(response.status !== 200 || !response.data?.items) {
+                    throw new Error("Failed to load users");
+                }
+
+                setUsers(response.data.items);
+                setTotalPages(response.data.totalPages);
             } catch (error) {
                 console.error("Error loading users:", error);
                 enqueueSnackbar("Erro ao carregar usuários.", {
@@ -85,7 +90,7 @@ const useLoadUsers = () => {
                 setLoadingUsers(false);
             }
         },
-        [controllerSignal, currentPage, enqueueSnackbar]
+        [controllerSignal, currentPage, enqueueSnackbar, role]
     );
 
 

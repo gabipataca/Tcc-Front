@@ -18,7 +18,7 @@ interface DialogProps<T> {
     action: ((item: T) => Promise<void>) | null;
 }
 
-const useStudentsTable = () => {
+const useTeachersTable = () => {
     const {
         users,
         currentPage,
@@ -33,7 +33,7 @@ const useStudentsTable = () => {
         loadingUsers,
         toggleLoadingUsers,
         togglePage,
-    } = userLoadUsers("Student");
+    } = userLoadUsers("Teacher");
 
     const { enqueueSnackbar } = useSnackbar();
 
@@ -180,4 +180,4 @@ const useStudentsTable = () => {
     };
 };
 
-export default useStudentsTable;
+export default useTeachersTable;
