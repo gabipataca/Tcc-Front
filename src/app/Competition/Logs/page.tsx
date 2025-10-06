@@ -19,16 +19,7 @@ const AdminTeamPage: React.FC = () => {
 
   return (
     <NavRanking>
-      <Box
-        sx={{
-          bgcolor: "#f0f0f0",
-          minHeight: "100vh",
-          display: "flex",
-          flexDirection: "column",
-          p: 2,
-          alignItems: "center",
-        }}
-      >
+
         <Typography
           variant="h5"
           component="div"
@@ -86,7 +77,7 @@ const AdminTeamPage: React.FC = () => {
             onRowsPerPageChange={handleChangeRowsPerPage}
           />
         </Paper>
-      </Box>
+     
     </NavRanking>
   )
 }

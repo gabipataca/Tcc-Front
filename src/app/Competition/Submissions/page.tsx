@@ -42,16 +42,7 @@ const AdminTeamPage: React.FC = () => {
 
   return (
     <NavRanking>
-      <div
-        style={{
-          backgroundColor: "#f0f0f0",
-          minHeight: "calc(100vh - 64px - 48px)",
-          display: "flex",
-          flexDirection: "column",
-          padding: "16px",
-          alignItems: "center",
-        }}
-      >
+   
         <Typography
           variant="h5"
           component="div"
@@ -170,7 +161,7 @@ const AdminTeamPage: React.FC = () => {
             labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ${count !== -1 ? count : `mais de ${to}`}`}
           />
         </Paper>
-      </div>
+      
     </NavRanking>
   )
 }

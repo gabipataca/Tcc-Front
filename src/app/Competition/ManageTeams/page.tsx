@@ -36,16 +36,8 @@ const ManageTeamsPage: React.FC = () => {
 
   return (
     <NavRanking>
-      <Box
-        sx={{
-          bgcolor: "#f0f0f0",
-          minHeight: "calc(100vh - 64px - 48px)",
-          display: "flex",
-          flexDirection: "column",
-          p: 2,
-          alignItems: "center",
-        }}
-      >
+
+
         <Typography
           variant="h5"
           component="div"
@@ -145,7 +137,7 @@ const ManageTeamsPage: React.FC = () => {
             onRowsPerPageChange={handleChangeRowsPerPage}
           />
         </Paper>
-      </Box>
+     
     </NavRanking>
   )
 }
