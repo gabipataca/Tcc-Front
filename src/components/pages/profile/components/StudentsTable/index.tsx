@@ -26,6 +26,7 @@ import TablePaginationActions from "@/components/_ui/Table/components/TablePagin
 import Loading from "@/components/_ui/Loading";
 import DeleteDialog from "../../_modules/Shared/DeleteDialog";
 import EditUserDialog from "../../_modules/Shared/EditUserDialog";
+import Button from "@/components/_ui/Button";
 
 const StudentsTable: FC = () => {
     const {
@@ -227,30 +228,30 @@ const StudentsTable: FC = () => {
                                             </TableCell>
                                             <TableCell className="text-right">
                                                 <div className="flex justify-end gap-2">
-                                                    <ButtonAdm
-                                                        variant="ghost"
+                                                    <Button
+                                                        variant="outline"
                                                         size="sm"
                                                         onClick={() =>
                                                             handleSelectUserToEdit(
                                                                 user
                                                             )
                                                         }
-                                                        className="hover:bg-[#e9edee] text-[#4F85A6]"
+                                                        rounded
                                                     >
                                                         <Edit className="w-5 h-5" />
-                                                    </ButtonAdm>
-                                                    <ButtonAdm
-                                                        variant="ghost"
+                                                    </Button>
+                                                    <Button
+                                                        variant="destructive"
                                                         size="sm"
                                                         onClick={() =>
                                                             handleDeleteUserClick(
                                                                 user
                                                             )
                                                         }
-                                                        className="hover:bg-red-50 text-red-500"
+                                                        rounded
                                                     >
                                                         <Trash2 className="w-5 h-5" />
-                                                    </ButtonAdm>
+                                                    </Button>
                                                 </div>
                                             </TableCell>
                                         </TableRow>
