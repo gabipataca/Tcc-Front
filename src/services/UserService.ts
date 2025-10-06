@@ -1,7 +1,7 @@
 
 import { apiRequest } from "@/libs/apiClient";
 import { ServerSideResponse } from "@/types/Global";
-import { User } from "@/types/User";
+import { GenericUserInfo, User } from "@/types/User";
 import { UserEditRequest } from "@/types/User/Requests";
 import { GetUsersResponse } from "@/types/User/Responses";
 
@@ -19,7 +19,7 @@ class UserService {
 
 
 
-    static async GetUsers(
+    static async GetStudentUsers(
         page: number,
         pageSize: number,
         search: string,
@@ -33,6 +33,29 @@ class UserService {
                 page,
                 pageSize,
                 search,
+                role: "Student",
+            },
+            signal: abortSignal,
+        });
+
+        return response.data;
+    }
+
+    static async GetTeacherUsers(
+        page: number,
+        pageSize: number,
+        search: string,
+        abortSignal: AbortSignal
+    ): Promise<GetUsersResponse> {
+        const response = await apiRequest<
+            GetUsersResponse
+        >(`/api/user`, {
+            method: "GET",
+            params: {
+                page,
+                pageSize,
+                search,
+                role: "Teacher",
             },
             signal: abortSignal,
         });
@@ -41,7 +64,7 @@ class UserService {
     }
 
     static async updateUser(userId: string, request: UserEditRequest) {
-        const response = await apiRequest<User>(`/api/user/${userId}`, {
+        const response = await apiRequest<GenericUserInfo>(`/api/user/${userId}`, {
             method: "PUT",
             data: request,
         });

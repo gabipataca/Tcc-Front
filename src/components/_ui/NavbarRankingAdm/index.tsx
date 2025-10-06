@@ -78,7 +78,7 @@ export default function NavRanking({ children }: Props) {
 
             {/* Logout Button */}
             <Button
-              style="ghost"
+              variant="ghost"
               size="icon"
               type="link"
               linkHref="/logout"

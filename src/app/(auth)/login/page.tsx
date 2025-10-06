@@ -67,7 +67,7 @@ const Login: React.FC = () => {
 						</div>
 
 						{/* Botão Entrar */}
-						<Button style="primary" type="button" onClick={handleSubmit(onSubmit)} rounded={true} fullWidth={true}>
+						<Button variant="primary" type="button" onClick={handleSubmit(onSubmit)} rounded={true} fullWidth={true}>
 							Entrar
 						</Button>
 

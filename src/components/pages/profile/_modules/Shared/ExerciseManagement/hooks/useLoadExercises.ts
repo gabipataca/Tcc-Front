@@ -8,10 +8,10 @@ import {
     EditExerciseRequest,
 } from "@/types/Exercise/Requests";
 import { useSnackbar } from "notistack";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const useLoadExercises = () => {
-    const [loadingExercises, setLoadingExercises] = useState<boolean>(false);
+    const [loadingExercises, setLoadingExercises] = useState<boolean>(true);
     const [exercises, setExercises] = useState<Exercise[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [totalPages, setTotalPages] = useState<number>(1);
@@ -49,7 +49,21 @@ const useLoadExercises = () => {
         async (exercise: CreateExerciseRequest) => {
             try {
                 setLoadingExercises(true);
-                const response = await ExerciseService.createExercise(exercise);
+                const payload = new FormData();
+                payload.append("title", exercise.title);
+                payload.append(
+                    "exerciseTypeId", exercise.exerciseTypeId.toString()
+                );
+                payload.append("description", exercise.description);
+                payload.append("pdfFile", exercise.pdfFile);
+                payload.append("inputs", JSON.stringify(exercise.inputs));
+                payload.append("outputs", JSON.stringify(exercise.outputs));
+                payload.append(
+                    "estimatedTime", exercise.estimatedTime.toString()
+                );
+
+
+                const response = await ExerciseService.createExercise(payload);
 
                 if (response.status !== 201) {
                     enqueueSnackbar("Erro ao tentar criar exercício.", {
@@ -175,6 +189,15 @@ const useLoadExercises = () => {
         },
         [enqueueSnackbar, exercises]
     );
+
+    useEffect(() => {
+        return () => {
+            if (controllerSignal) {
+                controllerSignal.abort();
+            }
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return {
         exercises,

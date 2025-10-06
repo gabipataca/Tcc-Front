@@ -3,7 +3,6 @@
 import Link from "next/link";
 import styles from "./Button.module.scss";
 import { ButtonProps } from "./types";
-import { StyledButton } from "./styles";
 
 const Button = ({
     className,
@@ -12,7 +11,7 @@ const Button = ({
     role,
     type = "button",
     linkHref,
-    style = "primary",
+    variant = "primary",
     rounded,
     fullWidth,
     size = "default",
@@ -22,7 +21,7 @@ const Button = ({
         return (
             <button
                 className={`${styles.button}
-                    ${styles[style]}
+                    ${styles[variant] ?? styles.primary}
                     ${rounded ? styles.rounded : ""}
                     ${fullWidth ? styles.fullWidth : ""}
                     ${styles[size]}
@@ -39,7 +38,7 @@ const Button = ({
         return (
             <Link
                 className={`${styles.button}
-                    ${styles[style]}
+                    ${styles[variant]}
                     ${rounded ? styles.rounded : ""}
                     ${fullWidth ? styles.fullWidth : ""}
                     ${className}

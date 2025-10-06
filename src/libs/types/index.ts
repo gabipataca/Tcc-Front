@@ -1,3 +1,4 @@
+import { RawAxiosRequestHeaders } from "axios";
 
 
 /**
@@ -25,7 +26,7 @@ export interface ApiRequestOptions<T> {
     /**
      * Optional headers to include in the API request.
      */
-    headers?: Record<string, string>;
+    headers?: RawAxiosRequestHeaders;
 
     /**
      * Optional query parameters to include in the API request.

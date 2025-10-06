@@ -61,7 +61,7 @@ const StudentDashboard: React.FC = () => {
                             <div className="flex gap-3">
                                 <Button
                                     type="button"
-                                    style="primary"
+                                    variant="primary"
                                     rounded
                                     className="text-xl"
                                     onClick={handleRegistrationClick}
@@ -72,7 +72,7 @@ const StudentDashboard: React.FC = () => {
                                 </Button>
                                 <Button
                                     type="button"
-                                    style="success"
+                                    variant="success"
                                     rounded
                                     className="text-xl"
                                     onClick={handleStartMarathonClick}

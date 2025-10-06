@@ -71,6 +71,11 @@ export interface CreateExerciseRequest {
      * List of outputs for the exercise.
      */
     outputs: CreateExerciseOutputRequest[];
+
+    /**
+     * The PDF file associated with the exercise.
+     */
+    pdfFile: File;
 }
 
 /**

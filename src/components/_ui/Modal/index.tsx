@@ -10,7 +10,7 @@ import { ModalProps } from "./types";
 import { Backdrop, ModalContainer } from "./styles";
 import { ModalBodyScroll } from "./components/ModalBody";
 import { ModalFooter } from "./components/ModalFooter";
-import { ButtonAdm } from "../ButtonAdm";
+import Button from "../Button";
 
 const Modal: React.FC<ModalProps> = ({
     open,
@@ -65,14 +65,30 @@ const Modal: React.FC<ModalProps> = ({
                     </ModalBodyScroll>
                     <ModalFooter>
                         {hasCancelButton && (
-                            <ButtonAdm className={`${growFooterButtons ? "flex-1" : ""}`} variant="destructive" onClick={onCancel}>
+                            <Button
+                                className={`${
+                                    growFooterButtons ? "flex-1" : ""
+                                }`}
+                                variant="destructive"
+                                rounded
+                                onClick={onCancel}
+                                type="button"
+                            >
                                 {cancelButtonContent || "Cancelar"}
-                            </ButtonAdm>
+                            </Button>
                         )}
                         {hasConfirmButton && (
-                            <ButtonAdm className={`${growFooterButtons ? "flex-1" : ""}`} variant="default" onClick={onConfirm}>
+                            <Button
+                                className={`${
+                                    growFooterButtons ? "flex-1" : ""
+                                }`}
+                                variant="success"
+                                rounded
+                                onClick={onConfirm}
+                                type="button"
+                            >
                                 {confirmButtonContent || "Confirmar"}
-                            </ButtonAdm>
+                            </Button>
                         )}
                     </ModalFooter>
                 </ModalContainer>

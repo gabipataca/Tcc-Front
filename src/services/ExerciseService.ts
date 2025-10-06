@@ -30,13 +30,16 @@ class ExerciseService {
 
 
     static async createExercise(
-        exercise: CreateExerciseRequest
+        exercise: FormData
     ): Promise<ServerSideResponse<Exercise>> {
         const response = await apiRequest<
             ServerSideResponse<Exercise>
         >(`/api/exercise`, {
             method: "POST",
             data: exercise,
+            headers: {
+                "Content-Type": "multipart/form-data",
+            }
         });
 
         return response.data;

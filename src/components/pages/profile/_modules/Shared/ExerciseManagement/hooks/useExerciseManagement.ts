@@ -45,9 +45,7 @@ export const useExerciseManagement = () => {
 
     // Estados do modal de edição
     const [editingExercise, setEditingExercise] = useState<Exercise | null>(
-        
         null
-    
     );
 
     const { enqueueSnackbar } = useSnackbar();
@@ -100,6 +98,7 @@ export const useExerciseManagement = () => {
         const newExercise: CreateExerciseRequest = {
             title,
             exerciseTypeId: type,
+            pdfFile: pdfFile,
             description: "",
             estimatedTime: 0,
             judgeUuid: null,
@@ -178,8 +177,6 @@ export const useExerciseManagement = () => {
     }, [toggleEditExerciseModal]);
 
     useEffect(() => {
-        if(loadingExercises) return;
-
         if (searchTimeout) {
             clearTimeout(searchTimeout);
         }
@@ -189,20 +186,7 @@ export const useExerciseManagement = () => {
             }, 1000)
         );
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [searchTerm]);
-
-    useEffect(() => {
-        if(loadingExercises) return;
-
-        if(searchTimeout) {
-            clearTimeout(searchTimeout);
-            setSearchTimeout(null);
-        }
-
-        handleLoadExercises();
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [exerciseTypeFilter]);
+    }, [searchTerm, exerciseTypeFilter]);
 
     return {
         title,

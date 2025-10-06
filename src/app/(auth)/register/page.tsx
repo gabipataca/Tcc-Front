@@ -25,7 +25,7 @@ const Cadastro: React.FC = () => {
                 <Button
                     type="link"
                     linkHref="/login"
-                    style="secondary"
+                    variant="secondary"
                     rounded={true}
                 >
                     Login
@@ -199,7 +199,7 @@ const Cadastro: React.FC = () => {
                             />
                         )}
 
-                        <Button style="primary" onClick={handleSubmit(handleFormSubmit, (d) =>
+                        <Button variant="primary" onClick={handleSubmit(handleFormSubmit, (d) =>
                             console.log(d)
                         )} rounded={true} fullWidth={true}>
                             Criar

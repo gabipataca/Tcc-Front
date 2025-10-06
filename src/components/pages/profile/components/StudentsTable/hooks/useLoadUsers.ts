@@ -4,10 +4,10 @@ import UserService from "@/services/UserService";
 import { GenericUserInfo, UserRole } from "@/types/User";
 import { UserEditRequest } from "@/types/User/Requests";
 import { useSnackbar } from "notistack";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const useLoadUsers = () => {
-    const [loadingUsers, setLoadingUsers] = useState<boolean>(false);
+    const [loadingUsers, setLoadingUsers] = useState<boolean>(true);
     const [users, setUsers] = useState<GenericUserInfo[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [totalPages, setTotalPages] = useState<number>(1);
@@ -62,7 +62,7 @@ const useLoadUsers = () => {
                 const controller = new AbortController();
                 setControllerSignal(controller);
 
-                const response = await UserService.GetUsers(
+                const response = await UserService.GetStudentUsers(
                     currentPage,
                     10,
                     searchTerm,
@@ -112,28 +112,20 @@ const useLoadUsers = () => {
                 usersCopy.push(data);
                 usersCopy.sort((a, b) => (a.id! < b.id! ? -1 : 1));
                 setUsers([...usersCopy]);
-                enqueueSnackbar("Usuário atualizado com sucesso!", {
-                    variant: "success",
-                    anchorOrigin: {
-                        vertical: "bottom",
-                        horizontal: "right",
-                    },
-                    autoHideDuration: 2500,
-                });
             } catch (error) {
                 console.error("Error updating user:", error);
-                enqueueSnackbar("Erro ao tentar atualizar usuário!", {
-                    variant: "error",
-                    anchorOrigin: {
-                        vertical: "bottom",
-                        horizontal: "right",
-                    },
-                    autoHideDuration: 2500,
-                });
             }
         },
-        [enqueueSnackbar, users]
+        [users]
     );
+
+    useEffect(() => {
+        return () => {
+            if (controllerSignal) {
+                controllerSignal.abort();
+            }
+        };
+    }, []);
 
     return {
         users,

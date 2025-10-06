@@ -11,10 +11,29 @@ export async function PUT(req: NextRequest, context: { params: Promise<{ userId:
         res = await apiRequest<User>(`/User/${userId}`, {
             method: "PUT",
             data: body,
+            cookies: req.cookies.toString()
         });
     } catch (exc) {
         return NextResponse.json(
             { message: "Erro ao atualizar usuário.", status: 500 },
+            { status: 500 }
+        );
+    }
+    return NextResponse.json(res.data, { status: res.status });
+}
+
+export async function DELETE(req: NextRequest, context: { params: Promise<{ userId: string }> }) {
+    const { userId } = await context.params;
+    let res;
+
+    try {
+        res = await apiRequest<void>(`/User/${userId}`, {
+            method: "DELETE",
+            cookies: req.cookies.toString()
+        });
+    } catch (exc) {
+        return NextResponse.json(
+            { message: "Erro ao deletar usuário.", status: 500 },
             { status: 500 }
         );
     }

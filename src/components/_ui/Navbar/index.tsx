@@ -67,7 +67,7 @@ const Navbar: FC = () => {
                         <Sheet open={isOpen} onOpenChange={setIsOpen}>
                             <SheetTrigger asChild>
                                 <Button
-                                    style="outline"
+                                    variant="outline"
                                     className="text-white hover:bg-white/10"
                                 >
                                     <Menu className="h-6 w-6" />

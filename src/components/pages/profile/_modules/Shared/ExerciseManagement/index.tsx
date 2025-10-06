@@ -1,6 +1,14 @@
 import type React from "react";
 import { useRef } from "react";
-import { FileText, Plus, Filter, Edit, Trash2, Search, Upload } from "lucide-react";
+import {
+    FileText,
+    Plus,
+    Filter,
+    Edit,
+    Trash2,
+    Search,
+    Upload,
+} from "lucide-react";
 import {
     Card,
     CardContent,
@@ -47,7 +55,7 @@ const ExerciseManagement: React.FC = () => {
         setOutputValues,
         pdfFile,
         handleFileChange,
-loadingExercises,
+        loadingExercises,
     } = useExerciseManagement();
 
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -97,9 +105,9 @@ loadingExercises,
                                         Filtrar por Tipo
                                     </label>
                                     <CustomDropdown
-                                        options={exerciseTypeOptions}
+                                        options={[{ label: "Todos", value: null }, ...exerciseTypeOptions]}
                                         value={
-                                            exerciseTypeOptions.find(
+                                            [{ label: "Todos", value: null }, ...exerciseTypeOptions].find(
                                                 (option) =>
                                                     option.value ===
                                                     exerciseTypeFilter
@@ -107,7 +115,7 @@ loadingExercises,
                                         }
                                         onChange={(val: ExerciseType) =>
                                             toggleExerciseTypeFilter(
-                                                exerciseTypeOptions.find(
+                                                [{ label: "Todos", value: null }, ...exerciseTypeOptions].find(
                                                     (option) =>
                                                         option.value === val
                                                 )?.value ?? null
@@ -198,9 +206,9 @@ loadingExercises,
                                             </div>
                                         ))}
 
-                                        {loadingExercises && (
-                                            <Loading variant="spinner" size="md" />
-                                        )}
+                                    {loadingExercises && (
+                                        <Loading variant="spinner" size="md" />
+                                    )}
                                 </div>
 
                                 <div className="text-center">
@@ -264,17 +272,21 @@ loadingExercises,
                                         <label className="block text-lg font-medium text-[#3f3c40]">
                                             Anexo (PDF):
                                         </label>
-                                      
+
                                         <ButtonAdm
                                             variant="outline"
-                                            onClick={() => fileInputRef.current?.click()}
+                                            onClick={() =>
+                                                fileInputRef.current?.click()
+                                            }
                                             className="w-full border-[#4F85A6] text-[#4F85A6] hover:bg-[#4F85A6]/10 text-lg h-16 flex items-center justify-center"
                                         >
                                             <Upload className="w-5 h-5 mr-3" />
-                                        
-                                            {pdfFile ? pdfFile.name : "Selecionar Arquivo PDF"}
+
+                                            {pdfFile
+                                                ? pdfFile.name
+                                                : "Selecionar Arquivo PDF"}
                                         </ButtonAdm>
-                                     
+
                                         <input
                                             type="file"
                                             accept=".pdf"
@@ -283,7 +295,6 @@ loadingExercises,
                                             className="hidden"
                                         />
                                     </div>
-
 
                                     <div className="space-y-3">
                                         <label className="block text-lg font-medium text-[#3f3c40]">

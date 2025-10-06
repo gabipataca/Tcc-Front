@@ -77,7 +77,7 @@ export default function NavStudent({ children }: Props) {
             <Button
               type="link"
               linkHref="/logout"
-              style="ghost"
+              variant="ghost"
               size="icon"
               className="text-white hover:bg-white/10 hover:text-white transition-all duration-200 ml-auto lg:ml-0"
             >
