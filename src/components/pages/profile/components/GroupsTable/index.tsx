@@ -1,111 +1,257 @@
 "use client";
 
-import { FC, useState } from "react";
-import { Group } from "../../hooks/mockData";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/_ui/Card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/_ui/TableAdm";
+import { FC } from "react";
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+    CardDescription,
+} from "@/components/_ui/Card";
 import { Badge } from "@/components/_ui/Badge";
-import { ButtonAdm } from "@/components/_ui/ButtonAdm";
 import Input from "@/components/_ui/Input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/_ui/Select";
-import { Edit, Search, Trash2 } from "lucide-react";
+import { Checkbox } from "@/components/_ui/Checkbox";
+import { Edit, Trash2, Download, Search } from "lucide-react";
+import useGroupsTable from "./hooks/useGroupsTable";
+import Table from "@/components/_ui/Table";
+import TableHead from "@/components/_ui/Table/components/TableHeader";
+import TableRow from "@/components/_ui/Table/components/TableRow";
+import TableCell from "@/components/_ui/Table/components/TableCell";
+import TableBody from "@/components/_ui/Table/components/TableBody";
+import TableFooter from "@/components/_ui/Table/components/TableFooter";
+import { TablePagination } from "@mui/material";
+import TablePaginationActions from "@/components/_ui/Table/components/TablePagination";
+import Loading from "@/components/_ui/Loading";
+import DeleteDialog from "../../_modules/Shared/DeleteDialog";
+import Button from "@/components/_ui/Button";
+import EditGroupDialog from "../../_modules/Shared/EditGroupDialog";
 
-
-
-interface GroupsTableProps {
-    groups: Group[];
-    onEdit: (group: Group) => void;
-    onDelete: (group: Group) => void;
-}
-
-// Usar a interface e receber as props
-const GroupsTable: FC<GroupsTableProps> = ({ groups, onEdit, onDelete }) => {
-    const [searchTerm, setSearchTerm] = useState("");
-    const [statusFilter, setStatusFilter] = useState("all");
-
-    const filteredGroups = groups.filter(group => {
-        const searchMatch = group.name.toLowerCase().includes(searchTerm.toLowerCase());
-        const statusMatch = statusFilter === 'all' || group.status === statusFilter;
-        return searchMatch && statusMatch;
-    });
+const GroupsTable: FC = () => {
+    const {
+        groups,
+        loadingGroups,
+        allGroupsSelected,
+        deleteDialog,
+        editDialog,
+        currentPage,
+        totalGroups,
+        togglePage,
+        searchTerm,
+        setSearchTerm,
+        selectedGroups,
+        handleSelectAll,
+        handleSelectGroup,
+        handleDeleteGroupClick,
+        handleSelectGroupToEdit,
+    } = useGroupsTable();
 
     return (
-        <Card className="bg-white border-[#e9edee] shadow-sm">
-            <CardHeader>
-                <div className="flex items-center justify-between">
-                    <div>
-                        <CardTitle className="text-3xl text-[#3f3c40]">Gerenciar Grupos</CardTitle>
-                        <CardDescription className="text-xl text-[#4F85A6]">Lista de grupos e última competição</CardDescription>
+        <>
+            {deleteDialog.isOpen && deleteDialog.group && (
+                <DeleteDialog
+                    isOpen={deleteDialog.isOpen}
+                    onClose={deleteDialog.toggleDialog!}
+                    onConfirm={() =>
+                        deleteDialog.action!(deleteDialog.group.id)
+                    }
+                    itemName={deleteDialog.group.name}
+                    itemType="Grupo"
+                />
+            )}
+
+            {editDialog.isOpen && editDialog.group && (
+                <EditGroupDialog
+                    isOpen={editDialog.isOpen}
+                    onClose={editDialog.toggleDialog!}
+                    onConfirm={editDialog.action!}
+                    group={editDialog.group}
+                    toggleDialog={editDialog.toggleDialog!}
+                />
+            )}
+
+            <Card className="bg-white border-[#e9edee] shadow-sm">
+                <CardHeader>
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <CardTitle className="text-3xl text-[#3f3c40]">
+                                Gerenciar Grupos
+                            </CardTitle>
+                            <CardDescription className="text-xl text-[#4F85A6]">
+                                Lista completa de grupos cadastrados
+                            </CardDescription>
+                        </div>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className="border-[#4F85A6] text-[#4F85A6] hover:bg-[#9abbd6] hover:text-white bg-transparent"
+                        >
+                            <Download className="w-4 h-4 mr-2" />
+                            Exportar
+                        </Button>
                     </div>
-                </div>
-                <div className="flex gap-4 mt-2">
-                    <div className="relative flex-1">
+                    <div className="relative mt-2">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#4F85A6] w-5 h-5" />
                         <Input
-                            placeholder="Buscar grupo..."
+                            placeholder="Buscar por nome do grupo..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="pl-10 border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-base"
+                            type="text"
+                            name="search"
                         />
                     </div>
-                    <Select value={statusFilter} onValueChange={setStatusFilter}>
-                        <SelectTrigger className="w-40 border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-base">
-                            <SelectValue placeholder="Status" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-white border-[#e9edee] text-base">
-                            <SelectItem value="all">Todos</SelectItem>
-                            <SelectItem value="active">Ativo</SelectItem>
-                            <SelectItem value="inactive">Inativo</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
-            </CardHeader>
+                </CardHeader>
 
-            <CardContent className="p-0">
-                <div className="rounded-md border border-[#e9edee]">
-                    <Table>
-                        <TableHeader>
-                            <TableRow className="bg-[#e9edee] hover:bg-[#e9edee]">
-                                <TableHead className="text-xl text-[#3f3c40] font-semibold w-[20%]">Grupo</TableHead>
-                                <TableHead className="text-xl text-[#3f3c40] font-semibold w-[20%]">Membros</TableHead>
-                                <TableHead className="text-xl text-[#3f3c40] font-semibold w-[20%]">Status</TableHead>
-                                <TableHead className="text-xl text-[#3f3c40] font-semibold w-[17%]">Última Competição</TableHead>
-                                <TableHead className="text-right text-xl text-[#3f3c40] font-semibold w-[7%]">Ações</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {filteredGroups.map((group) => (
-                                <TableRow key={group.id} className="hover:bg-[#e9edee] hover:bg-opacity-50">
-                                    <TableCell className="font-medium text-base text-[#3f3c40]">{group.name}</TableCell>
-                                    <TableCell>
-                                        <Badge variant="outline" className="border-[#9abbd6] text-base text-[#4F85A6] bg-[#9abbd6] bg-opacity-10">
-                                            {group.members} membros
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Badge className={group.status === "active" ? "bg-[#4F85A6] text-white hover:bg-[#3f3c40] text-base" : "bg-[#e9edee] text-[#3f3c40] text-base"}>
-                                            {group.status === "active" ? "Ativo" : "Inativo"}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell className="text-base text-[#3f3c40]">{group.lastCompetition}</TableCell>
-                                    <TableCell className="text-right">
-                                        <div className="flex justify-end gap-2">
-                                            {/* 4. Conectar os botões às funções onEdit e onDelete */}
-                                            <ButtonAdm variant="ghost" size="sm" onClick={() => onEdit(group)} className="hover:bg-[#e9edee] text-[#4F85A6]">
-                                                <Edit className="w-5 h-5" />
-                                            </ButtonAdm>
-                                            <ButtonAdm variant="ghost" size="sm" onClick={() => onDelete(group)} className="hover:bg-red-50 text-red-500">
-                                                <Trash2 className="w-5 h-5" />
-                                            </ButtonAdm>
-                                        </div>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </div>
-            </CardContent>
-        </Card>
+                <CardContent className="p-0 relative min-h-40">
+                    {loadingGroups && <Loading variant="spinner" size="lg" />}
+
+                    {groups.length > 0 && !loadingGroups && (
+                        <div className="rounded-md border border-[#e9edee]">
+                            <Table>
+                                <TableHead>
+                                    <TableRow className="bg-[#e9edee] hover:bg-[#e9edee]">
+                                        <TableCell className="w-12 px-2">
+                                            <Checkbox
+                                                checked={allGroupsSelected}
+                                                onClick={() =>
+                                                    handleSelectAll(
+                                                        !allGroupsSelected
+                                                    )
+                                                }
+                                            />
+                                        </TableCell>
+                                        <TableCell className="text-lg text-[#3f3c40] font-semibold w-[30%]">
+                                            Grupo
+                                        </TableCell>
+                                        <TableCell className="text-lg text-[#3f3c40] font-semibold w-[15%]">
+                                            Membros
+                                        </TableCell>
+                                        <TableCell className="text-lg text-[#3f3c40] font-semibold w-[15%]">
+                                            Status
+                                        </TableCell>
+                                        <TableCell className="text-lg text-[#3f3c40] font-semibold w-[20%]">
+                                            Última Competição
+                                        </TableCell>
+                                        <TableCell className="text-right text-lg text-[#3f3c40] font-semibold w-[20%]">
+                                            Ações
+                                        </TableCell>
+                                    </TableRow>
+                                </TableHead>
+
+                                <TableBody>
+                                    {groups.map((group) => (
+                                        <TableRow
+                                            key={group.id}
+                                            className="hover:bg-[#e9edee] hover:bg-opacity-50"
+                                        >
+                                            <TableCell>
+                                                <Checkbox
+                                                    checked={selectedGroups.includes(
+                                                        group.id
+                                                    )}
+                                                    onClick={() =>
+                                                        handleSelectGroup(
+                                                            group.id,
+                                                            !selectedGroups.includes(
+                                                                group.id
+                                                            )
+                                                        )
+                                                    }
+                                                />
+                                            </TableCell>
+                                            <TableCell className="font-medium text-base text-[#3f3c40]">
+                                                {group.name}
+                                            </TableCell>
+                                            <TableCell>
+                                                <Badge
+                                                    variant="outline"
+                                                    className="border-[#9abbd6] text-base text-[#4F85A6] bg-[#9abbd6] bg-opacity-10"
+                                                >
+                                                    {group.members} membros
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Badge
+                                                    variant="outline"
+                                                    className={
+                                                        group.status ===
+                                                        "active"
+                                                            ? "bg-[#4F85A6] text-white text-base"
+                                                            : "bg-[#e9edee] text-[#3f3c40] text-base"
+                                                    }
+                                                >
+                                                    {group.status === "active"
+                                                        ? "Ativo"
+                                                        : "Inativo"}
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell className="text-base text-[#3f3c40]">
+                                                {new Date(
+                                                    group.lastCompetition
+                                                ).toLocaleDateString()}
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                                <div className="flex justify-end gap-2">
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={() =>
+                                                            handleSelectGroupToEdit(
+                                                                group
+                                                            )
+                                                        }
+                                                        rounded
+                                                    >
+                                                        <Edit className="w-5 h-5" />
+                                                    </Button>
+                                                    <Button
+                                                        variant="destructive"
+                                                        size="sm"
+                                                        onClick={() =>
+                                                            handleDeleteGroupClick(
+                                                                group
+                                                            )
+                                                        }
+                                                        rounded
+                                                    >
+                                                        <Trash2 className="w-5 h-5" />
+                                                    </Button>
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+
+                                <TableFooter>
+                                    <TableRow>
+                                        <TablePagination
+                                            count={totalGroups || 0}
+                                            page={currentPage - 1}
+                                            onPageChange={(e, page) =>
+                                                togglePage(page + 1)
+                                            }
+                                            colSpan={6}
+                                            rowsPerPage={10}
+                                            rowsPerPageOptions={[]}
+                                            className="border-t"
+                                            ActionsComponent={
+                                                TablePaginationActions
+                                            }
+                                        />
+                                    </TableRow>
+                                </TableFooter>
+                            </Table>
+                        </div>
+                    )}
+
+                    {groups.length === 0 && !loadingGroups && (
+                        <div className="p-6 text-center text-[#3f3c40]">
+                            Nenhum grupo encontrado.
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
+        </>
     );
 };
 

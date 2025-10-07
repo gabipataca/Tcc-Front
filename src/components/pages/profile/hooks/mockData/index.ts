@@ -100,4 +100,11 @@ export const groupsData = [
         status: "active",
         lastCompetition: "2024-03-20",
     },
+    {
+        id: 5,
+        name: "ERROR 2025",
+        members: 3,
+        status: "active",
+        lastCompetition: "2024-03-22",
+    },
 ];
