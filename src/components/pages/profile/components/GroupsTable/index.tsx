@@ -1,6 +1,6 @@
 "use client";
 
-import { FC } from "react";
+import { FC, useState } from "react";
 import {
     Card,
     CardContent,
@@ -43,7 +43,11 @@ const GroupsTable: FC = () => {
         handleSelectGroup,
         handleDeleteGroupClick,
         handleSelectGroupToEdit,
+        handleDeleteGroups, 
     } = useGroupsTable();
+    
+   
+    const [isBulkDeleteDialogOpen, setIsBulkDeleteDialogOpen] = useState(false);
 
     return (
         <>
@@ -56,6 +60,17 @@ const GroupsTable: FC = () => {
                     }
                     itemName={deleteDialog.group.name}
                     itemType="Grupo"
+                />
+            )}
+            
+           
+            {isBulkDeleteDialogOpen && (
+                 <DeleteDialog
+                    isOpen={isBulkDeleteDialogOpen}
+                    onClose={() => setIsBulkDeleteDialogOpen(false)}
+                    onConfirm={handleDeleteGroups} 
+                    itemName={`os ${selectedGroups.length} grupo(s) selecionado(s)`}
+                    itemType="item"
                 />
             )}
 
@@ -132,8 +147,21 @@ const GroupsTable: FC = () => {
                                         <TableCell className="text-lg text-[#3f3c40] font-semibold w-[20%]">
                                             Última Competição
                                         </TableCell>
+                                        
                                         <TableCell className="text-right text-lg text-[#3f3c40] font-semibold w-[20%]">
-                                            Ações
+                                            <div className="flex justify-end items-center gap-2">
+                                                <span>Ações</span>
+                                                <Button
+                                                    variant="destructive"
+                                                    size="sm"
+                                                    onClick={() => setIsBulkDeleteDialogOpen(true)}
+                                                    rounded
+                                                    disabled={selectedGroups.length === 0}
+                                                    className="transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                                                >
+                                                    <Trash2 className="w-5 h-5" />
+                                                </Button>
+                                            </div>
                                         </TableCell>
                                     </TableRow>
                                 </TableHead>
@@ -174,8 +202,7 @@ const GroupsTable: FC = () => {
                                                 <Badge
                                                     variant="outline"
                                                     className={
-                                                        group.status ===
-                                                        "active"
+                                                        group.status === "active"
                                                             ? "bg-[#4F85A6] text-white text-base"
                                                             : "bg-[#e9edee] text-[#3f3c40] text-base"
                                                     }
@@ -256,3 +283,4 @@ const GroupsTable: FC = () => {
 };
 
 export default GroupsTable;
+

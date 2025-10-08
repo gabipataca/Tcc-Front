@@ -29,15 +29,22 @@ const useLoadGroups = () => {
         async (term = "") => {
             setLoadingGroups(true);
             try {
-                const res = GroupService.GetGroups(
+                const controller = new AbortController();
+                setControllerSignal(controller);
+                const res = await GroupService.GetGroups(
                     currentPage,
                     itemsPerPage,
-                    searchTerm
+                    term,
+                    controller.signal
                 );
-                await new Promise((res) => setTimeout(res, 300));
-                setGroups(paginated.map((g) => ({ ...g, id: String(g.id) })));
-                setTotalPages(Math.ceil(filtered.length / itemsPerPage));
-                setTotalGroups(filtered.length);
+
+                if (res.status != 200) {
+                    throw new Error("Failed to fetch groups");
+                }
+
+                setGroups(res.data!.items as Group[]);
+                setTotalPages(res.data!.totalPages);
+                setTotalGroups(res.data!.totalCount);
             } catch {
                 enqueueSnackbar("Falha ao carregar os grupos.", {
                     variant: "error",

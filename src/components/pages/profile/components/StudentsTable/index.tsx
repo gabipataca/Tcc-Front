@@ -1,6 +1,6 @@
 "use client";
 
-import { FC } from "react";
+import { FC, useState } from "react";
 import {
     Card,
     CardContent,
@@ -48,6 +48,8 @@ const StudentsTable: FC = () => {
         handleDeleteUsers,
     } = useStudentsTable();
 
+    const [isBulkDeleteDialogOpen, setIsBulkDeleteDialogOpen] = useState(false);
+
     const getInitials = (name: string) => {
         return name
             .split(" ")
@@ -84,9 +86,20 @@ const StudentsTable: FC = () => {
                 />
             )}
 
+            {isBulkDeleteDialogOpen && (
+                <DeleteDialog
+                    isOpen={isBulkDeleteDialogOpen}
+                    onClose={() => setIsBulkDeleteDialogOpen(false)}
+                    onConfirm={handleDeleteUsers}
+                    itemName={`os ${selectedUsers.length} aluno(s) selecionado(s)`}
+                    itemType="item"
+                />
+            )}
+
+
             <Card className="bg-white border-[#e9edee] shadow-sm">
                 <CardHeader>
-                    <div className="flex items-center justify-between">
+                     <div className="flex items-center justify-between">
                         <div>
                             <CardTitle className="text-3xl text-[#3f3c40]">
                                 Gerenciar Alunos
@@ -128,7 +141,7 @@ const StudentsTable: FC = () => {
                                             <Checkbox
                                                 checked={
                                                     selectedUsers.length ===
-                                                    users.length
+                                                    users.length && users.length > 0
                                                 }
                                                 onClick={() =>
                                                     handleSelectAll(
@@ -137,23 +150,36 @@ const StudentsTable: FC = () => {
                                                 }
                                             />
                                         </TableCell>
-                                        <TableCell className="text-lg text-[#3f3c40] font-semibold w-[25%]">
+                                        <TableCell className="text-lg text-[#3f3c40] font-semibold">
                                             Aluno
                                         </TableCell>
-                                        <TableCell className="text-lg text-[#3f3c40] font-semibold w-[15%]">
+                                        <TableCell className="text-lg text-[#3f3c40] font-semibold">
                                             RA
                                         </TableCell>
-                                        <TableCell className="text-lg text-[#3f3c40] font-semibold w-[15%]">
+                                        <TableCell className="text-lg text-[#3f3c40] font-semibold">
                                             Grupo
                                         </TableCell>
-                                        <TableCell className="text-lg text-[#3f3c40] font-semibold w-[15%]">
+                                        <TableCell className="text-lg text-[#3f3c40] font-semibold">
                                             Status
                                         </TableCell>
-                                        <TableCell className="text-lg text-[#3f3c40] font-semibold w-[15%]">
+                                        <TableCell className="text-lg text-[#3f3c40] font-semibold">
                                             Data de Ingresso
                                         </TableCell>
-                                        <TableCell className="text-right text-lg text-[#3f3c40] font-semibold w-[15%]">
-                                            Ações
+                                        <TableCell className="text-right text-lg text-[#3f3c40] font-semibold">
+                                            <div className="flex justify-end items-center gap-2">
+                                                <span>Ações</span>
+                                             
+                                                <Button
+                                                    variant="destructive"
+                                                    size="sm"
+                                                    onClick={() => setIsBulkDeleteDialogOpen(true)}
+                                                    rounded
+                                                    disabled={selectedUsers.length === 0}
+                                                    className="transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                                                >
+                                                    <Trash2 className="w-5 h-5" />
+                                                </Button>
+                                            </div>
                                         </TableCell>
                                     </TableRow>
                                 </TableHead>
@@ -179,7 +205,7 @@ const StudentsTable: FC = () => {
                                                 />
                                             </TableCell>
                                             <TableCell>
-                                                <div className="flex items-center gap-3">
+                                                <div className="flex items-center justify-center gap-3">
                                                     <Avatar className="w-9 h-9">
                                                         <AvatarFallback className="bg-[#9abbd6] text-white text-base">
                                                             {getInitials(
@@ -206,7 +232,7 @@ const StudentsTable: FC = () => {
                                                     className="border-[#9abbd6] text-base text-[#4F85A6] bg-[#9abbd6] bg-opacity-10"
                                                 >
                                                     {user.group?.name ||
-                                                        "-------"}
+                                                        "-----"}
                                                 </Badge>
                                             </TableCell>
                                             <TableCell>
@@ -258,9 +284,9 @@ const StudentsTable: FC = () => {
                                     ))}
                                 </TableBody>
                                 <TableFooter>
-                                    <TableRow className="w-full">
+                                     <TableRow className="w-full">
                                         <TablePagination
-                                            count={users.length} // Assuming 10 items per page
+                                            count={users.length}
                                             page={currentPage - 1}
                                             onPageChange={(e, page) => {
                                                 togglePage(page + 1);

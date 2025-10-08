@@ -1,6 +1,7 @@
 "use client";
 
-import { FC } from "react";
+// 1. Importar o 'useState'
+import { FC, useState } from "react";
 import {
     Card,
     CardContent,
@@ -28,7 +29,8 @@ import DeleteDialog from "../../../../_modules/Shared/DeleteDialog";
 import EditTeacherDialog from "../../../Shared/EditTeacherDialog";
 import Button from "@/components/_ui/Button";
 
-const StudentsTable: FC = () => {
+// Renomeado para refletir o conteúdo
+const TeachersTable: FC = () => {
     const {
         users,
         allUsersSelected,
@@ -47,6 +49,9 @@ const StudentsTable: FC = () => {
         handleSelectUserToEdit,
         handleDeleteUsers,
     } = useTeachersTable();
+
+    // 2. Adicionar o estado para o diálogo de exclusão em massa
+    const [isBulkDeleteDialogOpen, setIsBulkDeleteDialogOpen] = useState(false);
 
     const getInitials = (name: string) => {
         return name
@@ -84,6 +89,17 @@ const StudentsTable: FC = () => {
                 />
             )}
 
+            {/* 3. Adicionar a instância do diálogo de exclusão em massa */}
+            {isBulkDeleteDialogOpen && (
+                <DeleteDialog
+                    isOpen={isBulkDeleteDialogOpen}
+                    onClose={() => setIsBulkDeleteDialogOpen(false)}
+                    onConfirm={handleDeleteUsers}
+                    itemName={`os ${selectedUsers.length} professor(es) selecionado(s)`}
+                    itemType="item"
+                />
+            )}
+
             <Card className="bg-white border-[#e9edee] shadow-sm">
                 <CardHeader>
                     <div className="flex items-center justify-between">
@@ -107,7 +123,7 @@ const StudentsTable: FC = () => {
                     <div className="relative mt-2">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#4F85A6] w-5 h-5" />
                         <Input
-                            placeholder="Buscar por nome, RA ou grupo..."
+                            placeholder="Buscar por nome..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="pl-10 border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-base"
@@ -128,7 +144,7 @@ const StudentsTable: FC = () => {
                                             <Checkbox
                                                 checked={
                                                     selectedUsers.length ===
-                                                    users.length
+                                                    users.length && users.length > 0
                                                 }
                                                 onClick={() =>
                                                     handleSelectAll(
@@ -143,8 +159,21 @@ const StudentsTable: FC = () => {
                                         <TableCell className="text-lg text-[#3f3c40] font-semibold w-[15%]">
                                             Departamento
                                         </TableCell>
+                                        
                                         <TableCell className="text-right text-lg text-[#3f3c40] font-semibold w-[15%]">
-                                            Ações
+                                             <div className="flex justify-end items-center gap-2">
+                                                <span>Ações</span>
+                                                <Button
+                                                    variant="destructive"
+                                                    size="sm"
+                                                    onClick={() => setIsBulkDeleteDialogOpen(true)}
+                                                    rounded
+                                                    disabled={selectedUsers.length === 0}
+                                                    className="transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                                                >
+                                                    <Trash2 className="w-5 h-5" />
+                                                </Button>
+                                            </div>
                                         </TableCell>
                                     </TableRow>
                                 </TableHead>
@@ -170,7 +199,7 @@ const StudentsTable: FC = () => {
                                                 />
                                             </TableCell>
                                             <TableCell>
-                                                <div className="flex items-center gap-3">
+                                                <div className="flex items-center justify-center gap-3">
                                                     <Avatar className="w-9 h-9">
                                                         <AvatarFallback className="bg-[#9abbd6] text-white text-base">
                                                             {getInitials(
@@ -189,7 +218,7 @@ const StudentsTable: FC = () => {
                                                 </div>
                                             </TableCell>
                                             <TableCell className="font-mono text-base text-[#3f3c40]">
-                                                ---------------
+                                                {user.department || "Não definido"}
                                             </TableCell>
                                             <TableCell className="text-right">
                                                 <div className="flex justify-end gap-2">
@@ -214,7 +243,6 @@ const StudentsTable: FC = () => {
                                                             )
                                                         }
                                                         rounded
-                                                        className="hover:bg-red-50 text-red-500"
                                                     >
                                                         <Trash2 className="w-5 h-5" />
                                                     </Button>
@@ -226,7 +254,7 @@ const StudentsTable: FC = () => {
                                 <TableFooter>
                                     <TableRow className="w-full">
                                         <TablePagination
-                                            count={users.length} // Assuming 10 items per page
+                                            count={users.length}
                                             page={currentPage - 1}
                                             onPageChange={(e, page) => {
                                                 togglePage(page + 1);
@@ -256,7 +284,7 @@ const StudentsTable: FC = () => {
 
                     {users.length === 0 && !loadingUsers && (
                         <div className="p-6 text-center text-[#3f3c40]">
-                            Nenhum usuário encontrado.
+                            Nenhum professor encontrado.
                         </div>
                     )}
                 </CardContent>
@@ -264,4 +292,6 @@ const StudentsTable: FC = () => {
         </>
     );
 };
-export default StudentsTable;
+
+
+export default TeachersTable;
