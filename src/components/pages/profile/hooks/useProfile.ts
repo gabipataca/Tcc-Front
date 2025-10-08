@@ -21,13 +21,13 @@ const useProfile = () => {
     const ProfileToRender = useMemo(() => {
         switch (user?.role) {
             case "Admin":
-                return AdminDashboard;
+                return TeacherDashboard;
             case "Teacher":
                 return TeacherDashboard;
             case "Student":
                 return StudentDashboard;
             default:
-                return AdminDashboard;
+                return TeacherDashboard;
         }
     }, [user]);
 

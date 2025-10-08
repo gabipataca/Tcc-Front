@@ -2,7 +2,7 @@
 
 import type React from "react";
 import { FC, useState } from "react";
-import { Users, UserCheck, Menu, Package, ChevronLeft } from "lucide-react";
+import { Users, UserCheck, Package, ChevronLeft } from "lucide-react";
 import { ButtonAdm } from "@/components/_ui/ButtonAdm";
 import {
     Tabs,
@@ -10,35 +10,19 @@ import {
     TabsList,
     TabsTrigger,
 } from "@/components/_ui/Tabs";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/_ui/Sheet";
-import {
-    Home,
-    UserPlus,
-    BookOpen,
-    Trophy,
-    BarChart3,
-    Medal,
-    HelpCircle,
-} from "lucide-react";
 import StudentsTable from "../../components/StudentsTable";
 import GroupsTable from "../../components/GroupsTable";
 import StatsCard from "../../components/StatsCard";
 import { groupsData, studentsData, Student, Group } from "../../hooks/mockData";
 import useProfileMenu from "../../hooks/useProfileMenu";
 import ExerciseManagement from "../Shared/ExerciseManagement";
-
-// 1. Importar o Modal que vamos usar
 import { EditDeleteModal } from "@/components/pages/perfilAdm/EditDeleteModal";
-
-// Navbar e Sidebar não precisam de alterações, então foram omitidos para clareza
-const AppSidebar = () => { /* ... seu código existente ... */ };
-const Navbar = () => { /* ... seu código existente ... */ };
+import DepartmentModal from "@/components/_ui/DepartmentModal";
 
 const TeacherDashboard: FC = () => {
     const { activeMenu, toggleMenu } = useProfileMenu();
     const [activeTab, setActiveTab] = useState("students");
 
-    // 2. Adicionar o estado para alunos, grupos e para o modal
     const [students, setStudents] = useState<Student[]>(studentsData);
     const [groups, setGroups] = useState<Group[]>(groupsData);
     const [modalState, setModalState] = useState<{
@@ -53,7 +37,13 @@ const TeacherDashboard: FC = () => {
         itemType: "",
     });
 
-    // 3. Adicionar as funções para controlar o modal
+    const [isDeptModalOpen, setIsDeptModalOpen] = useState(false);
+    const [departmentInfo, setDepartmentInfo] = useState({
+        departamento: "Departamento de Computação",
+        descricao: "Gerencie os grupos e alunos do curso.",
+        email: "computacao@fho.edu.br",
+    });
+
     const openModal = (item: Student | Group, itemType: string, mode: "edit" | "delete") => {
         setModalState({ isOpen: true, item, itemType, mode });
     };
@@ -64,7 +54,6 @@ const TeacherDashboard: FC = () => {
 
     const handleConfirmModal = (updatedItem?: Student | Group) => {
         const { mode, item, itemType } = modalState;
-
         if (mode === "delete" && item) {
             if (itemType === "Aluno") setStudents(prev => prev.filter(s => s.id !== item.id));
             if (itemType === "Grupo") setGroups(prev => prev.filter(g => g.id !== item.id));
@@ -72,7 +61,6 @@ const TeacherDashboard: FC = () => {
             if (itemType === "Aluno") setStudents(prev => prev.map(s => s.id === updatedItem.id ? (updatedItem as Student) : s));
             if (itemType === "Grupo") setGroups(prev => prev.map(g => g.id === updatedItem.id ? (updatedItem as Group) : g));
         }
-        
         closeModal();
     };
 
@@ -88,8 +76,8 @@ const TeacherDashboard: FC = () => {
         {
             id: "students",
             title: "Total de Alunos",
-            value: students.length, // Usar o estado
-            description: "Ativos no ultimo mês",
+            value: students.length,
+            description: "Ativos no último mês",
             icon: Users,
             action: () => {
                 toggleMenu("Main");
@@ -99,8 +87,8 @@ const TeacherDashboard: FC = () => {
         {
             id: "groups",
             title: "Grupos Ativos",
-            value: groups.filter((g) => g.status === "active").length, // Usar o estado
-            description: "Ativos no ultimo mês",
+            value: groups.filter((g) => g.status === "active").length,
+            description: "Ativos no último mês",
             icon: UserCheck,
             action: () => {
                 toggleMenu("Main");
@@ -112,11 +100,11 @@ const TeacherDashboard: FC = () => {
     return (
         <div className="flex-1">
             <div className="container mx-auto p-6 space-y-6">
-                <div className="flex items-center gap-8">
+                <div className="flex items-center gap-8 justify-between">
                     {activeMenu !== "Main" && (
                         <ButtonAdm
                             type="button"
-                            variant="ghost" 
+                            variant="ghost"
                             size="default"
                             onClick={() => toggleMenu("Main")}
                         >
@@ -131,6 +119,16 @@ const TeacherDashboard: FC = () => {
                             Gerencie alunos, grupos e exercícios
                         </p>
                     </div>
+
+                    <ButtonAdm
+                        type="button"
+                        variant="default"
+                        size="default"
+                        onClick={() => setIsDeptModalOpen(true)}
+                        className="bg-[#4F85A6] hover:bg-[#3b6e8a] text-white font-semibold"
+                    >
+                        Editar Departamento
+                    </ButtonAdm>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -172,44 +170,53 @@ const TeacherDashboard: FC = () => {
                             </TabsTrigger>
                         </TabsList>
 
-                        <TabsContent
-                            value="students"
-                            className="space-y-0 mt-0"
-                        >
-                            {/* 4. Passar os dados e funções como props para a tabela */}
-                            <StudentsTable 
+                        <TabsContent value="students" className="space-y-0 mt-0">
+                            <StudentsTable
                                 students={students}
-                                onEdit={(s) => openModal(s, "Aluno", "edit")}
-                                onDelete={(s) => openModal(s, "Aluno", "delete")}
-                            />
-                        </TabsContent>
+                            onEdit={(s) => openModal(s, "Aluno", "edit")}
+                            onDelete={(s) => openModal(s, "Aluno", "delete")}
+                        />
+                    </TabsContent>
 
-                        <TabsContent value="groups" className="space-y-0 mt-0">
-                            {/* 4. Passar os dados e funções como props para a tabela */}
-                            <GroupsTable 
-                                groups={groups}
-                                onEdit={(g) => openModal(g, "Grupo", "edit")}
-                                onDelete={(g) => openModal(g, "Grupo", "delete")}
-                            />
-                        </TabsContent>
-                    </Tabs>
-                ) : activeMenu === "Exercise" ? (
-                    <ExerciseManagement />
-                ) : (
-                    <></>
-                )}
+                    <TabsContent value="groups" className="space-y-0 mt-0">
+                        <GroupsTable
+                            groups={groups}
+                            onEdit={(g) => openModal(g, "Grupo", "edit")}
+                            onDelete={(g) => openModal(g, "Grupo", "delete")}
+                        />
+                    </TabsContent>
+                </Tabs>
+            ) : activeMenu === "Exercise" ? (
+                <ExerciseManagement />
+            ) : null}
 
-                {/* 5. Adicionar a renderização do modal */}
-                {modalState.isOpen && (
-                    <EditDeleteModal
-                        isOpen={modalState.isOpen}
-                        onClose={closeModal}
-                        onConfirm={handleConfirmModal}
-                        item={modalState.item}
-                        itemType={modalState.itemType}
-                        mode={modalState.mode}
-                    />
-                )}
+            {modalState.isOpen && (
+                <EditDeleteModal
+                    isOpen={modalState.isOpen}
+                    onClose={closeModal}
+                    onConfirm={handleConfirmModal}
+                    item={modalState.item}
+                    itemType={modalState.itemType}
+                    mode={modalState.mode}
+                />
+            )}
+
+            {isDeptModalOpen && (
+                <DepartmentModal
+                    open={isDeptModalOpen}
+                    onClose={() => setIsDeptModalOpen(false)}
+                    onConfirm={(updatedInfo) => {
+                        setDepartmentInfo(updatedInfo);
+                        setIsDeptModalOpen(false);
+                    }}
+                    initialData={{
+                        ...departmentInfo,
+                        labelTitulo: "Alterar informações",
+                        labelSubtitulo: "Altere seus dados",
+                        labelCampo: "Departamento",
+                    }}
+                />
+            )}
             </div>
         </div>
     );
