@@ -43,6 +43,9 @@ export interface ButtonProps {
      */
     rounded?: boolean;
 
+    /**
+     * The size of the button.
+     */
     size?: "default" | "sm" | "lg" | "icon";
 
     /**
@@ -50,6 +53,14 @@ export interface ButtonProps {
      */
     fullWidth?: boolean;
 
+    /**
+     * Whether the button is disabled.
+     */
     disabled?: boolean;
+
+    /**
+     * Whether to show a loading indicator inside the button.
+     */
+    loading?: boolean;
     
 }

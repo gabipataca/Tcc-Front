@@ -1,22 +1,29 @@
 import { NextResponse, NextRequest } from "next/server";
 import AuthService from "./services/AuthService";
-import { UserTokenProperties } from "./types/Auth";
+import { UserTokenProperties, UserTokenPropertiesClaims } from "./types/Auth";
+import { RoleClaimKey } from "./constants/Auth";
 
 const protectedRoutes = [
     { path: "/admin", roles: ["Admin"] },
     { path: "/Competition", roles: ["Admin", "Teacher", "Student"] },
+    { path: "/profile", roles: ["Admin", "Teacher", "Student"] },
 ];
 
 const parseJwt = (token: string): UserTokenProperties => {
     const base64Url = token.split(".")[1];
     const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    const jsonPayload = decodeURIComponent(
-        atob(base64)
-            .split("")
-            .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
-            .join("")
-    );
-    return JSON.parse(jsonPayload);
+    const str = Buffer.from(base64, "base64").toString("utf-8");
+    const parsedToken = JSON.parse(str) as UserTokenPropertiesClaims;
+
+    return {
+        unique_name: parsedToken.unique_name,
+        id: parsedToken.id,
+        role: parsedToken[RoleClaimKey],
+        jti: parsedToken.jti,
+        exp: parsedToken.exp,
+        iss: parsedToken.iss,
+        aud: parsedToken.aud,
+    };
 };
 
 export const middleware = async (request: NextRequest) => {
@@ -41,8 +48,8 @@ export const middleware = async (request: NextRequest) => {
         console.log("Role: ", jwtPayload.role);
         console.log("Route: ", route);
 
-        if (!route?.roles?.includes(jwtPayload.role) && !isTokenValid) {
-            return NextResponse.redirect(new URL("/login", request.url));
+        if (!route?.roles?.includes(jwtPayload.role) || !isTokenValid) {
+            return NextResponse.redirect(new URL("/logout", request.url));
         }
 
         if (isAuthRoute) {

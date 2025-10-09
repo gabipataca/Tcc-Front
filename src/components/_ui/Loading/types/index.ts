@@ -9,4 +9,5 @@ export interface LoadingProps {
     className?: string;
     bgColor?: string;
     colorClass?: string;
+    notAbsolute?: boolean;
 };

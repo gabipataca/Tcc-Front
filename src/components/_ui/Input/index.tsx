@@ -2,6 +2,7 @@
 
 import type React from "react"
 import type { InputProps } from "./types"
+import Loading from "../Loading"
 
 const Input: React.FC<InputProps> = ({
   containerClassName,
@@ -23,12 +24,13 @@ const Input: React.FC<InputProps> = ({
   min,
   max,
   id,
+  loading,
   ...otherProps
 }) => {
   return (
-    <div className={`relative mb-4 ${containerClassName || ""}`}>
+    <div className={`relative ${error ? "mb-4" : ""} ${containerClassName || ""}`}>
       {label && (
-        <label htmlFor={id || name} className="block text-gray-700 mb-2">
+        <label htmlFor={id || name} className="block text-gray-700 mb-1">
           {label}
         </label>
       )}
@@ -42,7 +44,7 @@ const Input: React.FC<InputProps> = ({
         {icon && <div className="ml-2">{icon}</div>}
         <input
           id={id || name}
-          className={`w-full p-3 outline-none bg-transparent rounded-lg ${className || ""}`}
+          className={`flex-1 w-full p-3 outline-none bg-transparent rounded-lg ${className || ""}`}
           type={type}
           placeholder={placeholder}
           value={value ?? ""}
@@ -57,6 +59,12 @@ const Input: React.FC<InputProps> = ({
           max={max}
           {...otherProps}
         />
+        {loading && (
+          <div className="relative min-w-8 min-h-full flex justify-center items-center">
+            <Loading size="xs" variant="spinner" />
+          </div>
+        )}
+        
       </div>
       {error && <span className="absolute -bottom-6 left-0 text-red-700 text-sm">{error.message}</span>}
     </div>

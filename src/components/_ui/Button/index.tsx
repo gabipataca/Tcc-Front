@@ -3,6 +3,7 @@
 import Link from "next/link";
 import styles from "./Button.module.scss";
 import { ButtonProps } from "./types";
+import Loading from "../Loading";
 
 const Button = ({
     className,
@@ -16,6 +17,7 @@ const Button = ({
     fullWidth,
     size = "default",
     disabled,
+    loading,
 }: ButtonProps) => {
     if (type == "button") {
         return (
@@ -32,6 +34,11 @@ const Button = ({
                 disabled={disabled}
             >
                 {children}
+                {loading && (
+                    <div className="relative w-4 h-auto flex justify-center items-center">
+                        <Loading colorClass="fill-slate-100" variant="spinner" size="md" />
+                    </div>
+                )}
             </button>
         );
     } else {

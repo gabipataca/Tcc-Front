@@ -128,7 +128,7 @@ const useRegister = () => {
 
                     setTimeout(() => {
                         router.push("/profile");
-                    }, 600);
+                    }, 100);
                 }
             } catch (err) {
                 console.error(err);
@@ -141,14 +141,14 @@ const useRegister = () => {
                     for (let i = 0; i < errors.length; i++) {
                         setError(errors[i].target as "ra" | "password", {
                             type: "onBlur",
-                            message: errors[i].message,
+                            message: errors[i].error,
                         });
                         setValue(errors[i].target as "ra" | "password", "");
                     }
                 }
             }
         },
-        [isValid, setError, setUser, setValue]
+        [isValid, router, setError, setUser, setValue]
     );
 
     const formData = watch();

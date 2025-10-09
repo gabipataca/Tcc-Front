@@ -10,7 +10,7 @@ export interface FormError {
     /**
      * The error message associated with the form field.
      */
-    message: string;
+    error: string;
 }
 
 

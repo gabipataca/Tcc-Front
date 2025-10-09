@@ -107,4 +107,9 @@ export interface InputProps {
      * ID for the input element.
      */
     id?: string;
+
+    /**
+     * Indicates whether the input is in a loading state.
+     */
+    loading?: boolean;
 }

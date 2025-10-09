@@ -9,34 +9,30 @@ import {
 } from "@/components/_ui/Dialog";
 import Input from "@/components/_ui/Input";
 import { Edit } from "lucide-react";
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
+import useAccessCodeDialog from "./hooks/useAccessCodeDialog";
+import Button from "@/components/_ui/Button";
 
 interface AccessCodeDialogProps {
     isOpen: boolean;
     onClose: () => void;
-    onSave: (newCode: string) => void;
-    currentCode: string;
 }
 
 const AccessCodeDialog: React.FC<AccessCodeDialogProps> = ({
     isOpen,
     onClose,
-    onSave,
-    currentCode,
 }) => {
-    const generateRandomCode = () => {
-        return Math.random().toString(36).substring(2, 8).toUpperCase();
-    };
 
-    const [code, setCode] = useState(currentCode || "");
+    const {
+        code,
+        isLoading,
+        getCurrentCode,
+        updateCurrentCode,
+    } = useAccessCodeDialog();
 
     useEffect(() => {
-        setCode(currentCode || generateRandomCode());
-    }, [currentCode]);
-
-    const handleSave = () => {
-        onSave(code);
-    };
+        getCurrentCode();
+    }, [getCurrentCode]);
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
@@ -54,26 +50,31 @@ const AccessCodeDialog: React.FC<AccessCodeDialogProps> = ({
                     <label className="text-lg font-medium text-[#126396] block mb-2">
                         Código de Acesso
                     </label>
-                    <div className="grid grid-cols-[1fr_auto] items-center gap-4">
+                    <div className="flex items-center w-full gap-4">
                         <Input
+                            name="teacherCode"
+                            type="text"
                             value={code}
                             readOnly
                             placeholder="Código gerado"
-                            className="w-full border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-base"
+                            className="flex-1 border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-base"
+                            containerClassName="flex-1"
+                            loading={isLoading}
                         />
-                        <ButtonAdm
-                            onClick={() => setCode(generateRandomCode())}
-                            className="bg-[#4F85A6] hover:bg-[#126396] text-white"
+                        <Button
+                            onClick={updateCurrentCode}
+                            variant="primary"
+                            rounded
                         >
                             Gerar código
-                        </ButtonAdm>
+                        </Button>
                     </div>
                 </div>
 
                 <DialogFooter>
                     <ButtonAdm
-                        onClick={handleSave}
                         className="bg-[#4F85A6] hover:bg-[#126396] text-white"
+                        onClick={onClose}
                     >
                         <Edit className="w-4 h-4 mr-2" />
                         Confirmar
