@@ -1,8 +1,8 @@
 "use client";
 
 import type React from "react";
-import { useState } from "react"; // Importar o useState
-import Button from "@/components/_ui/Button";
+import { useState } from "react";
+import Button from "@/components/_ui/Button"; 
 import { useStudentDashboardData } from "./hooks/useStudentDashboardData";
 import StudentInfoSection from "./components/StudentInfoSection";
 import GroupInfoSection from "./components/GroupInfoSection";
@@ -10,39 +10,76 @@ import CompetitionHistorySection from "./components/CompetitionHistorySection";
 import ChampionTeamsSection from "./components/ChampionsTeamsSection";
 import { useUser } from "@/contexts/UserContext";
 import { Trophy, Users } from "lucide-react";
+import Modal from "@/components/_ui/Modal"; 
+
+
+interface ModalConfig {
+    title: string;
+    bodyContent: React.ReactNode;
+    hasConfirmButton?: boolean;
+    confirmButtonContent?: string;
+    onConfirm?: () => void;
+}
 
 const StudentDashboard: React.FC = () => {
     const { user } = useUser();
+    const { groupInfo, competitionHistory, championTeams } = useStudentDashboardData();
 
-    const { groupInfo, competitionHistory, championTeams } =
-        useStudentDashboardData();
+    const [isRegistrationOpen] = useState(true);
+    const [isUserRegistered] = useState(false);
 
-    // --- Lógica dos Botões ---
-    // Simula se as inscrições para a maratona estão abertas.
-    // Mude para 'false' para ver o botão desabilitado.
-    const [isRegistrationOpen, setIsRegistrationOpen] = useState(true);
+  //modal
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalConfig, setModalConfig] = useState<ModalConfig>({
+        title: "",
+        bodyContent: null,
+    });
 
-    // Simula se o aluno atual já se inscreveu na maratona.
-    const [isUserRegistered, setIsUserRegistered] = useState(false);
+    const showModal = (config: ModalConfig) => {
+        setModalConfig(config);
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
+
 
     const handleRegistrationClick = () => {
-        // Em uma aplicação real, você usaria um router para navegar.
-        // Ex: router.push('/inscricao');
-        alert("Redirecionando para a página de inscrição...");
+        showModal({
+            title: "Redirecionamento",
+            bodyContent: <p className="text-slate-600">Você será redirecionado para a página de inscrição...</p>,
+            hasConfirmButton: true,
+            confirmButtonContent: "OK",
+            onConfirm: closeModal,
+        });
     };
 
     const handleStartMarathonClick = () => {
         if (isUserRegistered) {
-            alert("Iniciando maratona... Boa sorte!");
-            // Lógica para iniciar a maratona
+            showModal({
+                title: "Iniciando Maratona",
+                bodyContent: <p className="text-slate-600">Boa sorte! A maratona está começando.</p>,
+                hasConfirmButton: true,
+                confirmButtonContent: "Entendido",
+                onConfirm: closeModal,
+            });
+           
         } else {
-            alert("Você precisa se inscrever na maratona antes de iniciá-la.");
+            showModal({
+                title: "Aviso",
+                bodyContent: <p className="text-slate-600">Você precisa se inscrever na maratona antes de iniciá-la.</p>,
+                hasConfirmButton: true,
+                confirmButtonContent: "OK",
+                onConfirm: closeModal,
+                status: "warning" 
+            });
         }
     };
 
     return (
         <>
-            {/* Conteúdo Principal */}
+            {/* ... todo o seu JSX do Dashboard permanece o mesmo ... */}
             <div className="flex-1 flex flex-col bg-gray-200">
                 {/* Main Content */}
                 <div className="flex-1">
@@ -87,13 +124,10 @@ const StudentDashboard: React.FC = () => {
                     {/* Content */}
                     <main className="px-40 py-8">
                         <div className="max-w-full space-y-8">
-                            {/* Information Cards */}
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                 <StudentInfoSection info={user} />
                                 <GroupInfoSection info={groupInfo} />
                             </div>
-
-                            {/* Tables */}
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                 <CompetitionHistorySection
                                     history={competitionHistory}
@@ -104,9 +138,21 @@ const StudentDashboard: React.FC = () => {
                     </main>
                 </div>
             </div>
+
+            {/* 4. Renderizar o seu Modal com as props corretas */}
+            <Modal
+                open={isModalOpen}
+                onClose={closeModal}
+                title={modalConfig.title}
+                bodyContent={modalConfig.bodyContent}
+                hasConfirmButton={modalConfig.hasConfirmButton}
+                confirmButtonContent={modalConfig.confirmButtonContent}
+                onConfirm={modalConfig.onConfirm}
+                hasCancelButton={false} // Para este caso, não precisamos do botão de cancelar
+                size="sm" // Ajuste o tamanho conforme necessário
+            />
         </>
     );
 };
 
 export default StudentDashboard;
-

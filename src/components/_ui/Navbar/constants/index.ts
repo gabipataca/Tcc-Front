@@ -14,7 +14,7 @@ import {
 import { NavbarLink } from "./types";
 
 export const NavbarLinks: NavbarLink[] = [
-    {
+    /* {
         label: "Criar Maratona",
         href: "/Competition/Create",
         Icon: TrophyIcon,
@@ -107,13 +107,11 @@ export const NavbarLinks: NavbarLink[] = [
         href: "/Profile/PerfilAdm",
         label: "Perfil do Administrador",
         Icon: UsersIcon,
-    },
-
-    {
+    },*/
+    /* {
         //Perfil Adm - Criar Formulários para inscrição maratona
         href: "/Profile/CreateSubscription",
         label: "Liberar Inscrições",
         Icon: UsersIcon,
-    },
-    */
+    },*/
 ];
