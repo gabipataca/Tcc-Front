@@ -15,15 +15,7 @@ type Props = {
 export default function NavRanking({ children }: Props) {
   const [isOpen, setIsOpen] = useState(false)
 
-  const navLinks = [
-    { href: "/Competition", label: "Home-Ranking", icon: Home },
-    { href: "/Competition/Submissions", label: "Relatório de Submissão", icon: Users },
-    { href: "/Competition/Logs", label: "Logs", icon: FileText },
-    { href: "/Competition/ManageTeams", label: "Gerenciar Equipes", icon: UsersRound },
-    { href: "/Competition/Settings", label: "Configurações", icon: Settings },
-    { href: "/Competition/Questions", label: "Dúvidas", icon: HelpCircle },
-    { href: "/Competition/ManualCorrection", label: "Correção", icon: CheckCircle },
-  ]
+
 
   return (
     <div className="flex flex-col max-h-screen bg-gray-200">
