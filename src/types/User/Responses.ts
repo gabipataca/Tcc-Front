@@ -6,4 +6,4 @@ import { PagedResult } from "../Global";
 /**
  * Represents the response for getting users.
  */
-export interface GetUsersResponse extends PagedResult<GenericUserInfo> {}
+export type GetUsersResponse = PagedResult<GenericUserInfo>;

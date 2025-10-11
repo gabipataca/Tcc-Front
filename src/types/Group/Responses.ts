@@ -51,14 +51,10 @@ export interface UpdateGroupResponse {
     userIds: string[];
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface GetGroupsResponse extends PagedResult<GroupResponse> {
-
-}
 /**
  * Represents the response for getting groups.
  */
-export interface GetGroupsResponse extends PagedResult<GroupResponse> {}
+export type GetGroupsResponse = PagedResult<GroupResponse>
 
 
 export interface InviteUserToGroupResponse {
@@ -102,7 +98,7 @@ export interface AcceptGroupInvitationResponse {
     /** The ID of the group. */
     groupId: number;
     /** The ID of the user who accepted. */
-    userId: number;
+    userId: string;
     /** The group information. */
     group: GroupResponse;
 }
