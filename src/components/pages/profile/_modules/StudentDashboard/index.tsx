@@ -79,7 +79,7 @@ const StudentDashboard: React.FC = () => {
 
     return (
         <>
-            {/* ... todo o seu JSX do Dashboard permanece o mesmo ... */}
+
             <div className="flex-1 flex flex-col bg-gray-200">
                 {/* Main Content */}
                 <div className="flex-1">
