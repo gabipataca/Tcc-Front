@@ -1,5 +1,5 @@
 import type React from "react";
-import { useRef } from "react";
+import { useRef, useState, useMemo } from "react";
 import {
     FileText,
     Plus,
@@ -8,6 +8,7 @@ import {
     Trash2,
     Search,
     Upload,
+    AlertTriangle,
 } from "lucide-react";
 import {
     Card,
@@ -25,9 +26,15 @@ import { exerciseTypeOptions } from "./constants";
 import CustomDropdown from "@/components/_ui/Dropdown";
 import { ExerciseType } from "@/types/Exercise";
 import { Textarea } from "@/components/_ui/Textarea";
-
-import { useMemo } from "react";
 import Loading from "@/components/_ui/Loading";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/_ui/Dialog";
 
 const ExerciseManagement: React.FC = () => {
     const {
@@ -60,6 +67,16 @@ const ExerciseManagement: React.FC = () => {
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 5;
+    const totalPages = Math.ceil(exercises.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const currentExercises = exercises.slice(startIndex, startIndex + itemsPerPage);
+
+    const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+    const [exerciseToDelete, setExerciseToDelete] = useState<number | null>(null);
+    const [duplicateError, setDuplicateError] = useState<string | null>(null);
+
     const exerciseTypeLabel = useMemo(() => {
         return (
             exerciseTypeOptions.find(
@@ -68,11 +85,32 @@ const ExerciseManagement: React.FC = () => {
         );
     }, [exerciseTypeFilter]);
 
+    const handleCreateWithValidation = () => {
+        const duplicate = exercises.some(
+            (ex) => ex.title.trim().toLowerCase() === title.trim().toLowerCase()
+        );
+
+        if (duplicate) {
+            setDuplicateError("Já existe um exercício com esse nome!");
+            return;
+        }
+
+        setDuplicateError(null);
+        handleCreateExercise();
+    };
+
+    const confirmDeleteExercise = () => {
+        if (exerciseToDelete !== null) {
+            handleRemoveExercise(exerciseToDelete);
+            setExerciseToDelete(null);
+            setConfirmDeleteOpen(false);
+        }
+    };
+
     return (
         <>
             <div className="flex-1">
                 <div className="container mx-auto p-8 space-y-12">
-                    {/* Header */}
                     <div className="flex items-center justify-between">
                         <div>
                             <h1 className="text-4xl font-bold text-[#3f3c40] flex items-center gap-6">
@@ -86,7 +124,6 @@ const ExerciseManagement: React.FC = () => {
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                        {/* Exercise List */}
                         <Card className="bg-white border-[#e9edee] shadow-sm">
                             <CardHeader className="pb-8">
                                 <CardTitle className="text-3xl text-[#3f3c40] flex items-center gap-4">
@@ -94,8 +131,7 @@ const ExerciseManagement: React.FC = () => {
                                     Lista de Exercícios
                                 </CardTitle>
                                 <CardDescription className="text-xl text-[#4F85A6] mt-2">
-                                    Visualize e gerencie todos os exercícios
-                                    cadastrados
+                                    Visualize e gerencie todos os exercícios cadastrados
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-8">
@@ -108,16 +144,13 @@ const ExerciseManagement: React.FC = () => {
                                         options={[{ label: "Todos", value: null }, ...exerciseTypeOptions]}
                                         value={
                                             [{ label: "Todos", value: null }, ...exerciseTypeOptions].find(
-                                                (option) =>
-                                                    option.value ===
-                                                    exerciseTypeFilter
+                                                (option) => option.value === exerciseTypeFilter
                                             )?.value ?? null
                                         }
                                         onChange={(val: ExerciseType) =>
                                             toggleExerciseTypeFilter(
                                                 [{ label: "Todos", value: null }, ...exerciseTypeOptions].find(
-                                                    (option) =>
-                                                        option.value === val
+                                                    (option) => option.value === val
                                                 )?.value ?? null
                                             )
                                         }
@@ -134,81 +167,109 @@ const ExerciseManagement: React.FC = () => {
                                         type="text"
                                         placeholder="Digite o nome do exercício..."
                                         value={searchTerm}
-                                        onChange={(e) =>
-                                            setSearchTerm(e.target.value)
-                                        }
+                                        onChange={(e) => setSearchTerm(e.target.value)}
                                         className="border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-xl h-16 px-6"
                                     />
                                 </div>
 
-                                <div className="max-h-96 min-h-32 overflow-y-auto border border-[#e9edee] rounded-lg p-6 space-y-4 relative">
-                                    {exercises.length === 0 &&
-                                        !loadingExercises && (
-                                            <div className="text-center py-12">
-                                                <FileText className="h-16 w-16 text-[#9abbd6] mx-auto mb-4" />
-                                                <p className="text-xl text-[#4F85A6]">
-                                                    Nenhum exercício encontrado
-                                                </p>
-                                                <p className="text-lg text-[#3f3c40] mt-2">
-                                                    {exerciseTypeFilter === null
-                                                        ? "Adicione um novo exercício"
-                                                        : `Nenhum exercício do tipo "${exerciseTypeLabel}" encontrado.`}
-                                                </p>
-                                            </div>
-                                        )}
-                                    {!loadingExercises &&
-                                        exercises.length > 0 &&
-                                        exercises.map((exercise, index) => (
-                                            <div
-                                                key={`${exercise.id}-${index}`}
-                                                className="flex justify-between items-center p-4 border-b border-[#e9edee] hover:bg-[#e9edee]/30 rounded transition-colors"
-                                            >
-                                                <div className="flex-1">
-                                                    <h4 className="text-xl font-medium text-[#3f3c40] mb-2">
-                                                        {exercise.title}
-                                                    </h4>
-                                                    <Badge
-                                                        className={`${getTypeColor(
-                                                            exercise.exerciseTypeId
-                                                        )} text-lg px-3 py-1`}
-                                                    >
-                                                        {exerciseTypeOptions.find(
-                                                            (option) =>
-                                                                option.value ===
+                                <div className="min-h-32 border border-[#e9edee] rounded-lg p-6 space-y-4 relative">
+                                    {exercises.length === 0 && !loadingExercises && (
+                                        <div className="text-center py-12">
+                                            <FileText className="h-16 w-16 text-[#9abbd6] mx-auto mb-4" />
+                                            <p className="text-xl text-[#4F85A6]">
+                                                Nenhum exercício encontrado
+                                            </p>
+                                            <p className="text-lg text-[#3f3c40] mt-2">
+                                                {exerciseTypeFilter === null
+                                                    ? "Adicione um novo exercício"
+                                                    : `Nenhum exercício do tipo "${exerciseTypeLabel}" encontrado.`}
+                                            </p>
+                                        </div>
+                                    )}
+
+                                    {!loadingExercises && currentExercises.length > 0 && (
+                                        <>
+                                            {currentExercises.map((exercise, index) => (
+                                                <div
+                                                    key={`${exercise.id}-${index}`}
+                                                    className="flex justify-between items-center p-4 border-b border-[#e9edee] rounded"
+                                                >
+                                                    <div className="flex-1">
+                                                        <h4 className="text-xl font-medium text-[#3f3c40] mb-2">
+                                                            {exercise.title}
+                                                        </h4>
+                                                        <Badge
+                                                            className={`${getTypeColor(
                                                                 exercise.exerciseTypeId
-                                                        )?.label ?? ""}
-                                                    </Badge>
+                                                            )} text-lg px-3 py-1 pointer-events-none`}
+                                                        >
+                                                            {
+                                                                exerciseTypeOptions.find(
+                                                                    (option) =>
+                                                                        option.value === exercise.exerciseTypeId
+                                                                )?.label
+                                                            }
+                                                        </Badge>
+                                                    </div>
+                                                    <div className="flex space-x-3 ml-4">
+                                                        <ButtonAdm
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            className="hover:bg-[#9abbd6]/20 text-[#4F85A6] p-3"
+                                                            onClick={() => startEdit(exercise)}
+                                                        >
+                                                            <Edit className="w-5 h-5" />
+                                                        </ButtonAdm>
+                                                        <ButtonAdm
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            className="hover:bg-red-50 text-red-500 p-3"
+                                                            onClick={() => {
+                                                                setExerciseToDelete(exercises.indexOf(exercise));
+                                                                setConfirmDeleteOpen(true);
+                                                            }}
+                                                        >
+                                                            <Trash2 className="w-5 h-5" />
+                                                        </ButtonAdm>
+                                                    </div>
                                                 </div>
-                                                <div className="flex space-x-3 ml-4">
+                                            ))}
+
+                                            {totalPages > 1 && (
+                                                <div className="flex justify-center items-center gap-4 mt-6">
                                                     <ButtonAdm
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        className="hover:bg-[#9abbd6]/20 text-[#4F85A6] p-3"
+                                                        variant="outline"
+                                                        className="px-4 py-2 text-white bg-[#4F85A6] hover:bg-[#3879a1]"
+                                                        disabled={currentPage === 1}
                                                         onClick={() =>
-                                                            startEdit(exercise)
+                                                            setCurrentPage((prev) => Math.max(prev - 1, 1))
                                                         }
                                                     >
-                                                        <Edit className="w-5 h-5" />
+                                                        Anterior
                                                     </ButtonAdm>
+
+                                                    <span className="text-[#3f3c40] text-lg">
+                                                        Página {currentPage} de {totalPages}
+                                                    </span>
+
                                                     <ButtonAdm
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        className="hover:bg-red-50 text-red-500 p-3"
+                                                        variant="outline"
+                                                        className="px-4 py-2 text-white bg-[#4F85A6] hover:bg-[#3879a1]"
+                                                        disabled={currentPage === totalPages}
                                                         onClick={() =>
-                                                            handleRemoveExercise(
-                                                                index
+                                                            setCurrentPage((prev) =>
+                                                                Math.min(prev + 1, totalPages)
                                                             )
                                                         }
                                                     >
-                                                        <Trash2 className="w-5 h-5" />
+                                                        Próxima
                                                     </ButtonAdm>
                                                 </div>
-                                            </div>
-                                        ))}
-
-                                    {loadingExercises && (
-                                        <Loading variant="spinner" size="md" />
+                                            )}
+                                        </>
                                     )}
+
+                                    {loadingExercises && <Loading variant="spinner" size="md" />}
                                 </div>
 
                                 <div className="text-center">
@@ -216,14 +277,12 @@ const ExerciseManagement: React.FC = () => {
                                         variant="outline"
                                         className="text-lg px-4 py-2 border-[#4F85A6] text-[#4F85A6]"
                                     >
-                                        Total: {exercises.length}
-                                        exercício(s)
+                                        Total: {exercises.length} exercício(s)
                                     </Badge>
                                 </div>
                             </CardContent>
                         </Card>
 
-                        {/* Exercise Form */}
                         <Card className="bg-white border-[#e9edee] shadow-sm">
                             <CardHeader className="pb-8">
                                 <CardTitle className="text-3xl text-[#3f3c40] flex items-center gap-4">
@@ -243,11 +302,14 @@ const ExerciseManagement: React.FC = () => {
                                         type="text"
                                         placeholder="Digite o título do exercício"
                                         value={title}
-                                        onChange={(e) =>
-                                            setTitle(e.target.value)
-                                        }
+                                        onChange={(e) => setTitle(e.target.value)}
                                         className="border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-xl h-16 px-6"
                                     />
+                                    {duplicateError && (
+                                        <p className="text-red-500 text-lg mt-2">
+                                            {duplicateError}
+                                        </p>
+                                    )}
                                 </div>
 
                                 <div>
@@ -257,9 +319,7 @@ const ExerciseManagement: React.FC = () => {
                                     <CustomDropdown
                                         options={exerciseTypeOptions}
                                         value={type}
-                                        onChange={(value: ExerciseType) =>
-                                            setType(value)
-                                        }
+                                        onChange={(value: ExerciseType) => setType(value)}
                                         type="normalDropdown"
                                     />
                                 </div>
@@ -275,16 +335,11 @@ const ExerciseManagement: React.FC = () => {
 
                                         <ButtonAdm
                                             variant="outline"
-                                            onClick={() =>
-                                                fileInputRef.current?.click()
-                                            }
-                                            className="w-full border-[#4F85A6] text-[#4F85A6] hover:bg-[#4F85A6]/10 text-lg h-16 flex items-center justify-center"
+                                            onClick={() => fileInputRef.current?.click()}
+                                            className="w-full border-[#2f6b91] text-[#4F85A6] text-lg h-16 flex items-center justify-center transition-colors hover:bg-[#3b7192] hover:text-white"
                                         >
                                             <Upload className="w-5 h-5 mr-3" />
-
-                                            {pdfFile
-                                                ? pdfFile.name
-                                                : "Selecionar Arquivo PDF"}
+                                            {pdfFile ? pdfFile.name : "Selecionar Arquivo PDF"}
                                         </ButtonAdm>
 
                                         <input
@@ -303,9 +358,7 @@ const ExerciseManagement: React.FC = () => {
                                         <Textarea
                                             placeholder="Digite os valores de entrada (separados por linha, vírgula, etc.)"
                                             value={inputValues}
-                                            onChange={(e) =>
-                                                setInputValues(e.target.value)
-                                            }
+                                            onChange={(e) => setInputValues(e.target.value)}
                                             className="border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-lg min-h-[120px] p-4"
                                         />
                                     </div>
@@ -317,9 +370,7 @@ const ExerciseManagement: React.FC = () => {
                                         <Textarea
                                             placeholder="Digite os valores de saída esperados (separados por linha, vírgula, etc.)"
                                             value={outputValues}
-                                            onChange={(e) =>
-                                                setOutputValues(e.target.value)
-                                            }
+                                            onChange={(e) => setOutputValues(e.target.value)}
                                             className="border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-lg min-h-[120px] p-4"
                                         />
                                     </div>
@@ -327,9 +378,9 @@ const ExerciseManagement: React.FC = () => {
 
                                 <div className="pt-6 border-t border-[#e9edee]">
                                     <ButtonAdm
-                                        onClick={handleCreateExercise}
+                                        onClick={handleCreateWithValidation}
                                         disabled={!title.trim()}
-                                        className="w-full bg-[#4F85A6] hover:bg-[#3f3c40] text-white disabled:opacity-50 disabled:cursor-not-allowed text-xl h-16"
+                                        className="w-full bg-[#4F85A6] hover:bg-[#3879a1] text-white disabled:opacity-50 disabled:cursor-not-allowed text-xl h-16"
                                     >
                                         <Plus className="w-6 h-6 mr-3" />
                                         Criar Exercício
@@ -350,6 +401,36 @@ const ExerciseManagement: React.FC = () => {
                     editingExercise={editingExercise}
                 />
             )}
+
+            <Dialog open={confirmDeleteOpen} onOpenChange={setConfirmDeleteOpen}>
+                <DialogContent className="max-w-md">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-3 text-2xl">
+                            <AlertTriangle className="text-red-500 w-7 h-7" />
+                            Confirmar Exclusão
+                        </DialogTitle>
+                        <DialogDescription className="text-lg text-[#3f3c40] mt-3">
+                            Tem certeza que deseja excluir este exercício? Essa ação
+                            não poderá ser desfeita.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter className="flex justify-end gap-4 mt-6">
+                        <ButtonAdm
+                            variant="outline"
+                            className="px-6 py-2 border-[#4F85A6] text-[#4F85A6]"
+                            onClick={() => setConfirmDeleteOpen(false)}
+                        >
+                            Cancelar
+                        </ButtonAdm>
+                        <ButtonAdm
+                            className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white"
+                            onClick={confirmDeleteExercise}
+                        >
+                            Excluir
+                        </ButtonAdm>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </>
     );
 };

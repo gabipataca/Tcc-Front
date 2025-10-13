@@ -7,4 +7,6 @@ export interface EditExerciseModalProps {
     editingExercise: Exercise;
     saveEdit: (exercise: EditExerciseRequest) => Promise<void>;
     cancelEdit: () => void;
+    pdfFile: File | null;
+    handleFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
