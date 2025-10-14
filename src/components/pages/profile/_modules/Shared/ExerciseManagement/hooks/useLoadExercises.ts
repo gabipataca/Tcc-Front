@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { fromBase64 } from "@/libs/utils";
 import ExerciseService from "@/services/ExerciseService";
@@ -52,16 +52,17 @@ const useLoadExercises = () => {
                 const payload = new FormData();
                 payload.append("title", exercise.title);
                 payload.append(
-                    "exerciseTypeId", exercise.exerciseTypeId.toString()
+                    "exerciseTypeId",
+                    exercise.exerciseTypeId.toString()
                 );
                 payload.append("description", exercise.description);
                 payload.append("pdfFile", exercise.pdfFile);
                 payload.append("inputs", JSON.stringify(exercise.inputs));
                 payload.append("outputs", JSON.stringify(exercise.outputs));
                 payload.append(
-                    "estimatedTime", exercise.estimatedTime.toString()
+                    "estimatedTime",
+                    exercise.estimatedTime.toString()
                 );
-
 
                 const response = await ExerciseService.createExercise(payload);
 
@@ -158,45 +159,64 @@ const useLoadExercises = () => {
     );
 
     const updateExercise = useCallback(
-        async (exercise: EditExerciseRequest) => {
+        async (id: number, exerciseData: EditExerciseRequest) => {
             try {
-                const data = await ExerciseService.updateExercise(exercise);
-                const exercisesCopy = exercises.filter(
-                    (ex) => ex.id !== data.id
+                const payload = new FormData();
+                payload.append("id", `${exerciseData.id}`);
+                payload.append("title", exerciseData.title);
+                payload.append(
+                    "exerciseTypeId",
+                    exerciseData.exerciseTypeId.toString()
                 );
-                exercisesCopy.push(data);
-                exercisesCopy.sort((a, b) => (a.id! < b.id! ? -1 : 1));
-                setExercises([...exercisesCopy]);
+                payload.append("description", exerciseData.description);
+                payload.append(
+                    "estimatedTime",
+                    exerciseData.estimatedTime.toString()
+                );
+                payload.append("judgeUuid", exerciseData.judgeUuid);
+                payload.append("inputs", JSON.stringify(exerciseData.inputs));
+                payload.append("outputs", JSON.stringify(exerciseData.outputs));
+
+                if (exerciseData.pdfFile) {
+                    payload.append("pdfFile", exerciseData.pdfFile);
+                }
+
+                const response = await ExerciseService.updateExercise(payload);
+
+                if (response.status !== 200) {
+                    throw new Error("Falha ao atualizar o exercício");
+                }
+
+                const updatedExercise = response.data!;
+
+                setExercises((prevExercises) =>
+                    prevExercises.map((ex) =>
+                        ex.id === updatedExercise.id ? updatedExercise : ex
+                    )
+                );
+
                 enqueueSnackbar("Exercício atualizado com sucesso!", {
                     variant: "success",
-                    anchorOrigin: {
-                        vertical: "bottom",
-                        horizontal: "right",
-                    },
+                    anchorOrigin: { vertical: "bottom", horizontal: "right" },
                     autoHideDuration: 2500,
                 });
             } catch (error) {
                 console.error("Error updating exercise:", error);
                 enqueueSnackbar("Erro ao tentar atualizar exercício!", {
                     variant: "error",
-                    anchorOrigin: {
-                        vertical: "bottom",
-                        horizontal: "right",
-                    },
+                    anchorOrigin: { vertical: "bottom", horizontal: "right" },
                     autoHideDuration: 2500,
                 });
             }
         },
-        [enqueueSnackbar, exercises]
+        [enqueueSnackbar]
     );
-
     useEffect(() => {
         return () => {
             if (controllerSignal) {
                 controllerSignal.abort();
             }
-        }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        };
     }, []);
 
     return {

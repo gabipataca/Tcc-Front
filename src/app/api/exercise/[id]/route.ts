@@ -1,17 +1,23 @@
 import { apiRequest } from "@/libs/apiClient";
 import { EditExerciseRequest } from "@/types/Exercise/Requests";
-import { Exercise } from "@/types/Exercise";
+import { Exercise, ExerciseType } from "@/types/Exercise";
 import { ServerSideResponse } from "@/types/Global";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(
+    req: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) {
     let res;
     const exerciseId = (await params).id;
     try {
-        res = await apiRequest<ServerSideResponse<void>>(`/Exercise/${exerciseId}`, {
-            method: "DELETE",
-            cookies: req.cookies.toString()
-        });
+        res = await apiRequest<ServerSideResponse<void>>(
+            `/Exercise/${exerciseId}`,
+            {
+                method: "DELETE",
+                cookies: req.cookies.toString(),
+            }
+        );
     } catch (exc) {
         return NextResponse.json(
             { message: "Erro ao deletar exercício.", status: 500 },
@@ -22,15 +28,40 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     return NextResponse.json(res.data, { status: res.status });
 }
 
-export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }): Promise<NextResponse> {
-    const body = await req.json() as EditExerciseRequest;
-    let res;
+export async function PUT(
+    req: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) {
     const exerciseId = (await params).id;
+    const formData = await req.formData();
+
+    const metadataPayload: Omit<EditExerciseRequest, "pdfFile"> = {
+        title: formData.get("title") as string,
+        exerciseTypeId: Number(formData.get("exerciseTypeId") as ExerciseType),
+        description: formData.get("description") as string,
+        estimatedTime: Number(formData.get("estimatedTime")),
+        judgeUuid: formData.get("judgeUuid") as string,
+        inputs: JSON.parse(formData.get("inputs") as string),
+        outputs: JSON.parse(formData.get("outputs") as string),
+    };
+
+    const backendPayload = new FormData();
+
+    if (formData.has("pdfFile") && formData.get("pdfFile") instanceof File) {
+        backendPayload.append("file", formData.get("pdfFile") as File);
+    }
+
+    backendPayload.append("metadata", JSON.stringify(metadataPayload));
+
+    let res;
     try {
-        res = await apiRequest<ServerSideResponse<Exercise>>(`/Exercise/${exerciseId}`, {
+        res = await apiRequest<Exercise>(`/Exercise/${exerciseId}`, {
             method: "PUT",
-            data: body,
-            cookies: req.cookies.toString()
+            data: backendPayload,
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+            cookies: req.cookies.toString(),
         });
     } catch (exc) {
         return NextResponse.json(
@@ -39,7 +70,11 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
         );
     }
 
-    console.log(res.data);
-
-    return NextResponse.json(res.data, { status: res.status });
+    return NextResponse.json(
+        {
+            data: res.data,
+            status: res.status,
+        } satisfies ServerSideResponse<Exercise>,
+        { status: res.status }
+    );
 }

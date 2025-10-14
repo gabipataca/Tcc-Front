@@ -3,7 +3,7 @@
 import React, { useState, useCallback } from "react";
 import Balao from "@/components/_ui/Balao";
 import Table from "@/components/_ui/Table";
-import TableHead from "@/components/_ui/Table/components/TableHeader";
+import TableHeader from "@/components/_ui/Table/components/TableHeader";
 import TableBody from "@/components/_ui/Table/components/TableBody";
 import TableRow from "@/components/_ui/Table/components/TableRow";
 import TableCell from "@/components/_ui/Table/components/TableCell";
@@ -13,7 +13,6 @@ import { StyledRankingCellContainer } from "@/components/pages/ranking/styles";
 import Button from "@/components/_ui/Button";
 import { FaUpload, FaPaperPlane } from "react-icons/fa";
 
-// ---------------- HOOK useSendExercise ----------------
 const exercises = [..."ABCDEFGHIJ"];
 const languages = ["C", "C++", "C#", "Java", "PHP", "Python"];
 
@@ -81,7 +80,6 @@ const useSendExercise = () => {
     };
 };
 
-// ---------------- COMPONENTE AnaliseJuiz ----------------
 const AnaliseJuiz: React.FC = () => {
     const {
         selectedExercise,
@@ -201,7 +199,6 @@ const AnaliseJuiz: React.FC = () => {
     );
 };
 
-// ---------------- COMPONENTE RankingPage ----------------
 const letras = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
 
 interface GroupRankingData {
@@ -230,20 +227,18 @@ const data: GroupRankingData[] = [
     { group: "Equipe 8", exercisesAccepteds: ["A","B","E","F","G","H","I"], times: { A:"1/135",B:"1/120",C:"",D:"",E:"2/95",F:"1/75",G:"1/110",H:"1/85",I:"2/60",J:"1/40"}, total:"7 (400)", totalCount:7, totalScore:400 },
 ];
 
-// Ordenação
 data.sort((a, b) => {
     if (a.totalCount === b.totalCount) return a.totalScore - b.totalScore;
     return b.totalCount - a.totalCount;
 });
 
-const tableHeaderColumns = ["Equipe", ...letras, "Total"];
+const tableHeaderColumns = ["Posição", "Equipe", ...letras, "Total"];
 
 const RankingPage: React.FC = () => {
     const [open, setOpen] = useState(false);
 
     return (
         <div className="relative">
-            {/* Botão no canto superior direito */}
             <div className="flex justify-end mb-4 mt-4">
                 <Button
                     className="bg-[#4F85A6] text-white px-6 py-2 rounded-md font-bold hover:bg-[#3B6A82] transition"
@@ -253,23 +248,22 @@ const RankingPage: React.FC = () => {
                 </Button>
             </div>
 
-            {/* Tabela */}
             <TableContainerMui component={TableContainer}>
                 <Table>
-                    <TableHead>
-                        <TableRow>
+                    <TableHeader>
+                        <TableRow className="bg-[#4F85A6] text-white">
                             {tableHeaderColumns.map((column, idx) => (
-                                <TableCell
-                                    key={`${column}-${idx}`}
-                                    item={{ content: column, space: 1 }}
-                                />
+                                <TableCell key={`${column}-${idx}`} className="text-white font-bold text-center">
+                                    {column}
+                                </TableCell>
                             ))}
                         </TableRow>
-                    </TableHead>
+                    </TableHeader>
 
                     <TableBody>
                         {data.map((rowData, idx) => (
                             <TableRow key={`${rowData.group}-${idx}`}>
+                                <TableCell className="font-bold text-center">{idx + 1}</TableCell>
                                 <TableCell>{rowData.group}</TableCell>
                                 {letras.map((l, index) => (
                                     <TableCell key={`${l}-${index}`}>
@@ -293,7 +287,6 @@ const RankingPage: React.FC = () => {
                 </Table>
             </TableContainerMui>
 
-            {/* Modal */}
             <Modal open={open} onClose={() => setOpen(false)}>
                 <Box
                     sx={{

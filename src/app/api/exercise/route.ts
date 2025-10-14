@@ -38,8 +38,6 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
     const formData = await req.formData();
 
-    console.log("typeId: ", formData.get("exerciseTypeId"));
-
     const metadataPayload: Omit<CreateExerciseRequest, "pdfFile"> = {
         title: formData.get("title") as string,
         exerciseTypeId: Number(formData.get("exerciseTypeId") as ExerciseType),
@@ -48,7 +46,7 @@ export async function POST(req: NextRequest) {
         judgeUuid: formData.get("judgeUuid") as string,
         inputs: JSON.parse(formData.get("inputs") as string),
         outputs: JSON.parse(formData.get("outputs") as string),
-    }
+    };
 
     const backendPayload = new FormData();
     backendPayload.append("file", formData.get("pdfFile") as File);
