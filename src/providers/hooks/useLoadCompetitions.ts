@@ -24,7 +24,6 @@ export const useLoadCompetitions = () => {
             toggleLoading();
             const response = await CompetitionService.getCompetitionTemplates();
             if (response.status !== 200) {
-                
                 enqueueSnackbar("Erro ao carregar modelos de competições.", {
                     variant: "error",
                     anchorOrigin: { vertical: "bottom", horizontal: "right" },
@@ -44,10 +43,10 @@ export const useLoadCompetitions = () => {
                 comp.stopRanking = null;
                 comp.blockSubmissions = null;
                 comp.startInscriptions = new Date(comp.startInscriptions!);
-                comp.endInscriptions = null;
+                comp.endInscriptions = new Date(comp.endInscriptions!);
                 comp.startTime = new Date(comp.startTime!);
                 comp.endTime = new Date(comp.endTime!);
-            })
+            });
 
             setCompetitions(data);
         } catch (error) {
@@ -70,7 +69,7 @@ export const useLoadCompetitions = () => {
                     data
                 );
                 if (response.status !== 200) {
-                    enqueueSnackbar("Erro ao atualizar competição.", {
+                    enqueueSnackbar("Erro ao atualizar ou criar competição.", {
                         variant: "error",
                         anchorOrigin: {
                             vertical: "bottom",
@@ -125,7 +124,7 @@ export const useLoadCompetitions = () => {
                 );
             } catch (error) {
                 console.error("Error updating competition:", error);
-                enqueueSnackbar("Erro ao atualizar competição.", {
+                enqueueSnackbar("Erro ao atualizar ou criar competição.", {
                     variant: "error",
                     anchorOrigin: { vertical: "bottom", horizontal: "right" },
                     autoHideDuration: 3000,

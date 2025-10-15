@@ -48,7 +48,7 @@ class CompetitionService {
         const response = await apiRequest<
             ServerSideResponse<CompetitionResponse>,
             UpdateCompetitionRequest
-        >("/api/competition", {
+        >(`/api/competition/${data.id}`, {
             method: "PUT",
             data: data,
         });

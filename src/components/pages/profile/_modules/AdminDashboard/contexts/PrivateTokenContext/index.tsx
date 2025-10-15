@@ -52,6 +52,8 @@ export const PrivateTokenContextProvider = ({
             setIsLoading(true);
             const res = await TokenService.updateCurrentToken();
 
+            console.log(res)
+
             if (res.status == 200) {
                 setToken(res.data!.newToken);
             } else {

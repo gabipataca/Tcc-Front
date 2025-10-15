@@ -19,6 +19,7 @@ import { useCompetition } from "@/contexts/CompetitionContext";
 import { Competition } from "@/types/Competition";
 
 interface CompetitionFormInputs {
+    competitionName: string;
     description: string;
     startDate: string;
     startTime: string;
@@ -32,6 +33,7 @@ interface CompetitionFormInputs {
 
 const schema = z
     .object({
+        competitionName: z.string(),
         description: z
             .string()
             .min(3, {
@@ -105,10 +107,12 @@ const useCreateCompetition = () => {
     const [search, setSearch] = useState("");
     const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [activeCompetition, setActiveCompetition] = useState<Competition | null>(null);
+    const [activeCompetition, setActiveCompetition] =
+        useState<Competition | null>(null);
 
     const {
         addCompetitionModel,
+        updateCompetition,
         competitionModels,
         loadCompetitions,
         isLoading: isLoadingCompetitions,
@@ -146,6 +150,7 @@ const useCreateCompetition = () => {
         setValue,
     } = useForm<CompetitionFormInputs>({
         defaultValues: {
+            competitionName: "",
             description: "",
             startDate: "",
             startTime: "",
@@ -158,32 +163,46 @@ const useCreateCompetition = () => {
         },
         disabled: activeCompetition == null,
         mode: activeCompetition == null ? undefined : "onChange",
-        
+
         resolver: zodResolver(schema),
     });
 
     const formValues = watch();
 
-    const selectCompetition = useCallback((competitionId: number) => {
-        const competition = competitionModels.find(c => c.id === competitionId) || null;
+    const selectCompetition = useCallback(
+        (competitionId: number) => {
+            const competition =
+                competitionModels.find((c) => c.id === competitionId) || null;
 
-        if(competition == null) {
-            return;
-        }
+            if (competition == null) {
+                return;
+            }
 
-        setValue("description", competition.description);
-        setValue("duration", competition.duration ?? 90);
-        setValue("maxFileSize", competition.maxSubmissionSize ?? 20);
-        setValue("exerciseCount", competition.maxExercises ?? 4);
-        setValue("penalty", competition.submissionPenalty ?? 30);
-        setValue("startDate", competition.startTime.toISOString().split("T")[0]);
-        setValue("startTime", competition.startTime.toISOString().split("T")[1].substring(0, 5));
-        setValue("stopAnswering", 85);
-        setValue("stopScoreboard", 80);
-        trigger();
+            setValue("competitionName", competition.name);
+            setValue("description", competition.description);
+            setValue("duration", competition.duration ?? 90);
+            setValue("maxFileSize", competition.maxSubmissionSize ?? 20);
+            setValue("exerciseCount", competition.maxExercises ?? 4);
+            setValue("penalty", competition.submissionPenalty ?? 30);
+            setValue(
+                "startDate",
+                competition.startTime.toISOString().split("T")[0]
+            );
+            setValue(
+                "startTime",
+                competition.startTime
+                    .toISOString()
+                    .split("T")[1]
+                    .substring(0, 5)
+            );
+            setValue("stopAnswering", 85);
+            setValue("stopScoreboard", 80);
+            trigger();
 
-        setActiveCompetition({...competition});
-    }, [competitionModels, setValue, trigger]);
+            setActiveCompetition({ ...competition });
+        },
+        [competitionModels, setValue, trigger]
+    );
 
     const toggleExercise = useCallback(
         (exerciseId: number) => {
@@ -211,7 +230,7 @@ const useCreateCompetition = () => {
 
     const onSubmit: SubmitHandler<CompetitionFormInputs> = useCallback(
         async (data) => {
-            if(activeCompetition == null) {
+            if (activeCompetition == null) {
                 return;
             }
 
@@ -220,10 +239,11 @@ const useCreateCompetition = () => {
 
             try {
                 const payload: UpdateCompetitionRequest = {
+                    id: activeCompetition.id,
                     name: activeCompetition.name,
                     description: data.description,
                     startTime: new Date(
-                        `${data.startDate}T${data.startTime}:00`
+                        `${data.startDate}T${data.startTime.split(".")[0]}`
                     ).toISOString(),
                     duration: convertNumberToTimeSpan(data.duration * 60),
                     blockSubmissions: convertNumberToTimeSpan(
@@ -238,73 +258,26 @@ const useCreateCompetition = () => {
                     maxSubmissionSize: data.maxFileSize,
                     maxExercises: data.exerciseCount,
                     exerciseIds: selectedExercises,
-                    startInscriptions: null,
-                    endInscriptions: null,
+                    startInscriptions:
+                        activeCompetition.startInscriptions!.toISOString(),
+                    endInscriptions:
+                        activeCompetition.endInscriptions!.toISOString(),
                 };
 
-                const res = await CompetitionService.updateCompetition(payload);
-
-                if (res.status == 200) {
-                    addCompetitionModel({
-                        id: res.data!.id,
-                        blockSubmissions: res.data?.blockSubmissions
-                            ? new Date(res.data!.blockSubmissions)
-                            : null,
-                        duration: res.data?.duration
-                            ? new Date(
-                                  convertTimeSpanToNumber(res.data!.duration)
-                              )
-                            : null,
-                        endInscriptions: res.data?.endInscriptions
-                            ? new Date(res.data!.endInscriptions)
-                            : null,
-                        endTime: res.data?.endTime
-                            ? new Date(res.data!.endTime)
-                            : null,
-                        maxExercises: res.data!.maxExercises,
-                        maxSubmissionSize: res.data!.maxSubmissionSize,
-                        name: res.data!.name,
-                        description: res.data?.description || "",
-                        startInscriptions: res.data?.startInscriptions
-                            ? new Date(
-                                  convertTimeSpanToNumber(
-                                      res.data!.startInscriptions
-                                  )
-                              )
-                            : null,
-                        startTime: new Date(res.data!.startTime),
-                        status: res.data!.status,
-                        stopRanking: res.data?.stopRanking
-                            ? new Date(res.data!.stopRanking)
-                            : null,
-                        submissionPenalty: res.data?.submissionPenalty
-                            ? convertTimeSpanToNumber(
-                                  res.data!.submissionPenalty
-                              )
-                            : null,
-                    });
-                    enqueueSnackbar("Maratona criada com sucesso!", {
-                        variant: "success",
-                        autoHideDuration: 2500,
-                        anchorOrigin: {
-                            vertical: "bottom",
-                            horizontal: "right",
-                        },
-                    });
-                }
+                await updateCompetition(payload);
             } catch (error) {
                 errored = true;
-                enqueueSnackbar(
-                    "Ocorreu um erro ao criar a maratona. Tente novamente.",
-                    {
-                        variant: "error",
-                        autoHideDuration: 2500,
-                        anchorOrigin: {
-                            vertical: "bottom",
-                            horizontal: "right",
-                        },
-                    }
-                );
+                //enqueueSnackbar(
+                //    "Ocorreu um erro ao criar a maratona. Tente novamente.",
+                //    {
+                //        variant: "error",
+                //        autoHideDuration: 2500,
+                //        anchorOrigin: {
+                //            vertical: "bottom",
+                //            horizontal: "right",
+                //        },
+                //    }
+                //);
             } finally {
                 setIsSubmitting(false);
                 if (!errored) {
@@ -314,7 +287,7 @@ const useCreateCompetition = () => {
                 }
             }
         },
-        [addCompetitionModel, enqueueSnackbar, selectedExercises, toggleMenu]
+        [activeCompetition, selectedExercises, toggleMenu, updateCompetition]
     );
 
     useEffect(() => {

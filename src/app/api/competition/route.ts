@@ -46,20 +46,3 @@ export async function POST(req: NextRequest) {
     } satisfies ServerSideResponse<Competition>, { status: res.status });
 }
 
-export async function PUT(req: NextRequest) {
-    const body = await req.json() as UpdateCompetitionRequest;
-    let res;
-    try {
-        res = await apiRequest<ServerSideResponse<UpdateCompetitionResponse>>("/Competition", {
-            method: "PUT",
-            data: body,
-            cookies: req.cookies.toString()
-        });
-    } catch {
-        return NextResponse.json(
-            { message: "Erro ao atualizar competição.", status: 500 },
-            { status: 500 }
-        );
-    }
-    return NextResponse.json(res.data, { status: res.status });
-}

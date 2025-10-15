@@ -24,15 +24,15 @@ const AccessCodeDialog: React.FC<AccessCodeDialogProps> = ({
 }) => {
 
     const {
-        code,
+        token,
         isLoading,
-        getCurrentCode,
-        updateCurrentCode,
+        fetchToken,
+        refreshToken,
     } = useAccessCodeDialog();
 
     useEffect(() => {
-        getCurrentCode();
-    }, [getCurrentCode]);
+        fetchToken();
+    }, [fetchToken]);
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
@@ -54,7 +54,7 @@ const AccessCodeDialog: React.FC<AccessCodeDialogProps> = ({
                         <Input
                             name="teacherCode"
                             type="text"
-                            value={code}
+                            value={token ?? ""}
                             readOnly
                             placeholder="Código gerado"
                             className="flex-1 border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-base"
@@ -62,7 +62,7 @@ const AccessCodeDialog: React.FC<AccessCodeDialogProps> = ({
                             loading={isLoading}
                         />
                         <Button
-                            onClick={updateCurrentCode}
+                            onClick={refreshToken}
                             variant="primary"
                             rounded
                         >

@@ -33,8 +33,6 @@ const useCompetitionContext = () => {
                 toggleLoading();
                 const res = await CompetitionService.createCompetition(payload);
 
-                console.log(res);
-
                 if (res.status == 201) {
                     console.log(res.data);
                     addCompetitionModel({
@@ -103,8 +101,6 @@ const useCompetitionContext = () => {
         },
         [addCompetitionModel, toggleLoading]
     );
-
-    console.log("teste")
 
     return {
         competitions,
