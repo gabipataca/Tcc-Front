@@ -230,70 +230,69 @@ data.sort((a, b) => {
     return b.totalCount - a.totalCount;
 });
 
+const tableHeaderColumns = ["Posição", "Equipe", ...letras, "Total"];
+
 const RankingPage: React.FC = () => {
     const [open, setOpen] = useState(false);
 
     return (
-        <div className="bg-gray-100 min-h-screen p-8 flex flex-col items-center">
+        <div className="relative flex flex-col items-center p-8 bg-gray-100 min-h-screen">
+            <div className="flex justify-end mb-4 mt-4 w-full max-w-7xl">
+                <Button
+                    className="bg-[#4F85A6] text-white px-6 py-2 rounded-md font-bold hover:bg-[#3B6A82] transition"
+                    onClick={() => setOpen(true)}
+                >
+                    Enviar Exercícios
+                </Button>
+            </div>
+
             <div className="w-full max-w-7xl">
-                <div className="flex justify-end mb-4">
-                    <Button
-                        className="bg-[#4F85A6] text-white px-6 py-3 rounded-md font-bold text-base hover:bg-[#3B6A82] transition"
-                        onClick={() => setOpen(true)}
-                    >
-                        Enviar Exercícios
-                    </Button>
-                </div>
-
-                {/* Ranking Container */}
-                <div className="rounded-lg shadow-lg overflow-hidden">
-                    {/* Cabeçalho do Ranking */}
-                    <div className="flex bg-[#4F85A6] text-white text-base font-bold items-center p-4">
-                        <div className="w-[10%] text-center">Posição</div>
-                        <div className="w-[15%] text-left pl-6">Equipe</div>
-                        <div className="flex flex-1 justify-around text-center">
-                            {letras.map((l) => (
-                                <div key={l} className="flex-1">
-                                    {l}
-                                </div>
-                            ))}
-                        </div>
-                        <div className="w-[12%] text-center">Total</div>
-                    </div>
-
-                    {/* Corpo: Lista de "cards" */}
-                    <div className="bg-white">
-                        {data.map((rowData, idx) => (
-                            <div
-                                key={`${rowData.group}-${idx}`}
-                                className="flex items-center p-4 border-b border-gray-200 last:border-b-0 transition-colors duration-200 hover:bg-gray-50 cursor-pointer"
-                            >
-                                <div className="w-[10%] text-center">
-                                    <span className="font-bold text-2xl text-gray-700">{idx + 1}º</span>
-                                </div>
-                                <div className="w-[15%] text-left pl-6">
-                                    <span className="font-semibold text-lg text-gray-800">{rowData.group}</span>
-                                </div>
-                                <div className="flex flex-1 justify-around">
-                                    {letras.map((l, index) => (
-                                        <div key={`${l}-${index}`} className="flex-1 text-center flex flex-col items-center">
-                                            {rowData.exercisesAccepteds.includes(l) ? (
-                                                <StyledRankingCellContainer $fillColor={colors[index]} $size={70}>
-                                                    <Balao />
-                                                    <span className="text-sm mt-1 text-gray-600">{rowData.times[l]}</span>
-                                                </StyledRankingCellContainer>
-                                            ) : (
-                                                <span className="text-gray-300">-</span>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-                                <div className="w-[12%] text-center">
-                                    <span className="font-bold text-lg text-gray-800">{rowData.total}</span>
-                                </div>
+                {/* Cabeçalho */}
+                <div className="flex bg-[#4F85A6] text-white text-lg font-bold text-center rounded-t-2xl p-4">
+                    <div className="w-[8%]">#</div>
+                    <div className="w-[15%] text-left pl-2">Equipe</div>
+                    <div className="flex flex-1 justify-around">
+                        {letras.map((l) => (
+                            <div key={l} className="flex-1">
+                                {l}
                             </div>
                         ))}
                     </div>
+                    <div className="w-[12%]">Total</div>
+                </div>
+
+                {/* Corpo: Lista de "cards" */}
+                <div className="mt-4">
+                    {data.map((rowData, idx) => (
+                        <div
+                            key={`${rowData.group}-${idx}`}
+                            className="bg-white rounded-xl shadow-md mb-4 flex items-center p-4 transition-all duration-200 hover:shadow-xl cursor-pointer"
+                        >
+                            <div className="w-[8%] text-center">
+                                <span className="font-bold text-2xl text-gray-700">{idx + 1}º</span>
+                            </div>
+                            <div className="w-[15%] text-left pl-2">
+                                <span className="font-bold text-lg text-gray-800">{rowData.group}</span>
+                            </div>
+                            <div className="flex flex-1 justify-around">
+                                {letras.map((l, index) => (
+                                    <div key={`${l}-${index}`} className="flex-1 text-center flex flex-col items-center">
+                                        {rowData.exercisesAccepteds.includes(l) ? (
+                                            <StyledRankingCellContainer $fillColor={colors[index]} $size={60}>
+                                                <Balao />
+                                                <span className="text-sm mt-1">{rowData.times[l]}</span>
+                                            </StyledRankingCellContainer>
+                                        ) : (
+                                            <span className="text-gray-300">-</span>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="w-[12%] text-center">
+                                <span className="font-bold text-lg text-gray-800">{rowData.total}</span>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </div>
 

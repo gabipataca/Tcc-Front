@@ -1,22 +1,16 @@
+"use client";
+
 import { useState, useCallback, useMemo, useEffect, useRef } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { type SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
-import useLoadExercises from "../../../../Shared/ExerciseManagement/hooks/useLoadExercises";
-import CompetitionService from "@/services/CompetitionService";
-import {
-    convertNumberToTimeSpan,
-    convertTimeSpanToNumber,
-    parseDate,
-} from "@/libs/utils";
-import {
-    CreateCompetitionRequest,
-    UpdateCompetitionRequest,
-} from "@/types/Competition/Requests";
+import useLoadExercises from "@/components/pages/profile/_modules/Shared/ExerciseManagement/hooks/useLoadExercises";
+import { convertNumberToTimeSpan, parseDate } from "@/libs/utils";
+import type { UpdateCompetitionRequest } from "@/types/Competition/Requests";
 import { useSnackbar } from "notistack";
 import useProfileMenu from "@/components/pages/profile/hooks/useProfileMenu";
 import { useCompetition } from "@/contexts/CompetitionContext";
-import { Competition } from "@/types/Competition";
+import type { Competition } from "@/types/Competition";
 
 interface CompetitionFormInputs {
     competitionName: string;
@@ -33,7 +27,9 @@ interface CompetitionFormInputs {
 
 const schema = z
     .object({
-        competitionName: z.string(),
+        competitionName: z
+            .string()
+            .min(1, { message: "O nome da maratona é obrigatório." }),
         description: z
             .string()
             .min(3, {
@@ -44,12 +40,8 @@ const schema = z
                 message:
                     "A descrição da maratona deve ter no máximo 1200 caracteres.",
             }),
-        startDate: z
-            .string()
-            .min(1, { message: "A data de início é obrigatória." }),
-        startTime: z
-            .string()
-            .min(1, { message: "A hora de início é obrigatória." }),
+        startDate: z.string(),
+        startTime: z.string(),
         duration: z.coerce
             .number()
             .min(1, { message: "A duração deve ser de no mínimo 1 minuto." }),
@@ -81,7 +73,8 @@ const schema = z
         }
 
         if (data.startDate) {
-            const today = new Date(Date.now());
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
             const startDateTime = parseDate(data.startDate);
 
             if (startDateTime == null) {
@@ -94,7 +87,7 @@ const schema = z
                 if (startDateTime.getTime() < today.getTime()) {
                     ctx.addIssue({
                         code: z.ZodIssueCode.custom,
-                        message: "A data de início deve ser no futuro.",
+                        message: "A data de início não pode ser no passado.",
                         path: ["startDate"],
                     });
                 }
@@ -119,7 +112,6 @@ const useCreateCompetition = () => {
     } = useCompetition();
 
     const { enqueueSnackbar } = useSnackbar();
-
     const { toggleMenu } = useProfileMenu();
 
     useEffect(() => {
@@ -148,6 +140,7 @@ const useCreateCompetition = () => {
         trigger,
         watch,
         setValue,
+        clearErrors,
     } = useForm<CompetitionFormInputs>({
         defaultValues: {
             competitionName: "",
@@ -161,9 +154,8 @@ const useCreateCompetition = () => {
             maxFileSize: 20,
             exerciseCount: 2,
         },
-        disabled: activeCompetition == null,
-        mode: activeCompetition == null ? undefined : "onChange",
-
+        mode: "onSubmit",
+        reValidateMode: "onSubmit",
         resolver: zodResolver(schema),
     });
 
@@ -178,30 +170,62 @@ const useCreateCompetition = () => {
                 return;
             }
 
-            setValue("competitionName", competition.name);
-            setValue("description", competition.description);
-            setValue("duration", competition.duration ?? 90);
-            setValue("maxFileSize", competition.maxSubmissionSize ?? 20);
-            setValue("exerciseCount", competition.maxExercises ?? 4);
-            setValue("penalty", competition.submissionPenalty ?? 30);
+            setValue("competitionName", competition.name, {
+                shouldValidate: false,
+                shouldDirty: false,
+            });
+            setValue("description", competition.description, {
+                shouldValidate: false,
+                shouldDirty: false,
+            });
+            setValue("duration", competition.duration ?? 90, {
+                shouldValidate: false,
+                shouldDirty: false,
+            });
+            setValue("maxFileSize", competition.maxSubmissionSize ?? 20, {
+                shouldValidate: false,
+                shouldDirty: false,
+            });
+            setValue("exerciseCount", competition.maxExercises ?? 4, {
+                shouldValidate: false,
+                shouldDirty: false,
+            });
+            setValue("penalty", competition.submissionPenalty ?? 30, {
+                shouldValidate: false,
+                shouldDirty: false,
+            });
             setValue(
                 "startDate",
-                competition.startTime.toISOString().split("T")[0]
+                competition.startTime.toISOString().split("T")[0],
+                {
+                    shouldValidate: false,
+                    shouldDirty: false,
+                }
             );
             setValue(
                 "startTime",
                 competition.startTime
                     .toISOString()
                     .split("T")[1]
-                    .substring(0, 5)
+                    .substring(0, 5),
+                {
+                    shouldValidate: false,
+                    shouldDirty: false,
+                }
             );
-            setValue("stopAnswering", 85);
-            setValue("stopScoreboard", 80);
-            trigger();
+            setValue("stopAnswering", 85, {
+                shouldValidate: false,
+                shouldDirty: false,
+            });
+            setValue("stopScoreboard", 80, {
+                shouldValidate: false,
+                shouldDirty: false,
+            });
 
+            clearErrors();
             setActiveCompetition({ ...competition });
         },
-        [competitionModels, setValue, trigger]
+        [competitionModels, setValue, clearErrors]
     );
 
     const toggleExercise = useCallback(
@@ -267,17 +291,6 @@ const useCreateCompetition = () => {
                 await updateCompetition(payload);
             } catch (error) {
                 errored = true;
-                //enqueueSnackbar(
-                //    "Ocorreu um erro ao criar a maratona. Tente novamente.",
-                //    {
-                //        variant: "error",
-                //        autoHideDuration: 2500,
-                //        anchorOrigin: {
-                //            vertical: "bottom",
-                //            horizontal: "right",
-                //        },
-                //    }
-                //);
             } finally {
                 setIsSubmitting(false);
                 if (!errored) {
@@ -313,7 +326,6 @@ const useCreateCompetition = () => {
                 setControllerSignal(null);
             }
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [search]);
 
     return {
@@ -333,7 +345,9 @@ const useCreateCompetition = () => {
         currentPage,
         isLoading: loadingExercises,
         maxPages,
-        pageSize: 10,
+        nextPage,
+        prevPage,
+        pageSize: 4,
         search,
         setSearch,
         setValue,
