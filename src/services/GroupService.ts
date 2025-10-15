@@ -12,6 +12,7 @@ import {
     UpdateGroupResponse,
 } from "@/types/Group/Responses";
 import { UpdateGroupRequest } from "../types/Group/Requests";
+import { GroupInvitation } from "@/types/Group";
 
 class GroupService {
     static async CreateGroup(
@@ -77,6 +78,18 @@ class GroupService {
         >(`/api/group/invite`, {
             method: "POST",
             data: request,
+        });
+
+        return response.data;
+    }
+
+    static async GetGroupInvitations(): Promise<
+        ServerSideResponse<GroupInvitation[]>
+    > {
+        const response = await apiRequest<
+            ServerSideResponse<GroupInvitation[]>
+        >("/api/group/invite", {
+            method: "GET",
         });
 
         return response.data;

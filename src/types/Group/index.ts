@@ -22,6 +22,13 @@ export interface Group {
     users: User[];
 }
 
+export interface GroupInvitation {
+    id: number;
+    groupId: number;
+    userId: string;
+    group: Group;
+}
+
 /**
  * Represents a request to edit a group.
  */

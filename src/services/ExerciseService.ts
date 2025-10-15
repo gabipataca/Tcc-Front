@@ -1,9 +1,5 @@
 import { apiRequest } from "@/libs/apiClient";
 import { Exercise, ExerciseType } from "@/types/Exercise";
-import {
-    CreateExerciseRequest,
-    EditExerciseRequest,
-} from "@/types/Exercise/Requests";
 import { GetExercisesResponse } from "@/types/Exercise/Responses";
 import { ServerSideResponse } from "@/types/Global";
 

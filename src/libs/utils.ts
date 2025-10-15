@@ -26,6 +26,11 @@ export const convertNumberToTimeSpan = (value: number) => {
         .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
 };
 
+export const convertTimeSpanToNumber = (timeSpan: string) => {
+    const [hours, minutes, seconds] = timeSpan.split(":").map(Number);
+    return hours * 3600 + minutes * 60 + seconds;
+};
+
 /**
  * Parses a date string in the format "YYYY-MM-DD" and returns a Date object.
  *

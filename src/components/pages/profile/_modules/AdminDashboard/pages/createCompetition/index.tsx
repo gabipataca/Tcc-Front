@@ -9,9 +9,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/_ui/Select";
-import { useCompetition } from "@/contexts/CompetitionContext";
-import SideMenu from "@/components/_ui/SideMenu";
-import Navbar from "@/components/_ui/Navbar";
 import {
     Card,
     CardContent,
@@ -25,11 +22,12 @@ import { Badge } from "@/components/_ui/Badge";
 import { Checkbox } from "@/components/_ui/Checkbox";
 import { Controller } from "react-hook-form";
 import useCreateCompetition from "./hooks/useCreateCompetition";
-import { ChangeEvent } from "react";
+import { ChangeEvent, useMemo } from "react";
 import Loading from "@/components/_ui/Loading";
+import { DropdownOption } from "@/components/_ui/Dropdown/types";
+import CustomDropdown from "@/components/_ui/Dropdown";
 
 const CreateCompetition: React.FC = () => {
-    const { subscriptions } = useCompetition();
     const {
         control,
         handleSubmit,
@@ -47,7 +45,18 @@ const CreateCompetition: React.FC = () => {
         formValues,
         currentPage,
         setValue,
+        competitionModels,
+        selectCompetition,
+        activeCompetition,
     } = useCreateCompetition();
+
+
+    const competitionModelsOptions = useMemo(() => {
+        return competitionModels.map((model) => ({
+            value: model.id,
+            label: model.name,
+        } satisfies DropdownOption))
+    }, [competitionModels]);
 
     return (
         <>
@@ -89,64 +98,17 @@ const CreateCompetition: React.FC = () => {
                                             <label className="block text-xl font-medium text-[#3f3c40] mb-4">
                                                 Nome da Maratona
                                             </label>
-                                            <Controller
-                                                name="competitionName"
-                                                control={control}
-                                                render={({ field }) => (
-                                                    <Select
-                                                        onValueChange={(
-                                                            val
-                                                        ) => {
-                                                            field.onChange(val);
-                                                            const model =
-                                                                subscriptions.find(
-                                                                    (m) =>
-                                                                        m.name ===
-                                                                        val
-                                                                );
-                                                            if (model) {
-                                                                setValue(
-                                                                    "startDate",
-                                                                    model.initialDate,
-                                                                    {
-                                                                        shouldValidate:
-                                                                            true,
-                                                                    }
-                                                                );
-                                                            }
-                                                        }}
-                                                        value={field.value}
-                                                    >
-                                                        <SelectTrigger className="w-full border-[#e9edee] text-xl h-16 px-6">
-                                                            <SelectValue placeholder="Selecione um modelo de inscrição" />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            {subscriptions.map(
-                                                                (m) => (
-                                                                    <SelectItem
-                                                                        key={
-                                                                            m.id
-                                                                        }
-                                                                        value={
-                                                                            m.name
-                                                                        }
-                                                                    >
-                                                                        {m.name}
-                                                                    </SelectItem>
-                                                                )
-                                                            )}
-                                                        </SelectContent>
-                                                    </Select>
-                                                )}
+                                            <CustomDropdown
+                                                options={competitionModelsOptions}
+                                                onChange={(val) => {
+                                                    if(val == null) return;
+
+                                                    selectCompetition(parseInt(val))
+                                                }}
+                                                value={activeCompetition?.id ?? null}
+                                                type="normalDropdown"
+                                                grow={true}
                                             />
-                                            {errors.competitionName && (
-                                                <p className="text-red-500 text-sm mt-1">
-                                                    {
-                                                        errors.competitionName
-                                                            .message
-                                                    }
-                                                </p>
-                                            )}
                                         </div>
 
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

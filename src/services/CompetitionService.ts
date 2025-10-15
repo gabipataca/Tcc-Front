@@ -5,15 +5,25 @@ import {
     UpdateCompetitionRequest,
 } from "@/types/Competition/Requests";
 import {
-    CreateCompetitionResponse,
-    UpdateCompetitionResponse,
+    CompetitionResponse,
 } from "@/types/Competition/Responses";
 import { ServerSideResponse } from "@/types/Global";
 
 class CompetitionService {
     static async getExistentCompetition() {
-        const response = await apiRequest<ServerSideResponse<Competition>>(
+        const response = await apiRequest<ServerSideResponse<CompetitionResponse>>(
             "/api/competition",
+            {
+                method: "GET",
+            }
+        );
+
+        return response.data;
+    }
+
+    static async getCompetitionTemplates() {
+        const response = await apiRequest<ServerSideResponse<Competition[]>>(
+            "/api/competition/template",
             {
                 method: "GET",
             }
@@ -24,7 +34,7 @@ class CompetitionService {
 
     static async createCompetition(data: CreateCompetitionRequest) {
         const response = await apiRequest<
-            ServerSideResponse<CreateCompetitionResponse>,
+            ServerSideResponse<CompetitionResponse>,
             CreateCompetitionRequest
         >("/api/competition", {
             method: "POST",
@@ -36,7 +46,7 @@ class CompetitionService {
 
     static async updateCompetition(data: UpdateCompetitionRequest) {
         const response = await apiRequest<
-            ServerSideResponse<UpdateCompetitionResponse>,
+            ServerSideResponse<CompetitionResponse>,
             UpdateCompetitionRequest
         >("/api/competition", {
             method: "PUT",

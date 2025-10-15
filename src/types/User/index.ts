@@ -33,6 +33,11 @@ export interface User {
     email: string;
 
     /**
+     * The department the user belongs to.
+     */
+    department: string | null;
+
+    /**
      * The group ID associated with the user.
      */
     groupId?: number;
@@ -53,6 +58,7 @@ export interface GenericUserInfo {
     id: string;
     ra: string;
     email: string;
+    department: string | null;
     name: string;
     joinYear: number;
     createdAt: string;

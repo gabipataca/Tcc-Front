@@ -4,7 +4,7 @@ import type React from "react";
 
 import { useState, useMemo, useCallback } from "react";
 import { useCompetition } from "@/contexts/CompetitionContext";
-import { useSnackbar } from "notistack";
+import { CreateCompetitionRequest } from "@/types/Competition/Requests";
 
 interface CompetitionFormData {
     name: string;
@@ -25,37 +25,32 @@ export const useCompetitionForm = () => {
     const [endRegistration, setEndRegistration] = useState("");
     const [status, setStatus] = useState("Fechado");
 
-    const { addSubscription } = useCompetition();
-    const { enqueueSnackbar } = useSnackbar();
+    const { createCompetition } = useCompetition();
 
     const handleSubmit = useCallback(
-        (e: React.FormEvent) => {
+        async (e: React.FormEvent) => {
             e.preventDefault();
 
             try {
-                const dataCompetition: CompetitionFormData = {
+                const dataCompetition: CreateCompetitionRequest = {
                     name,
                     description,
                     maxMembers: Number(maxMembers),
-                    initialDate,
-                    initialRegistration,
-                    endRegistration,
-                    status,
+                    startTime: initialDate,
+                    startInscriptions: initialRegistration,
+                    endInscriptions: endRegistration,
+                    duration: "00:00:00",
+                    stopRanking: null,
+                    submissionPenalty: "00:20:00",
+                    maxExercises: null,
+                    maxSubmissionSize: 20,
+                    exerciseIds: [],
+                    blockSubmissions: null,
                 };
 
-                addSubscription(dataCompetition);
-
-                enqueueSnackbar("Inscrição liberada com sucesso", {
-                    variant: "success",
-                    autoHideDuration: 2500,
-                    anchorOrigin: { vertical: "bottom", horizontal: "right" },
-                });
+                await createCompetition(dataCompetition);
             } catch (error) {
-                enqueueSnackbar("Erro ao liberar inscrição", {
-                    variant: "error",
-                    autoHideDuration: 2500,
-                    anchorOrigin: { vertical: "bottom", horizontal: "right" },
-                });
+                console.log(error);
             }
         },
         [
@@ -65,9 +60,7 @@ export const useCompetitionForm = () => {
             initialDate,
             initialRegistration,
             endRegistration,
-            status,
-            addSubscription,
-            enqueueSnackbar,
+            createCompetition,
         ]
     );
 

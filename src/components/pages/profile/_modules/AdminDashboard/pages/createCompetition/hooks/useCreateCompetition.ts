@@ -1,16 +1,25 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
-import useLoadExercises from "./useLoadExercises";
+import useLoadExercises from "../../../../Shared/ExerciseManagement/hooks/useLoadExercises";
 import CompetitionService from "@/services/CompetitionService";
-import { convertNumberToTimeSpan, parseDate } from "@/libs/utils";
-import { CreateCompetitionRequest } from "@/types/Competition/Requests";
+import {
+    convertNumberToTimeSpan,
+    convertTimeSpanToNumber,
+    parseDate,
+} from "@/libs/utils";
+import {
+    CreateCompetitionRequest,
+    UpdateCompetitionRequest,
+} from "@/types/Competition/Requests";
 import { useSnackbar } from "notistack";
 import useProfileMenu from "@/components/pages/profile/hooks/useProfileMenu";
+import { useCompetition } from "@/contexts/CompetitionContext";
+import { Competition } from "@/types/Competition";
 
 interface CompetitionFormInputs {
-    competitionName: string;
+    description: string;
     startDate: string;
     startTime: string;
     duration: number;
@@ -23,9 +32,16 @@ interface CompetitionFormInputs {
 
 const schema = z
     .object({
-        competitionName: z.string().min(3, {
-            message: "O nome da maratona deve ter no mínimo 3 caracteres.",
-        }),
+        description: z
+            .string()
+            .min(3, {
+                message:
+                    "A descrição da maratona deve ter no mínimo 3 caracteres.",
+            })
+            .max(1200, {
+                message:
+                    "A descrição da maratona deve ter no máximo 1200 caracteres.",
+            }),
         startDate: z
             .string()
             .min(1, { message: "A data de início é obrigatória." }),
@@ -86,23 +102,39 @@ const schema = z
 
 const useCreateCompetition = () => {
     const [selectedExercises, setSelectedExercises] = useState<number[]>([]);
+    const [search, setSearch] = useState("");
+    const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [activeCompetition, setActiveCompetition] = useState<Competition | null>(null);
 
-    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+    const {
+        addCompetitionModel,
+        competitionModels,
+        loadCompetitions,
+        isLoading: isLoadingCompetitions,
+    } = useCompetition();
+
+    const { enqueueSnackbar } = useSnackbar();
 
     const { toggleMenu } = useProfileMenu();
 
+    useEffect(() => {
+        loadCompetitions();
+    }, [loadCompetitions]);
+
     const {
         exercises,
-        isLoading,
-        maxPages,
-        pageSize,
         currentPage,
-        search,
-        togglePage,
+        addExercise,
+        controllerSignal,
+        exerciseTypeFilter,
+        setControllerSignal,
+        nextPage,
+        prevPage,
+        totalPages: maxPages,
+        toggleExerciseTypeFilter,
         loadExercises,
-        setSearch,
-        totalExercises,
+        loadingExercises,
     } = useLoadExercises();
 
     const {
@@ -114,7 +146,7 @@ const useCreateCompetition = () => {
         setValue,
     } = useForm<CompetitionFormInputs>({
         defaultValues: {
-            competitionName: "",
+            description: "",
             startDate: "",
             startTime: "",
             duration: 90,
@@ -124,11 +156,34 @@ const useCreateCompetition = () => {
             maxFileSize: 20,
             exerciseCount: 2,
         },
-        mode: "onChange",
+        disabled: activeCompetition == null,
+        mode: activeCompetition == null ? undefined : "onChange",
+        
         resolver: zodResolver(schema),
     });
 
     const formValues = watch();
+
+    const selectCompetition = useCallback((competitionId: number) => {
+        const competition = competitionModels.find(c => c.id === competitionId) || null;
+
+        if(competition == null) {
+            return;
+        }
+
+        setValue("description", competition.description);
+        setValue("duration", competition.duration ?? 90);
+        setValue("maxFileSize", competition.maxSubmissionSize ?? 20);
+        setValue("exerciseCount", competition.maxExercises ?? 4);
+        setValue("penalty", competition.submissionPenalty ?? 30);
+        setValue("startDate", competition.startTime.toISOString().split("T")[0]);
+        setValue("startTime", competition.startTime.toISOString().split("T")[1].substring(0, 5));
+        setValue("stopAnswering", 85);
+        setValue("stopScoreboard", 80);
+        trigger();
+
+        setActiveCompetition({...competition});
+    }, [competitionModels, setValue, trigger]);
 
     const toggleExercise = useCallback(
         (exerciseId: number) => {
@@ -154,60 +209,139 @@ const useCreateCompetition = () => {
         return isValid && isExerciseSelectionValid;
     }, [isValid, isExerciseSelectionValid]);
 
-    const onSubmit: SubmitHandler<CompetitionFormInputs> = async (data) => {
-        setIsSubmitting(true);
-        let errored = false;
-
-        try {
-            const payload: CreateCompetitionRequest = {
-                name: data.competitionName,
-                startTime: new Date(
-                    `${data.startDate}T${data.startTime}:00`
-                ).toISOString(),
-                duration: convertNumberToTimeSpan(data.duration * 60),
-                blockSubmissions: convertNumberToTimeSpan(
-                    data.stopAnswering * 60
-                ),
-                stopRanking: convertNumberToTimeSpan(data.stopScoreboard * 60),
-                submissionPenalty: convertNumberToTimeSpan(data.penalty * 60),
-                maxSubmissionSize: data.maxFileSize,
-                maxExercises: data.exerciseCount,
-                exerciseIds: selectedExercises,
-                startInscriptions: null,
-                endInscriptions: null,
-            };
-
-            //const res = await CompetitionService.createCompetition(payload);
-
-            //if(res.status == 201) {
-            await new Promise((resolve) => {
-                setTimeout(resolve, 1000);
-            });
-            enqueueSnackbar("Maratona criada com sucesso!", {
-                variant: "success",
-                autoHideDuration: 2500,
-                anchorOrigin: { vertical: "bottom", horizontal: "right" },
-            });
-            //}
-        } catch (error) {
-            errored = true;
-            enqueueSnackbar(
-                "Ocorreu um erro ao criar a maratona. Tente novamente.",
-                {
-                    variant: "error",
-                    autoHideDuration: 2500,
-                    anchorOrigin: { vertical: "bottom", horizontal: "right" },
-                }
-            );
-        } finally {
-            setIsSubmitting(false);
-            if (!errored) {
-                setTimeout(() => {
-                    toggleMenu("Main");
-                }, 1500);
+    const onSubmit: SubmitHandler<CompetitionFormInputs> = useCallback(
+        async (data) => {
+            if(activeCompetition == null) {
+                return;
             }
+
+            setIsSubmitting(true);
+            let errored = false;
+
+            try {
+                const payload: UpdateCompetitionRequest = {
+                    name: activeCompetition.name,
+                    description: data.description,
+                    startTime: new Date(
+                        `${data.startDate}T${data.startTime}:00`
+                    ).toISOString(),
+                    duration: convertNumberToTimeSpan(data.duration * 60),
+                    blockSubmissions: convertNumberToTimeSpan(
+                        data.stopAnswering * 60
+                    ),
+                    stopRanking: convertNumberToTimeSpan(
+                        data.stopScoreboard * 60
+                    ),
+                    submissionPenalty: convertNumberToTimeSpan(
+                        data.penalty * 60
+                    ),
+                    maxSubmissionSize: data.maxFileSize,
+                    maxExercises: data.exerciseCount,
+                    exerciseIds: selectedExercises,
+                    startInscriptions: null,
+                    endInscriptions: null,
+                };
+
+                const res = await CompetitionService.updateCompetition(payload);
+
+                if (res.status == 200) {
+                    addCompetitionModel({
+                        id: res.data!.id,
+                        blockSubmissions: res.data?.blockSubmissions
+                            ? new Date(res.data!.blockSubmissions)
+                            : null,
+                        duration: res.data?.duration
+                            ? new Date(
+                                  convertTimeSpanToNumber(res.data!.duration)
+                              )
+                            : null,
+                        endInscriptions: res.data?.endInscriptions
+                            ? new Date(res.data!.endInscriptions)
+                            : null,
+                        endTime: res.data?.endTime
+                            ? new Date(res.data!.endTime)
+                            : null,
+                        maxExercises: res.data!.maxExercises,
+                        maxSubmissionSize: res.data!.maxSubmissionSize,
+                        name: res.data!.name,
+                        description: res.data?.description || "",
+                        startInscriptions: res.data?.startInscriptions
+                            ? new Date(
+                                  convertTimeSpanToNumber(
+                                      res.data!.startInscriptions
+                                  )
+                              )
+                            : null,
+                        startTime: new Date(res.data!.startTime),
+                        status: res.data!.status,
+                        stopRanking: res.data?.stopRanking
+                            ? new Date(res.data!.stopRanking)
+                            : null,
+                        submissionPenalty: res.data?.submissionPenalty
+                            ? convertTimeSpanToNumber(
+                                  res.data!.submissionPenalty
+                              )
+                            : null,
+                    });
+                    enqueueSnackbar("Maratona criada com sucesso!", {
+                        variant: "success",
+                        autoHideDuration: 2500,
+                        anchorOrigin: {
+                            vertical: "bottom",
+                            horizontal: "right",
+                        },
+                    });
+                }
+            } catch (error) {
+                errored = true;
+                enqueueSnackbar(
+                    "Ocorreu um erro ao criar a maratona. Tente novamente.",
+                    {
+                        variant: "error",
+                        autoHideDuration: 2500,
+                        anchorOrigin: {
+                            vertical: "bottom",
+                            horizontal: "right",
+                        },
+                    }
+                );
+            } finally {
+                setIsSubmitting(false);
+                if (!errored) {
+                    setTimeout(() => {
+                        toggleMenu("Main");
+                    }, 1500);
+                }
+            }
+        },
+        [addCompetitionModel, enqueueSnackbar, selectedExercises, toggleMenu]
+    );
+
+    useEffect(() => {
+        if (controllerSignal) {
+            controllerSignal.abort();
+            setControllerSignal(null);
         }
-    };
+
+        if (searchTimeoutRef.current) {
+            clearTimeout(searchTimeoutRef.current);
+        }
+
+        const controller = new AbortController();
+        setControllerSignal(controller);
+
+        searchTimeoutRef.current = setTimeout(() => {
+            loadExercises(search, exerciseTypeFilter);
+        }, 800);
+
+        return () => {
+            if (controllerSignal) {
+                controllerSignal.abort();
+                setControllerSignal(null);
+            }
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [search]);
 
     return {
         control,
@@ -224,12 +358,15 @@ const useCreateCompetition = () => {
         isSubmitting,
         trigger,
         currentPage,
-        isLoading,
+        isLoading: loadingExercises,
         maxPages,
-        pageSize,
+        pageSize: 10,
         search,
         setSearch,
         setValue,
+        competitionModels,
+        selectCompetition,
+        activeCompetition,
     };
 };
 

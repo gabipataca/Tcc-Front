@@ -60,7 +60,7 @@ export interface DropdownProps {
    * Callback function triggered when the dropdown loses focus.
    * @param e - The focus event.
    */
-  onBlur: (e: React.FocusEvent<HTMLInputElement>) => void;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
 
   /**
    * Inline styles to apply to the component.
