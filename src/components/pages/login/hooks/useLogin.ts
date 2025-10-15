@@ -87,10 +87,11 @@ const useLogin = () => {
                 role: body.user.role,
                 groupId: body.user.groupId,
                 token: body.token,
+                department: body.user.department,
             });
 
             setTimeout(() => {
-                router.push("/profile");
+                router.push("/Profile");
             }, 100);
         } catch (err) {
             console.error(err);

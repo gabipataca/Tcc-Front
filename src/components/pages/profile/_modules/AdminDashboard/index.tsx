@@ -17,7 +17,7 @@ import CreateCompetition from "./pages/createCompetition";
 import TeachersTable from "./components/TeachersTable";
 import StudentsTable from "../../components/StudentsTable";
 import GroupsTable from "../../components/GroupsTable";
-import CreateCompetitionSubscription from "@/app/profile/CreateSubscription/page";
+import CreateCompetitionSubscription from "@/app/Profile/CreateSubscription/page";
 import useAdminDashboard from "./hooks/useAdminDashboard";
 
 const AdminDashboard: FC = () => {

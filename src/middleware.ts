@@ -9,6 +9,11 @@ const protectedRoutes = [
     { path: "/profile", roles: ["Admin", "Teacher", "Student"] },
 ];
 
+/**
+ * Decodes and parses a JWT token to extract user properties.
+ * @param token - The JWT token string.
+ * @returns The parsed user token properties.
+ */
 const parseJwt = (token: string): UserTokenProperties => {
     const base64Url = token.split(".")[1];
     const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
@@ -26,6 +31,12 @@ const parseJwt = (token: string): UserTokenProperties => {
     };
 };
 
+/**
+ * Middleware to protect routes based on authentication and user roles.
+ * Redirects users to login, logout, or profile pages depending on their authentication status and role.
+ * @param request - The incoming Next.js request object.
+ * @returns A NextResponse object for redirection or continuation.
+ */
 export const middleware = async (request: NextRequest) => {
     const { basePath, pathname } = request.nextUrl;
     const isAuthRoute = ["register", "login"].some((path) =>
@@ -58,8 +69,10 @@ export const middleware = async (request: NextRequest) => {
 
         return NextResponse.next();
     } catch (error) {
-        console.error("JWT verification failed:", error);
-        return NextResponse.redirect(new URL("/login", request.url));
+        console.error("JWT verification failed, trying to refresh token...");
+        // TODO: Implement token refresh logic here
+
+        return NextResponse.redirect(new URL("/logout", request.url));
     }
 };
 
