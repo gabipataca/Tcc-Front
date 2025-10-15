@@ -46,25 +46,17 @@ const useSendExercise = () => {
         }
 
         setIsSubmitting(true);
-        console.log("Submetendo análise:", {
-            selectedExercise,
-            selectedLanguage,
-            attachedFileName,
-            file,
-        });
-
         try {
             await new Promise((resolve) => setTimeout(resolve, 1500));
             alert("Análise enviada com sucesso!");
             setAttachedFileName(null);
             setFile(null);
         } catch (error) {
-            console.error("Erro ao submeter análise:", error);
             alert("Ocorreu um erro ao enviar a análise. Tente novamente.");
         } finally {
             setIsSubmitting(false);
         }
-    }, [selectedExercise, selectedLanguage, attachedFileName, file]);
+    }, [file]);
 
     return {
         selectedExercise,
@@ -97,12 +89,12 @@ const AnaliseJuiz: React.FC = () => {
     return (
         <Box
             sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'flex-start',
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "flex-start",
                 py: 4,
                 px: 2,
-                width: '100%',
+                width: "100%",
                 flexGrow: 1,
             }}
         >
@@ -111,20 +103,20 @@ const AnaliseJuiz: React.FC = () => {
                 sx={{
                     p: { xs: 4, md: 8 },
                     borderRadius: 4,
-                    width: '100%',
-                    maxWidth: '800px',
-                    textAlign: 'center',
-                    boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.1)',
+                    width: "100%",
+                    maxWidth: "800px",
+                    textAlign: "center",
+                    boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.1)",
                 }}
             >
                 <Typography
                     variant="h4"
                     component="h2"
                     sx={{
-                        fontWeight: 'bold',
-                        color: '#4F85A6',
+                        fontWeight: "bold",
+                        color: "#4F85A6",
                         mb: 6,
-                        letterSpacing: '0.05em',
+                        letterSpacing: "0.05em",
                     }}
                 >
                     Submeter a análise do Juíz
@@ -132,7 +124,7 @@ const AnaliseJuiz: React.FC = () => {
 
                 <div className="mb-8">
                     <label className="block text-gray-700 text-lg mb-2">
-                        <Typography variant="body1" component="span" sx={{ color: '#4F85A6', fontWeight: 'bold' }}>
+                        <Typography variant="body1" component="span" sx={{ color: "#4F85A6", fontWeight: "bold" }}>
                             Escolha o exercício:
                         </Typography>
                     </label>
@@ -144,7 +136,9 @@ const AnaliseJuiz: React.FC = () => {
                             disabled={isSubmitting}
                         >
                             {exercises.map((letter: string) => (
-                                <option key={letter} value={letter}>{letter}</option>
+                                <option key={letter} value={letter}>
+                                    {letter}
+                                </option>
                             ))}
                         </select>
 
@@ -155,7 +149,7 @@ const AnaliseJuiz: React.FC = () => {
                             onChange={handleFileChange}
                             accept=".c,.cpp,.cs,.java,.php,.py"
                         />
-                        
+
                         <Button
                             className="bg-[#4F85A6] text-white px-6 py-10 rounded-full font-bold hover:bg-[#3B6A82] transition-all duration-300 shadow-md flex items-center justify-center gap-2"
                             onClick={() => document.getElementById("file-upload")?.click()}
@@ -164,7 +158,7 @@ const AnaliseJuiz: React.FC = () => {
                         </Button>
                     </div>
                     {attachedFileName && (
-                        <Typography variant="body2" sx={{ mt: 2, color: '#4F85A6' }}>
+                        <Typography variant="body2" sx={{ mt: 2, color: "#4F85A6" }}>
                             Arquivo anexado: <span className="font-bold">{attachedFileName}</span>
                         </Typography>
                     )}
@@ -172,7 +166,7 @@ const AnaliseJuiz: React.FC = () => {
 
                 <div className="mb-8">
                     <label className="block text-gray-700 text-lg mb-2">
-                        <Typography variant="body1" component="span" sx={{ color: '#4F85A6', fontWeight: 'bold' }}>
+                        <Typography variant="body1" component="span" sx={{ color: "#4F85A6", fontWeight: "bold" }}>
                             Escolha a Linguagem:
                         </Typography>
                     </label>
@@ -183,16 +177,20 @@ const AnaliseJuiz: React.FC = () => {
                         disabled={isSubmitting}
                     >
                         {languages.map((lang: string) => (
-                            <option key={lang} value={lang}>{lang}</option>
+                            <option key={lang} value={lang}>
+                                {lang}
+                            </option>
                         ))}
                     </select>
                 </div>
 
                 <Button
-                    className={`bg-[#4F85A6] text-white px-8 py-3 rounded-full font-bold hover:bg-[#3B6A82] transition-all duration-300 shadow-lg flex items-center justify-center mx-auto gap-2${isSubmitting || !attachedFileName ? ' opacity-50 pointer-events-none' : ''}`}
+                    className={`bg-[#4F85A6] text-white px-8 py-3 rounded-full font-bold hover:bg-[#3B6A82] transition-all duration-300 shadow-lg flex items-center justify-center mx-auto gap-2${
+                        isSubmitting || !attachedFileName ? " opacity-50 pointer-events-none" : ""
+                    }`}
                     onClick={handleSubmitAnalysis}
                 >
-                    {isSubmitting ? 'Enviando...' : 'Enviar'} <FaPaperPlane size={18} />
+                    {isSubmitting ? "Enviando..." : "Enviar"} <FaPaperPlane size={18} />
                 </Button>
             </Paper>
         </Box>
@@ -232,60 +230,72 @@ data.sort((a, b) => {
     return b.totalCount - a.totalCount;
 });
 
-const tableHeaderColumns = ["Posição", "Equipe", ...letras, "Total"];
-
 const RankingPage: React.FC = () => {
     const [open, setOpen] = useState(false);
 
     return (
-        <div className="relative">
-            <div className="flex justify-end mb-4 mt-4">
-                <Button
-                    className="bg-[#4F85A6] text-white px-6 py-2 rounded-md font-bold hover:bg-[#3B6A82] transition"
-                    onClick={() => setOpen(true)}
-                >
-                    Enviar Exercícios
-                </Button>
-            </div>
+        <div className="bg-gray-100 min-h-screen p-8 flex flex-col items-center">
+            <div className="w-full max-w-7xl">
+                <div className="flex justify-end mb-4">
+                    <Button
+                        className="bg-[#4F85A6] text-white px-6 py-3 rounded-md font-bold text-base hover:bg-[#3B6A82] transition"
+                        onClick={() => setOpen(true)}
+                    >
+                        Enviar Exercícios
+                    </Button>
+                </div>
 
-            <TableContainerMui component={TableContainer}>
-                <Table>
-                    <TableHeader>
-                        <TableRow className="bg-[#4F85A6] text-white">
-                            {tableHeaderColumns.map((column, idx) => (
-                                <TableCell key={`${column}-${idx}`} className="text-white font-bold text-center">
-                                    {column}
-                                </TableCell>
+                {/* Ranking Container */}
+                <div className="rounded-lg shadow-lg overflow-hidden">
+                    {/* Cabeçalho do Ranking */}
+                    <div className="flex bg-[#4F85A6] text-white text-base font-bold items-center p-4">
+                        <div className="w-[10%] text-center">Posição</div>
+                        <div className="w-[15%] text-left pl-6">Equipe</div>
+                        <div className="flex flex-1 justify-around text-center">
+                            {letras.map((l) => (
+                                <div key={l} className="flex-1">
+                                    {l}
+                                </div>
                             ))}
-                        </TableRow>
-                    </TableHeader>
+                        </div>
+                        <div className="w-[12%] text-center">Total</div>
+                    </div>
 
-                    <TableBody>
+                    {/* Corpo: Lista de "cards" */}
+                    <div className="bg-white">
                         {data.map((rowData, idx) => (
-                            <TableRow key={`${rowData.group}-${idx}`}>
-                                <TableCell className="font-bold text-center">{idx + 1}</TableCell>
-                                <TableCell>{rowData.group}</TableCell>
-                                {letras.map((l, index) => (
-                                    <TableCell key={`${l}-${index}`}>
-                                        {rowData.exercisesAccepteds.includes(l) ? (
-                                            <StyledRankingCellContainer
-                                                $fillColor={colors[index]}
-                                                $size={40}
-                                            >
-                                                <Balao />
-                                                {rowData.times[l]}
-                                            </StyledRankingCellContainer>
-                                        ) : (
-                                            " "
-                                        )}
-                                    </TableCell>
-                                ))}
-                                <TableCell>{rowData.total}</TableCell>
-                            </TableRow>
+                            <div
+                                key={`${rowData.group}-${idx}`}
+                                className="flex items-center p-4 border-b border-gray-200 last:border-b-0 transition-colors duration-200 hover:bg-gray-50 cursor-pointer"
+                            >
+                                <div className="w-[10%] text-center">
+                                    <span className="font-bold text-2xl text-gray-700">{idx + 1}º</span>
+                                </div>
+                                <div className="w-[15%] text-left pl-6">
+                                    <span className="font-semibold text-lg text-gray-800">{rowData.group}</span>
+                                </div>
+                                <div className="flex flex-1 justify-around">
+                                    {letras.map((l, index) => (
+                                        <div key={`${l}-${index}`} className="flex-1 text-center flex flex-col items-center">
+                                            {rowData.exercisesAccepteds.includes(l) ? (
+                                                <StyledRankingCellContainer $fillColor={colors[index]} $size={70}>
+                                                    <Balao />
+                                                    <span className="text-sm mt-1 text-gray-600">{rowData.times[l]}</span>
+                                                </StyledRankingCellContainer>
+                                            ) : (
+                                                <span className="text-gray-300">-</span>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="w-[12%] text-center">
+                                    <span className="font-bold text-lg text-gray-800">{rowData.total}</span>
+                                </div>
+                            </div>
                         ))}
-                    </TableBody>
-                </Table>
-            </TableContainerMui>
+                    </div>
+                </div>
+            </div>
 
             <Modal open={open} onClose={() => setOpen(false)}>
                 <Box
