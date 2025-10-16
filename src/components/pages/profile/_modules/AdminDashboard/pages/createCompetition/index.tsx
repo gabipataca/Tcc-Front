@@ -34,9 +34,12 @@ const CreateCompetition: React.FC = () => {
     selectCompetition,
     activeCompetition,
     pageSize,
+    currentPage,
+    maxPages,
+    nextPage,
+    prevPage,
+    resetPagination,
   } = useCreateCompetition()
-
-  const [frontendPage, setFrontendPage] = useState(1)
 
   const competitionModelsOptions = useMemo(() => {
     return competitionModels.map(
@@ -48,31 +51,11 @@ const CreateCompetition: React.FC = () => {
     )
   }, [competitionModels])
 
-  const maxPages = useMemo(() => {
-    return Math.ceil(exercises.length / pageSize)
-  }, [exercises.length, pageSize])
-
-  const paginatedExercises = useMemo(() => {
-    const startIndex = (frontendPage - 1) * pageSize
-    const endIndex = startIndex + pageSize
-    return exercises.slice(startIndex, endIndex)
-  }, [exercises, frontendPage, pageSize])
-
-  const handleNextPage = () => {
-    if (frontendPage < maxPages) {
-      setFrontendPage((prev) => prev + 1)
-    }
-  }
-
-  const handlePrevPage = () => {
-    if (frontendPage > 1) {
-      setFrontendPage((prev) => prev - 1)
-    }
-  }
-
   useMemo(() => {
-    setFrontendPage(1)
-  }, [exercises.length])
+    resetPagination();
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [exercises.length]);
 
   return (
     <>
@@ -337,7 +320,7 @@ const CreateCompetition: React.FC = () => {
                     </div>
 
                     <div className="max-h-96 overflow-y-auto border border-[#e9edee] rounded-lg p-8 space-y-6">
-                      {paginatedExercises.map((exercise) => (
+                      {exercises.map((exercise) => (
                         <div
                           key={exercise.id}
                           className="flex items-center space-x-6 p-4 hover:bg-[#e9edee]/50 rounded"
@@ -357,22 +340,22 @@ const CreateCompetition: React.FC = () => {
                         type="button"
                         variant="outline"
                         className="px-6 py-3 text-white bg-[#4F85A6] hover:bg-[#3879a1] disabled:opacity-50 disabled:cursor-not-allowed rounded-md"
-                        disabled={frontendPage === 1}
-                        onClick={handlePrevPage}
+                        disabled={currentPage === 1}
+                        onClick={prevPage}
                       >
                         Anterior
                       </ButtonAdm>
 
                       <span className="text-[#3f3c40] text-lg font-medium">
-                        Página {frontendPage} de {maxPages}
+                        Página {currentPage} de {maxPages}
                       </span>
 
                       <ButtonAdm
                         type="button"
                         variant="outline"
                         className="px-6 py-3 text-white bg-[#4F85A6] hover:bg-[#3879a1] disabled:opacity-50 disabled:cursor-not-allowed rounded-md"
-                        disabled={frontendPage === maxPages}
-                        onClick={handleNextPage}
+                        disabled={currentPage === maxPages}
+                        onClick={nextPage}
                       >
                         Próxima
                       </ButtonAdm>

@@ -34,6 +34,10 @@ const useLoadExercises = () => {
         }
     }, [currentPage]);
 
+    const resetPagination = useCallback(() => {
+        setCurrentPage(1);
+    }, []);
+
     const toggleExerciseTypeFilter = useCallback(
         (type: ExerciseType | null) => {
             setExerciseTypeFilter(type);
@@ -235,6 +239,7 @@ const useLoadExercises = () => {
         exerciseTypeFilter,
         loadingExercises,
         toggleLoadingExercises,
+        resetPagination,
     };
 };
 

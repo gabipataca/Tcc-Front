@@ -131,6 +131,7 @@ const useCreateCompetition = () => {
         toggleExerciseTypeFilter,
         loadExercises,
         loadingExercises,
+        resetPagination,
     } = useLoadExercises();
 
     const {
@@ -289,6 +290,13 @@ const useCreateCompetition = () => {
                 };
 
                 await updateCompetition(payload);
+
+                enqueueSnackbar({
+                    message: "Competição criada com sucesso!",
+                    variant: "success",
+                    anchorOrigin: { vertical: "bottom", horizontal: "right" },
+                    autoHideDuration: 3000,
+                });
             } catch (error) {
                 errored = true;
             } finally {
@@ -300,7 +308,7 @@ const useCreateCompetition = () => {
                 }
             }
         },
-        [activeCompetition, selectedExercises, toggleMenu, updateCompetition]
+        [activeCompetition, enqueueSnackbar, selectedExercises, toggleMenu, updateCompetition]
     );
 
     useEffect(() => {
@@ -354,6 +362,7 @@ const useCreateCompetition = () => {
         competitionModels,
         selectCompetition,
         activeCompetition,
+        resetPagination,
     };
 };
 

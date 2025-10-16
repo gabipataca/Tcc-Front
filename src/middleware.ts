@@ -6,7 +6,7 @@ import { RoleClaimKey } from "./constants/Auth";
 const protectedRoutes = [
     { path: "/admin", roles: ["Admin"] },
     { path: "/Competition", roles: ["Admin", "Teacher", "Student"] },
-    { path: "/profile", roles: ["Admin", "Teacher", "Student"] },
+    { path: "/Profile", roles: ["Admin", "Teacher", "Student"] },
 ];
 
 /**
@@ -64,7 +64,7 @@ export const middleware = async (request: NextRequest) => {
         }
 
         if (isAuthRoute) {
-            return NextResponse.redirect(new URL("/profile", request.url));
+            return NextResponse.redirect(new URL("/Profile", request.url));
         }
 
         return NextResponse.next();
