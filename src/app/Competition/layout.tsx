@@ -1,6 +1,6 @@
 import { FC, ReactNode } from "react";
 import QuestionsContextProvider from "../../components/pages/Competition/providers/QuestionsContextProvider";
-import CompetitionContextProvider from "../../components/pages/Competition/providers/CompetitionContextProvider";
+import OngoingCompetitionContextProvider from "../../components/pages/Competition/providers/OngoingCompetitionContextProvider";
 
 
 
@@ -8,11 +8,11 @@ const CompetitionPageProviders: FC<{ children: ReactNode }> = ({ children }) => 
 
 
     return(
-        <CompetitionContextProvider>
+        <OngoingCompetitionContextProvider>
             <QuestionsContextProvider>
                 {children}
             </QuestionsContextProvider>
-        </CompetitionContextProvider>
+        </OngoingCompetitionContextProvider>
     );
 }
 

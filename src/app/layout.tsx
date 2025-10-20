@@ -6,7 +6,8 @@ import SnackbarProviderC from "@/contexts/SnackbarProvider";
 import ThemeRegistry from "./ThemeRegistry";
 
 // 1. Importe o novo provider
-import { CompetitionContextProvider } from "@/providers/CompetiitonContextProvider";
+import CompetitionContextProvider from "@/providers/CompetitionContextProvider";
+import { WebSocketContextProvider } from "@/contexts/WebSocketContext";
 
 export const metadata: Metadata = {
     title: "Falcon",
@@ -26,9 +27,13 @@ export default function RootLayout({
                         <Navbar />
 
                         <UserContextProvider>
-                            <CompetitionContextProvider>
-                                <main className="flex-grow">{children}</main>
-                            </CompetitionContextProvider>
+                            <WebSocketContextProvider>
+                                <CompetitionContextProvider>
+                                    <main className="flex-grow">
+                                        {children}
+                                    </main>
+                                </CompetitionContextProvider>
+                            </WebSocketContextProvider>
                         </UserContextProvider>
                     </SnackbarProviderC>
                 </ThemeRegistry>

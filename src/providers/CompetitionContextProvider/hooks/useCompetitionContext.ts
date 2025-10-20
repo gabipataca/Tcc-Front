@@ -1,10 +1,11 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import useLoadCompetitions from "./useLoadCompetitions";
 import { Competition } from "@/types/Competition";
 import { CreateCompetitionRequest } from "@/types/Competition/Requests";
 import CompetitionService from "@/services/CompetitionService";
 import { convertTimeSpanToNumber } from "@/libs/utils";
 import { enqueueSnackbar } from "notistack";
+import { useWebSocketContext } from "@/contexts/WebSocketContext";
 
 const useCompetitionContext = () => {
     const {
@@ -15,6 +16,7 @@ const useCompetitionContext = () => {
         toggleLoading,
         updateCompetition,
     } = useLoadCompetitions();
+
 
     const competitionModels = useMemo(() => {
         return competitions.filter((x) => x.status == 5);

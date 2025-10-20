@@ -1,3 +1,5 @@
+import { Exercise } from "../Exercise";
+import { Group } from "../Group";
 
 
 /**
@@ -84,6 +86,21 @@ export interface Competition {
      * Current status of the competition.
      */
     status: CompetitionStatus;
+
+    /**
+     * List of exercises included in the competition.
+     */
+    exercises: Exercise[];
+
+    /**
+     * List of groups participating in the competition.
+     */
+    groups: Group[];
+
+    /**
+     * List of competition rankings.
+     */
+    competitionRankings: CompetitionRanking[];
 }
 
 /**
