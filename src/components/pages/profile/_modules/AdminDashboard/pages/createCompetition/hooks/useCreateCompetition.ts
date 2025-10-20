@@ -116,7 +116,7 @@ const useCreateCompetition = () => {
 
     useEffect(() => {
         loadCompetitions();
-    }, [loadCompetitions]);
+    }, []);
 
     const {
         exercises,
@@ -289,7 +289,7 @@ const useCreateCompetition = () => {
                         activeCompetition.endInscriptions!.toISOString(),
                 };
 
-                await updateCompetition(payload);
+                //await updateCompetition(payload);
 
                 enqueueSnackbar({
                     message: "Competição criada com sucesso!",
@@ -300,7 +300,10 @@ const useCreateCompetition = () => {
             } catch (error) {
                 errored = true;
             } finally {
-                setIsSubmitting(false);
+                setTimeout(() => {
+                    setIsSubmitting(false);
+                }, 500);
+                return;
                 if (!errored) {
                     setTimeout(() => {
                         toggleMenu("Main");
@@ -351,7 +354,8 @@ const useCreateCompetition = () => {
         isSubmitting,
         trigger,
         currentPage,
-        isLoading: loadingExercises,
+        isLoadingExercises: loadingExercises,
+        isLoadingCompetitions,
         maxPages,
         nextPage,
         prevPage,

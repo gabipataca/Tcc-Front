@@ -8,7 +8,7 @@ import { ButtonAdm } from "@/components/_ui/ButtonAdm"
 import { Badge } from "@/components/_ui/Badge"
 import { Checkbox } from "@/components/_ui/Checkbox"
 import { Controller } from "react-hook-form"
-import { type ChangeEvent, useMemo, useState } from "react"
+import { type ChangeEvent, useMemo } from "react"
 import Loading from "@/components/_ui/Loading"
 import type { DropdownOption } from "@/components/_ui/Dropdown/types"
 import CustomDropdown from "@/components/_ui/Dropdown"
@@ -39,6 +39,8 @@ const CreateCompetition: React.FC = () => {
     nextPage,
     prevPage,
     resetPagination,
+    isLoadingExercises,
+    isLoadingCompetitions,
   } = useCreateCompetition()
 
   const competitionModelsOptions = useMemo(() => {
@@ -47,7 +49,7 @@ const CreateCompetition: React.FC = () => {
         ({
           value: model.id,
           label: model.name,
-        }) satisfies DropdownOption,
+        }) as DropdownOption,
     )
   }, [competitionModels])
 
@@ -96,6 +98,7 @@ const CreateCompetition: React.FC = () => {
                           selectCompetition(Number.parseInt(val))
                         }}
                         value={activeCompetition?.id ?? null}
+                        disabled={isLoadingCompetitions}
                         type="normalDropdown"
                         grow={true}
                       />

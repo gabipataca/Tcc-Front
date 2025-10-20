@@ -76,7 +76,12 @@ const useLogin = () => {
                 return;
             }
 
-            const body = res!.data!;
+            if(!res.data) {
+                console.log(res);
+                return;
+            }
+
+            const body = res.data;
 
             setUser({
                 id: body.user.id,

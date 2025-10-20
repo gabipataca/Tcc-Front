@@ -7,7 +7,7 @@ import { useCallback, useState } from "react";
 
 export const useLoadCompetitions = () => {
     const [competitions, setCompetitions] = useState<Competition[]>([]);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
     const { enqueueSnackbar } = useSnackbar();
 
@@ -21,7 +21,6 @@ export const useLoadCompetitions = () => {
 
     const loadCompetitions = useCallback(async () => {
         try {
-            toggleLoading();
             const response = await CompetitionService.getCompetitionTemplates();
             if (response.status !== 200) {
                 enqueueSnackbar("Erro ao carregar modelos de competições.", {

@@ -1,16 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Calendar, Edit, Hash, Mail, UserCheck, Users, X } from "lucide-react";
 import { ButtonAdm } from "@/components/_ui/ButtonAdm";
-
-// --- Tipos ---
-// Adicionei os campos que faltavam com base no seu componente
-type User = {
-    id: string;
-    name: string;
-    joinYear: string; // Mantido como joinYear conforme o seu código
-    email: string;
-    ra: string;
-};
+import { useUser } from "@/contexts/UserContext";
+import { User } from "@/types/User";
 
 // --- Componentes de UI Falsos (Mock) ---
 // Para que este código seja executável, adicionei versões simples dos seus componentes de UI.
@@ -317,6 +309,8 @@ const StudentInfoSection: React.FC<{
 
 // --- Componente Principal que Gerencia o Estado ---
 const StudentProfile = () => {
+    const { user } = useUser();
+
     // Simulação dos dados iniciais do aluno
     const [studentInfo, setStudentInfo] = useState<User>({
         id: "student-01",
@@ -338,7 +332,7 @@ const StudentProfile = () => {
     return (
         <>
             <StudentInfoSection
-                info={studentInfo}
+                info={user}
                 onEditClick={() => setEditModalOpen(true)}
             />
 
@@ -346,7 +340,7 @@ const StudentProfile = () => {
                 isOpen={isEditModalOpen}
                 onClose={() => setEditModalOpen(false)}
                 onSave={handleSaveInfo}
-                currentUser={studentInfo}
+                currentUser={user!}
             />
         </>
     );
