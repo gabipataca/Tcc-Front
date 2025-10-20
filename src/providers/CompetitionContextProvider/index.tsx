@@ -1,11 +1,10 @@
 "use client";
 
 import { CompetitionContext } from "@/contexts/CompetitionContext";
-import { ReactNode, useMemo } from "react";
-import { Competition } from "@/types/Competition";
+import { ReactNode } from "react";
 import useCompetitionContext from "./hooks/useCompetitionContext";
 
-export const CompetitionContextProvider = ({
+const CompetitionContextProvider = ({
     children,
 }: {
     children: ReactNode;
@@ -38,3 +37,6 @@ export const CompetitionContextProvider = ({
         </CompetitionContext.Provider>
     );
 };
+
+
+export default CompetitionContextProvider;

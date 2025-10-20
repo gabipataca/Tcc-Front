@@ -2,16 +2,16 @@ import { HubConnection } from "@microsoft/signalr";
 
 
 /**
- * Propriedades do contexto WebSocket para gerenciamento de conexões SignalR.
+ * WebSocket context properties for managing SignalR connections.
  */
 export interface WebSocketContextProps {
     /**
-     * Instância da conexão SignalR ou null se não houver conexão ativa.
+     * SignalR connection instance or null if there is no active connection.
      */
     webSocketConnection: HubConnection | null;
 
     /**
-     * Identificador único da conexão, ou null se não estiver conectado.
+     * Unique connection identifier, or null if not connected.
      */
     connectionId: string | null;
 }
