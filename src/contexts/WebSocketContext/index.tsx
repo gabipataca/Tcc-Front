@@ -8,8 +8,13 @@ import React, {
     useState,
 } from "react";
 import { WebSocketContextProps } from "./types";
-import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
+import {
+    HubConnection,
+    HubConnectionBuilder,
+    HubConnectionState,
+} from "@microsoft/signalr";
 import { useSnackbar } from "notistack";
+import { useUser } from "../UserContext";
 
 export const WebSocketContext = createContext<WebSocketContextProps | null>(
     null
@@ -20,6 +25,8 @@ export const WebSocketContextProvider = ({
 }: {
     children: React.ReactNode;
 }) => {
+    const { user } = useUser();
+
     const [webSocketConnection, setWebSocketConnection] =
         useState<HubConnection | null>(null);
     const [connectionId, setConnectionId] = useState<string | null>(null);
@@ -27,14 +34,20 @@ export const WebSocketContextProvider = ({
     const { enqueueSnackbar } = useSnackbar();
 
     const ConfigureWebSocket = useCallback(async () => {
-        if (webSocketConnection == null) return;
+        if (
+            webSocketConnection == null ||
+            webSocketConnection.state === HubConnectionState.Connected
+        )
+            return;
 
         try {
-            await webSocketConnection!.start();
+            await webSocketConnection.start();
 
-            webSocketConnection.invoke("GetConnectionId").then((id: string) => {
+            webSocketConnection.on("ReceiveConnectionId", (id: string) => {
                 setConnectionId(id);
             });
+
+            await webSocketConnection.invoke("GetConnectionId");
         } catch (error) {
             console.error("WebSocket connection failed: ", error);
             enqueueSnackbar("Conexão WebSocket falhou", {
@@ -45,19 +58,37 @@ export const WebSocketContextProvider = ({
     }, [enqueueSnackbar, webSocketConnection]);
 
     useEffect(() => {
+        if (!user || webSocketConnection != null) return;
+
         const newConnection = new HubConnectionBuilder()
-            .withUrl(`${process.env.NEXT_PUBLIC_URL}/hub/competition`, {
-                withCredentials: true,
-            })
+            .withUrl(
+                `${process.env.NEXT_PUBLIC_API_URL_CUSTOM}/hub/competition`,
+                {
+                    withCredentials: true,
+                    accessTokenFactory() {
+                        return user.token;
+                    },
+                }
+            )
             .withAutomaticReconnect()
             .build();
 
         setWebSocketConnection(newConnection);
-    }, []);
+    }, [user]);
 
     useEffect(() => {
         ConfigureWebSocket();
-    }, [ConfigureWebSocket]);
+
+        return () => {
+            if (webSocketConnection != null) {
+                if (
+                    webSocketConnection.state === HubConnectionState.Connected
+                ) {
+                    webSocketConnection.stop();
+                }
+            }
+        };
+    }, [ConfigureWebSocket, webSocketConnection]);
 
     return (
         <WebSocketContext.Provider

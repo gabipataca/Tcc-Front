@@ -8,6 +8,7 @@ import {
     AcceptGroupInvitationResponse,
     CreateGroupResponse,
     GetGroupsResponse,
+    GroupResponse,
     InviteUserToGroupResponse,
     UpdateGroupResponse,
 } from "@/types/Group/Responses";
@@ -17,15 +18,17 @@ import { GroupInvitation } from "@/types/Group";
 class GroupService {
     static async CreateGroup(
         groupName: string,
+        userRAs: string[],
         abortSignal: AbortSignal
-    ): Promise<ServerSideResponse<CreateGroupResponse>> {
+    ): Promise<ServerSideResponse<GroupResponse>> {
         const response = await apiRequest<
-            ServerSideResponse<CreateGroupResponse>,
+            ServerSideResponse<GroupResponse>,
             CreateGroupRequest
         >(`/api/group`, {
             method: "POST",
             data: {
                 name: groupName,
+                userRAs: userRAs,
             },
             signal: abortSignal,
         });

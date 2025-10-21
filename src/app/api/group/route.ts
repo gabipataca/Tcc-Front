@@ -4,6 +4,7 @@ import { CreateGroupRequest } from "@/types/Group/Requests";
 import {
     CreateGroupResponse,
     GetGroupsResponse,
+    GroupResponse,
 } from "@/types/Group/Responses";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -39,8 +40,9 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
     const body = (await req.json()) as CreateGroupRequest;
     let res;
+    console.log(body);
     try {
-        res = await apiRequest<ServerSideResponse<CreateGroupResponse>>(
+        res = await apiRequest<GroupResponse>(
             "/Group",
             {
                 method: "POST",
@@ -55,5 +57,8 @@ export async function POST(req: NextRequest) {
         );
     }
 
-    return NextResponse.json(res.data, { status: res.status });
+    return NextResponse.json({
+        data: res.data,
+        status: res.status,
+    } satisfies ServerSideResponse<GroupResponse>, { status: res.status });
 }

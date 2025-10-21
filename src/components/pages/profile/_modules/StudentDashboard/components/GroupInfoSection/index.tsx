@@ -1,5 +1,10 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import { Edit, Plus, Trophy, Users, X, Check, Clock, UserX } from "lucide-react";
+import AddGroupModal from "./components/AddGroupModal";
+import EditGroupModal from "./components/EditGroupModal";
+import AddMemberModal from "./components/AddMemberModal";
 
 // --- Tipos (Mantendo e expandindo o que você já tinha) ---
 type User = {
@@ -73,180 +78,6 @@ const Input = ({ className = '', ...props }) => (
 const Label = ({ children, className = '', ...props }: { children: React.ReactNode, className?: string, [key: string]: any }) => (
     <label className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${className}`} {...props}>{children}</label>
 );
-
-
-// --- Componente: Modal de Adicionar Grupo ---
-const AddGroupModal = ({ isOpen, onClose, onCreate }: { isOpen: boolean, onClose: () => void, onCreate: (name: string, members: string[]) => void }) => {
-    const [groupName, setGroupName] = useState("");
-    const [member2, setMember2] = useState("");
-    const [member3, setMember3] = useState("");
-
-    if (!isOpen) return null;
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        onCreate(groupName, [member2, member3].filter(Boolean));
-        onClose();
-        setGroupName("");
-        setMember2("");
-        setMember3("");
-    };
-
-    return (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <Card className="w-full max-w-md">
-                <form onSubmit={handleSubmit}>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <Plus /> Criar Novo Grupo
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="groupName">Nome do Grupo</Label>
-                            <Input id="groupName" placeholder="Ex: Os Campeões da Maratona" value={groupName} onChange={e => setGroupName(e.target.value)} required />
-                        </div>
-                        <p className="text-sm text-slate-600">Adicione até 2 outros integrantes (opcional). Você já está incluído como líder.</p>
-                        <div className="space-y-2">
-                            <Label htmlFor="member2">RA do Integrante 2</Label>
-                            <Input id="member2" type="text" placeholder="Ex: 123456" value={member2} onChange={e => setMember2(e.target.value)} />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="member3">RA do Integrante 3</Label>
-                            <Input id="member3" type="text" placeholder="Ex: 789012" value={member3} onChange={e => setMember3(e.target.value)} />
-                        </div>
-                    </CardContent>
-                    <CardFooter className="flex justify-end gap-2">
-                        <Button type="button" style="outline" onClick={onClose}>Cancelar</Button>
-                        <Button type="submit" style="primary">Criar Grupo</Button>
-                    </CardFooter>
-                </form>
-            </Card>
-        </div>
-    );
-};
-
-// --- Componente: Modal de Adicionar Integrante ---
-const AddMemberModal = ({ isOpen, onClose, onAdd, currentSize }: { isOpen: boolean, onClose: () => void, onAdd: (members: string[]) => void, currentSize: number }) => {
-    const [memberRA1, setMemberRA1] = useState("");
-    const [memberRA2, setMemberRA2] = useState("");
-    const slotsAvailable = 3 - currentSize;
-
-    useEffect(() => {
-        setMemberRA1("");
-        setMemberRA2("");
-    }, [isOpen]);
-
-    if (!isOpen) return null;
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        const membersToAdd = [memberRA1, memberRA2].filter(Boolean);
-        if (membersToAdd.length > 0) {
-            onAdd(membersToAdd);
-        }
-        onClose();
-    };
-
-    return (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <Card className="w-full max-w-md">
-                <form onSubmit={handleSubmit}>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <Plus /> Adicionar Integrantes
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <p className="text-sm text-slate-600">Você pode adicionar mais {slotsAvailable} integrante(s).</p>
-                        {slotsAvailable >= 1 && (
-                            <div className="space-y-2">
-                                <Label htmlFor="newMember1">RA do Novo Integrante</Label>
-                                <Input id="newMember1" type="text" placeholder="Ex: 987654" value={memberRA1} onChange={e => setMemberRA1(e.target.value)} required />
-                            </div>
-                        )}
-                        {slotsAvailable >= 2 && (
-                            <div className="space-y-2">
-                                <Label htmlFor="newMember2">RA do Novo Integrante</Label>
-                                <Input id="newMember2" type="text" placeholder="Ex: 543210" value={memberRA2} onChange={e => setMemberRA2(e.target.value)} />
-                            </div>
-                        )}
-                    </CardContent>
-                    <CardFooter className="flex justify-end gap-2">
-                        <Button type="button" style="outline" onClick={onClose}>Cancelar</Button>
-                        <Button type="submit" style="primary">Adicionar</Button>
-                    </CardFooter>
-                </form>
-            </Card>
-        </div>
-    );
-};
-
-
-// --- Componente: Modal de Editar Grupo ---
-const EditGroupModal = ({ isOpen, onClose, onUpdate, group }: { isOpen: boolean, onClose: () => void, onUpdate: (id: string, name: string, membersToRemove: string[]) => void, group: GroupInfo | null }) => {
-    const [groupName, setGroupName] = useState(group?.name || "");
-    const [membersToRemove, setMembersToRemove] = useState<string[]>([]);
-
-    useEffect(() => {
-        if (group) {
-            setGroupName(group.name);
-            setMembersToRemove([]);
-        }
-    }, [group]);
-
-    if (!isOpen || !group) return null;
-
-    const handleToggleRemove = (userId: string) => {
-        setMembersToRemove(prev =>
-            prev.includes(userId) ? prev.filter(id => id !== userId) : [...prev, userId]
-        );
-    }
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        onUpdate(group.id, groupName, membersToRemove);
-        onClose();
-    };
-
-    return (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <Card className="w-full max-w-md">
-                <form onSubmit={handleSubmit}>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><Edit /> Editar Grupo</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="editGroupName">Nome do Grupo</Label>
-                            <Input id="editGroupName" value={groupName} onChange={e => setGroupName(e.target.value)} required />
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Integrantes</Label>
-                            <div className="space-y-2 rounded-md border p-2">
-                                {group.users.map(user => (
-                                    <div key={user.id} className={`flex items-center justify-between p-2 rounded ${membersToRemove.includes(user.id) ? 'bg-red-100' : ''}`}>
-                                        <span className={`${membersToRemove.includes(user.id) ? 'line-through text-slate-500' : ''}`}>{user.name} {user.id === 'user-1' ? '(Líder)' : ''}</span>
-                                        {user.id !== 'user-1' && ( // Não permite remover o líder
-                                            <Button type="button" size="sm" style={membersToRemove.includes(user.id) ? 'light-success' : 'outline'} onClick={() => handleToggleRemove(user.id)}>
-                                                {membersToRemove.includes(user.id) ? <Plus className="h-4 w-4 mr-1" /> : <UserX className="h-4 w-4 mr-1" />}
-                                                {membersToRemove.includes(user.id) ? 'Manter' : 'Remover'}
-                                            </Button>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </CardContent>
-                    <CardFooter className="flex justify-end gap-2">
-                        <Button type="button" style="outline" onClick={onClose}>Cancelar</Button>
-                        <Button type="submit" style="primary">Salvar Alterações</Button>
-                    </CardFooter>
-                </form>
-            </Card>
-        </div>
-    );
-};
 
 
 // --- Seção de Informações do Grupo (Refatorada) ---
@@ -513,11 +344,12 @@ const GroupManagement = () => {
         <>
             {renderContent()}
 
-            <AddGroupModal
-                isOpen={isAddModalOpen}
-                onClose={() => setAddModalOpen(false)}
-                onCreate={handleCreateGroup}
-            />
+            {(isAddModalOpen) && (
+                <AddGroupModal
+                    onClose={() => setAddModalOpen(false)}
+                />
+            )}
+            
             <EditGroupModal
                 isOpen={isEditModalOpen}
                 onClose={() => setEditModalOpen(false)}

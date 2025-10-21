@@ -43,6 +43,11 @@ export interface User {
     groupId?: number;
 
     /**
+     * The group object associated with the user.
+     */
+    group?: Group | null;
+
+    /**
      * The authentication token associated with the user.
      */
     token: string;

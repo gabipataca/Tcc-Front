@@ -79,6 +79,7 @@ body {
   font-display: swap;
   display: flex;
   flex-direction: column;
+  padding: 0 !important;
 }
 
 

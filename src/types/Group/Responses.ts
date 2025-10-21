@@ -15,12 +15,16 @@ export interface CreateGroupResponse {
     id: number;
     /** The name of the group. */
     name: string;
+
+    leaderId: string;
+
+    users: GenericUserInfo[];
 }
 
 export interface GroupResponse {
     id: number;
     name: string;
-    leaderId: number;
+    leaderId: string;
     users: GenericUserInfo[];
 }
 /**

@@ -1,4 +1,4 @@
-import { User } from "../User";
+import { GenericUserInfo, User } from "../User";
 
 /**
  * Represents a group in the system.
@@ -19,7 +19,7 @@ export interface Group {
      */
     leaderId: string;
 
-    users: User[];
+    users: GenericUserInfo[];
 }
 
 export interface GroupInvitation {

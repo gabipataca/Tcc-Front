@@ -10,6 +10,11 @@ export interface CreateGroupRequest {
 export interface CreateGroupRequest {
     /** The name of the group to be created. */
     name: string;
+    
+    /**
+     * The list of user RAs (academic registration numbers) to be included in the group.
+     */
+    userRAs: string[];
 }
 
 
