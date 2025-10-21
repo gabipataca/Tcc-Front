@@ -18,7 +18,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle"
 import BlockIcon from "@mui/icons-material/Block"
 import DeleteIcon from "@mui/icons-material/Delete"
 import useManageTeams from './hooks/useManageTeams';
-import NavRanking from "@/components/_ui/NavbarRankingAdm"
+import Navbar from "@/components/_ui/Navbar"
 
 
 
@@ -35,7 +35,7 @@ const ManageTeamsPage: React.FC = () => {
   } = useManageTeams()
 
   return (
-    <NavRanking>
+    <Navbar>
 
 
         <Typography
@@ -138,7 +138,7 @@ const ManageTeamsPage: React.FC = () => {
           />
         </Paper>
      
-    </NavRanking>
+    </Navbar>
   )
 }
 

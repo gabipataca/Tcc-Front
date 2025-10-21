@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-import NavRanking from "@/components/_ui/NavbarRankingAdm"
 import Paper from "@mui/material/Paper"
 import Table from "@mui/material/Table"
 import TableBody from "@mui/material/TableBody"
@@ -18,8 +17,7 @@ const AdminTeamPage: React.FC = () => {
   const { page, rowsPerPage, handleChangePage, handleChangeRowsPerPage, rows, columns } = useLogs()
 
   return (
-    <NavRanking>
-
+    <>
         <Typography
           variant="h5"
           component="div"
@@ -78,7 +76,7 @@ const AdminTeamPage: React.FC = () => {
           />
         </Paper>
      
-    </NavRanking>
+    </>
   )
 }
 
