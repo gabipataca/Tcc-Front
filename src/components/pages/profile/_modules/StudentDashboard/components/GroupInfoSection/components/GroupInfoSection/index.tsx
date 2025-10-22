@@ -54,7 +54,7 @@ const GroupInfoSection = ({
                         </span>
                     </div>
                     <div className="space-y-2 pl-8">
-                        {group.users.map((member) => (
+                        {group?.users.map((member) => (
                             <div
                                 key={member.id}
                                 className="flex items-center gap-3 text-slate-900"

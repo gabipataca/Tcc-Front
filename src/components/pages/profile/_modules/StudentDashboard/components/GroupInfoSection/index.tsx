@@ -2,14 +2,8 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import {
-    Edit,
     Plus,
-    Trophy,
     Users,
-    X,
-    Check,
-    Clock,
-    UserX,
 } from "lucide-react";
 import AddGroupModal from "./components/AddGroupModal";
 import EditGroupModal from "./components/EditGroupModal";
@@ -20,12 +14,6 @@ import InvitationSection from "./components/InvitationSection";
 import GroupService from "@/services/GroupService";
 import { useSnackbar } from "notistack";
 import { GroupInvitation } from "@/types/Group";
-
-type Invitation = {
-    groupId: string;
-    groupName: string;
-    fromLeader: string;
-};
 
 // --- Componentes de UI Falsos (Mock) ---
 // Para que este código seja executável, criei versões simples dos seus componentes de UI.

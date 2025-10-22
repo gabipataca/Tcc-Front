@@ -2,7 +2,7 @@
 
 import type React from "react";
 import { useState } from "react";
-import Button from "@/components/_ui/Button"; 
+import Button from "@/components/_ui/Button";
 import { useStudentDashboardData } from "./hooks/useStudentDashboardData";
 import StudentInfoSection from "./components/StudentInfoSection";
 import GroupInfoSection from "./components/GroupInfoSection";
@@ -10,8 +10,7 @@ import CompetitionHistorySection from "./components/CompetitionHistorySection";
 import ChampionTeamsSection from "./components/ChampionsTeamsSection";
 import { useUser } from "@/contexts/UserContext";
 import { Trophy, Users } from "lucide-react";
-import Modal from "@/components/_ui/Modal"; 
-
+import Modal from "@/components/_ui/Modal";
 
 interface ModalConfig {
     title: string;
@@ -23,12 +22,13 @@ interface ModalConfig {
 
 const StudentDashboard: React.FC = () => {
     const { user } = useUser();
-    const { groupInfo, competitionHistory, championTeams } = useStudentDashboardData();
+    const { groupInfo, competitionHistory, championTeams } =
+        useStudentDashboardData();
 
     const [isRegistrationOpen] = useState(true);
     const [isUserRegistered] = useState(false);
 
-  //modal
+    //modal
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalConfig, setModalConfig] = useState<ModalConfig>({
         title: "",
@@ -44,11 +44,14 @@ const StudentDashboard: React.FC = () => {
         setIsModalOpen(false);
     };
 
-
     const handleRegistrationClick = () => {
         showModal({
             title: "Redirecionamento",
-            bodyContent: <p className="text-slate-600">Você será redirecionado para a página de inscrição...</p>,
+            bodyContent: (
+                <p className="text-slate-600">
+                    Você será redirecionado para a página de inscrição...
+                </p>
+            ),
             hasConfirmButton: true,
             confirmButtonContent: "OK",
             onConfirm: closeModal,
@@ -59,27 +62,34 @@ const StudentDashboard: React.FC = () => {
         if (isUserRegistered) {
             showModal({
                 title: "Iniciando Maratona",
-                bodyContent: <p className="text-slate-600">Boa sorte! A maratona está começando.</p>,
+                bodyContent: (
+                    <p className="text-slate-600">
+                        Boa sorte! A maratona está começando.
+                    </p>
+                ),
                 hasConfirmButton: true,
                 confirmButtonContent: "Entendido",
                 onConfirm: closeModal,
             });
-           
         } else {
             showModal({
                 title: "Aviso",
-                bodyContent: <p className="text-slate-600">Você precisa se inscrever na maratona antes de iniciá-la.</p>,
+                bodyContent: (
+                    <p className="text-slate-600">
+                        Você precisa se inscrever na maratona antes de
+                        iniciá-la.
+                    </p>
+                ),
                 hasConfirmButton: true,
                 confirmButtonContent: "OK",
                 onConfirm: closeModal,
-                status: "warning" 
+                status: "warning",
             });
         }
     };
 
     return (
         <>
-
             <div className="flex-1 flex flex-col bg-gray-200">
                 {/* Main Content */}
                 <div className="flex-1">
@@ -125,8 +135,8 @@ const StudentDashboard: React.FC = () => {
                     <main className="px-40 py-8">
                         <div className="max-w-full space-y-8">
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                <StudentInfoSection info={user} />
-                                <GroupInfoSection info={groupInfo} />
+                                <StudentInfoSection />
+                                <GroupInfoSection />
                             </div>
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                 <CompetitionHistorySection

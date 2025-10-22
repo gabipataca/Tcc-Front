@@ -13,7 +13,8 @@ import React from "react";
 import { Controller } from "react-hook-form";
 
 const Login: React.FC = () => {
-    const { control, handleSubmit, onSubmit, formError, isLoading } = useLogin();
+    const { control, handleSubmit, onSubmit, formError, isLoading } =
+        useLogin();
 
     return (
         <ScreenContainer>
@@ -30,7 +31,7 @@ const Login: React.FC = () => {
                         </p>
                     )}
 
-                    <div className="w-full max-w-sm">
+                    <div className="w-full max-w-sm flex flex-col gap-2">
                         {/* Campo RA */}
                         <Controller
                             name="ra"
@@ -92,8 +93,8 @@ const Login: React.FC = () => {
                             onClick={handleSubmit(onSubmit)}
                             rounded={true}
                             fullWidth={true}
-							disabled={isLoading}
-							loading={isLoading}
+                            disabled={isLoading}
+                            loading={isLoading}
                         >
                             Entrar
                         </Button>

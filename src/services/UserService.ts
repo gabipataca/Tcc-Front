@@ -65,7 +65,7 @@ class UserService {
     }
 
     static async updateUser(userId: string, request: UserEditRequest) {
-        const response = await apiRequest<GenericUserInfo>(`/api/user/${userId}`, {
+        const response = await apiRequest<ServerSideResponse<GenericUserInfo>>(`/api/user/${userId}`, {
             method: "PUT",
             data: request,
         });

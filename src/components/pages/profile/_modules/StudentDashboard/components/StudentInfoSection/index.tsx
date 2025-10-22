@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Calendar, Edit, Hash, Mail, UserCheck, Users, X } from "lucide-react";
 import { ButtonAdm } from "@/components/_ui/ButtonAdm";
 import { useUser } from "@/contexts/UserContext";
 import { User } from "@/types/User";
+import EditStudentInfoModal from "./components/EditStudentInfoModal";
 
 // --- Componentes de UI Falsos (Mock) ---
 // Para que este código seja executável, adicionei versões simples dos seus componentes de UI.
@@ -121,105 +122,6 @@ const Label = ({
     </label>
 );
 
-// --- Modal para Editar Informações do Aluno ---
-const EditStudentInfoModal = ({
-    isOpen,
-    onClose,
-    onSave,
-    currentUser,
-}: {
-    isOpen: boolean;
-    onClose: () => void;
-    onSave: (data: Partial<User>) => void;
-    currentUser: User | null;
-}) => {
-    const [name, setName] = useState(currentUser?.name || "");
-    const [joinYear, setJoinYear] = useState(currentUser?.joinYear || "");
-
-    useEffect(() => {
-        if (currentUser) {
-            setName(currentUser.name);
-            setJoinYear(currentUser.joinYear);
-        }
-    }, [currentUser, isOpen]);
-
-    if (!isOpen) return null;
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        onSave({ name, joinYear });
-        onClose();
-    };
-
-    return (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <Card className="w-full max-w-md">
-                <form onSubmit={handleSubmit}>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <Edit /> Editar Informações
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="studentName">Nome Completo</Label>
-                            <Input
-                                id="studentName"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                required
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="studentJoinYear">
-                                Data de Nascimento
-                            </Label>
-                            <Input
-                                id="studentJoinYear"
-                                type="text"
-                                placeholder="DD/MM/AAAA"
-                                value={joinYear}
-                                onChange={(e) => setJoinYear(e.target.value)}
-                                required
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label>E-mail Institucional</Label>
-                            <p className="text-sm text-slate-500 bg-slate-100 p-2 rounded-md">
-                                {currentUser?.email} (não editável)
-                            </p>
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Registro Acadêmico (RA)</Label>
-                            <p className="text-sm text-slate-500 bg-slate-100 p-2 rounded-md">
-                                {currentUser?.ra} (não editável)
-                            </p>
-                        </div>
-                    </CardContent>
-                    <CardFooter className="flex justify-end gap-2">
-                        <ButtonAdm
-                            type="button"
-                            variant="outline"
-                            onClick={onClose}
-                            className="bg-[#4F85A6] hover:bg-[#126396] text-white"
-                        >
-                            Cancelar
-                        </ButtonAdm>
-
-                        <ButtonAdm
-                            type="submit"
-                            variant="primary"
-                            className="bg-[#4F85A6] hover:bg-[#126396] text-white"
-                        >
-                            Salvar
-                        </ButtonAdm>
-                    </CardFooter>
-                </form>
-            </Card>
-        </div>
-    );
-};
-
 // --- Componente da Seção de Informações do Aluno (do seu código) ---
 const StudentInfoSection: React.FC<{
     info?: User;
@@ -311,37 +213,21 @@ const StudentInfoSection: React.FC<{
 const StudentProfile = () => {
     const { user } = useUser();
 
-    // Simulação dos dados iniciais do aluno
-    const [studentInfo, setStudentInfo] = useState<User>({
-        id: "student-01",
-        name: "Ana Silva",
-        joinYear: "15/08/2002",
-        email: "ana.silva@institucional.com",
-        ra: "12345678",
-    });
-
     const [isEditModalOpen, setEditModalOpen] = useState(false);
-
-    // Função para salvar os dados do modal
-    const handleSaveInfo = (updatedData: Partial<User>) => {
-        setStudentInfo((prevInfo) => ({ ...prevInfo, ...updatedData }));
-        console.log("Informações salvas:", updatedData);
-        // Aqui você faria a chamada para sua API para salvar os dados
-    };
 
     return (
         <>
             <StudentInfoSection
-                info={user}
+                info={user!}
                 onEditClick={() => setEditModalOpen(true)}
             />
 
-            <EditStudentInfoModal
-                isOpen={isEditModalOpen}
-                onClose={() => setEditModalOpen(false)}
-                onSave={handleSaveInfo}
-                currentUser={user!}
-            />
+            {(isEditModalOpen && user) && (
+                <EditStudentInfoModal
+                    onClose={() => setEditModalOpen(false)}
+                    currentUser={user}
+                />
+            )}
         </>
     );
 };

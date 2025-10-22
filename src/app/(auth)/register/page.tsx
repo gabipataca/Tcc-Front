@@ -205,20 +205,19 @@ const Cadastro: React.FC = () => {
                                 )}
                             />
                         )}
-
-                        <Button
-                            variant="primary"
-                            onClick={handleSubmit(handleFormSubmit, (d) =>
-                                console.log(d)
-                            )}
-                            rounded={true}
-                            fullWidth={true}
-                            disabled={isLoading}
-                            loading={isLoading}
-                        >
-                            Criar
-                        </Button>
                     </form>
+                    <Button
+                        variant="primary"
+                        onClick={handleSubmit(handleFormSubmit, (d) =>
+                            console.log(d)
+                        )}
+                        rounded={true}
+                        fullWidth={true}
+                        disabled={isLoading}
+                        loading={isLoading}
+                    >
+                        Criar
+                    </Button>
                 </div>
             </div>
         </ScreenContainer>

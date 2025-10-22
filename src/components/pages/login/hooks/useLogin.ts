@@ -81,7 +81,7 @@ const useLogin = () => {
                 return;
             }
 
-            const body = res.data;
+            const body = res.data!;
 
             setUser({
                 id: body.user.id,
@@ -93,15 +93,19 @@ const useLogin = () => {
                 groupId: body.user.groupId,
                 token: body.token,
                 department: body.user.department,
-                group: {
-                    ...body.user.group,
+                group: (body.user.group == null) ? null : {
+                    id: body.user.group.id,
+                    name: body.user.group.name,
+                    leaderId: body.user.group.leaderId,
+                    users: body.user.group.users,
                     groupInvitations: body.user.groupInvitations
                 },
+                groupInvitations: body.user.groupInvitations
             });
 
             setTimeout(() => {
                 router.push("/Profile");
-            }, 100);
+            }, 300);
         } catch (err) {
             console.error(err);
 

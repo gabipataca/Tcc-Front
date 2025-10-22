@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { apiRequest } from "@/libs/apiClient";
 import { UserEditRequest } from "@/types/User/Requests";
 import { User } from "@/types/User";
+import { ServerSideResponse } from "@/types/Global";
 
 export async function PUT(req: NextRequest, context: { params: Promise<{ userId: string }> }) {
     const { userId } = await context.params;
@@ -19,7 +20,10 @@ export async function PUT(req: NextRequest, context: { params: Promise<{ userId:
             { status: 500 }
         );
     }
-    return NextResponse.json(res.data, { status: res.status });
+    return NextResponse.json({
+        data: res.data,
+        status: res.status,
+    } satisfies ServerSideResponse<User>, { status: res.status });
 }
 
 export async function DELETE(req: NextRequest, context: { params: Promise<{ userId: string }> }) {
