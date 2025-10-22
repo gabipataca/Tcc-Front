@@ -1,4 +1,5 @@
 import { GenericUserInfo, User } from "../User";
+import { GroupResponse } from "./Responses";
 
 /**
  * Represents a group in the system.
@@ -20,13 +21,20 @@ export interface Group {
     leaderId: string;
 
     users: GenericUserInfo[];
+
+    groupInvitations?: GroupInvitation[];
 }
 
 export interface GroupInvitation {
     id: number;
-    groupId: number;
     userId: string;
-    group: Group;
+    /**
+     * The group associated with the invitation.
+     * Can be null in certain contexts.
+     */
+    group: GroupResponse | null;
+    user: GenericUserInfo;
+    accepted: boolean;
 }
 
 /**

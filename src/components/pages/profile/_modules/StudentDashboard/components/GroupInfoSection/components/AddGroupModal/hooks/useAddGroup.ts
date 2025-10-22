@@ -8,19 +8,17 @@ import z from "zod";
 
 interface AddGroupFormValues {
     name: string;
-    member2Ra: string;
-    member3Ra: string;
+    member2Ra?: string;
+    member3Ra?: string;
 }
 
 const schema = z.object({
     name: z.string().min(3, "O nome do grupo deve ter pelo menos 3 caracteres"),
     member2Ra: z
         .string()
-        .min(6, { message: "RA do membro 2 deve ter pelo menos 6 caracteres" })
         .optional(),
     member3Ra: z
         .string()
-        .min(6, { message: "RA do membro 3 deve ter pelo menos 6 caracteres" })
         .optional(),
 });
 
@@ -31,7 +29,7 @@ export const useAddGroup = (onClose: () => void) => {
         useState<AbortController | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
-    const { control, handleSubmit, setError, resetField, watch } = useForm({
+    const { control, handleSubmit, setError, watch } = useForm({
         defaultValues: {
             name: "",
             member2Ra: "",
@@ -51,9 +49,8 @@ export const useAddGroup = (onClose: () => void) => {
 
             try {
                 setIsLoading(true);
-                const RAsArray = [data.member2Ra, data.member3Ra].filter(
-                    (ra) => ra && ra.trim() !== ""
-                );
+                const RAsArray = [data.member2Ra, data.member3Ra]
+                    .filter((ra): ra is string => typeof ra === "string" && ra.trim() !== "");
 
                 const response = await GroupService.CreateGroup(
                     formValues.name,
@@ -62,14 +59,12 @@ export const useAddGroup = (onClose: () => void) => {
                 );
 
                 if (response.status === 201) {
-                    setUser((prev) => {
-                        return {
+                    setUser((prev) => ({
                             ...prev!,
                             group: response.data,
-                        };
-                    });
+                        }
+                    ));
 
-                    setIsLoading(false);
                     enqueueSnackbar("Grupo criado com sucesso!", {
                         variant: "success",
                         autoHideDuration: 3000,
@@ -78,6 +73,9 @@ export const useAddGroup = (onClose: () => void) => {
                             horizontal: "right",
                         },
                     });
+
+                    onClose();
+
                     return;
                 }
             } catch (error) {
@@ -123,7 +121,6 @@ export const useAddGroup = (onClose: () => void) => {
         handleSubmit,
         isLoading,
         control,
-        formValues,
     };
 };
 

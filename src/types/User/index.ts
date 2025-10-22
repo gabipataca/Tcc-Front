@@ -1,4 +1,4 @@
-import { Group } from "../Group";
+import { Group, GroupInvitation } from "../Group";
 
 export type UserRole = "Admin" | "Teacher" | "Student";
 
@@ -56,6 +56,11 @@ export interface User {
      * The role assigned to the user (Admin, Teacher, or Student).
      */
     role: UserRole;
+
+    /**
+     * List of group invitations sent by the user.
+     */
+    groupInvitations: GroupInvitation[];
 }
 
 

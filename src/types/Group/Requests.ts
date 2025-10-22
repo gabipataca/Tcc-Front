@@ -32,16 +32,12 @@ export interface UpdateGroupRequest {
     userIds: string[];
 }
 
-export interface InviteUserToGroupRequest {
-    userId: string;
-    groupId: number;
-}
 /**
  * Represents the request to invite a user to a group.
  */
 export interface InviteUserToGroupRequest {
-    /** The ID of the user to invite. */
-    userId: string;
+    /** The RA of the user to invite. */
+    ra: string;
     /** The ID of the group to which the user is invited. */
     groupId: number;
 }

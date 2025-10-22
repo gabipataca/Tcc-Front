@@ -51,6 +51,7 @@ export async function POST(req: NextRequest) {
             }
         );
     } catch (exc) {
+        console.error(exc);
         return NextResponse.json(
             { message: "Erro ao criar grupo.", status: 500 },
             { status: 500 }

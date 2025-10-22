@@ -93,6 +93,10 @@ const useLogin = () => {
                 groupId: body.user.groupId,
                 token: body.token,
                 department: body.user.department,
+                group: {
+                    ...body.user.group,
+                    groupInvitations: body.user.groupInvitations
+                },
             });
 
             setTimeout(() => {

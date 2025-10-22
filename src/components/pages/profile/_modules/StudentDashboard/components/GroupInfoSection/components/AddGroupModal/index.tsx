@@ -19,17 +19,22 @@ interface AddGroupModalProps {
 const AddGroupModal = ({ onClose }: AddGroupModalProps) => {
     const {
         control,
-        formValues,
         handleSubmit,
         isLoading,
         handleSubmitError,
         handleSubmitForm,
     } = useAddGroup(onClose);
 
+    // Wrapper to prevent native form submit reload and delegate to react-hook-form
+    const onFormSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        handleSubmit(handleSubmitForm, handleSubmitError)();
+    };
+
     return (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
             <Card className="w-full max-w-md">
-                <form>
+                <form onSubmit={onFormSubmit}>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <Plus /> Criar Novo Grupo
@@ -41,7 +46,7 @@ const AddGroupModal = ({ onClose }: AddGroupModalProps) => {
                             <Controller
                                 control={control}
                                 name="name"
-                                render={({ field, fieldState: { error } }) => (
+                                render={({ field }) => (
                                     <Input
                                         type="text"
                                         placeholder="Ex: Os Campeões da Maratona"
@@ -60,7 +65,7 @@ const AddGroupModal = ({ onClose }: AddGroupModalProps) => {
                             <Controller
                                 control={control}
                                 name="member2Ra"
-                                render={({ field, fieldState: { error } }) => (
+                                render={({ field }) => (
                                     <Input
                                         id="member2"
                                         type="text"
@@ -75,7 +80,7 @@ const AddGroupModal = ({ onClose }: AddGroupModalProps) => {
                             <Controller
                                 control={control}
                                 name="member3Ra"
-                                render={({ field, fieldState: { error } }) => (
+                                render={({ field }) => (
                                     <Input
                                         id="member3"
                                         type="text"
@@ -101,12 +106,7 @@ const AddGroupModal = ({ onClose }: AddGroupModalProps) => {
                             variant="success"
                             rounded
                             disabled={isLoading}
-                            onClick={() =>
-                                handleSubmit(
-                                    handleSubmitForm,
-                                    handleSubmitError
-                                )
-                            }
+                            onClick={() => handleSubmit(handleSubmitForm, handleSubmitError)()}
                             loading={isLoading}
                         >
                             Criar Grupo
