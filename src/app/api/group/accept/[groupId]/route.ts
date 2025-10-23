@@ -11,7 +11,7 @@ export async function PUT(
     let res;
     try {
         res = await apiRequest<
-            ServerSideResponse<AcceptGroupInvitationResponse>
+            AcceptGroupInvitationResponse
         >(`/Group/Accept/${groupId}`, {
             method: "PUT",
             cookies: req.cookies.toString(),
@@ -22,5 +22,8 @@ export async function PUT(
             { status: 500 }
         );
     }
-    return NextResponse.json(res.data, { status: res.status });
+    return NextResponse.json({
+        data: res.data,
+        status: res.status,
+    } satisfies ServerSideResponse<AcceptGroupInvitationResponse>, { status: res.status });
 }

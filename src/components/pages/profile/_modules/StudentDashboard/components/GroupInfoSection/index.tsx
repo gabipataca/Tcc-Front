@@ -169,28 +169,28 @@ const GroupManagement = () => {
         setIsLoadingInvitations(false);
     }, [enqueueSnackbar]);
 
-    const handleAcceptInvitation = useCallback(async (groupId: number) => {
-        await GroupService.AcceptGroupInvitation(groupId);
-    }, []);
-
     const handleLeaveGroup = (groupId: number) => {
         console.log("Saindo do grupo!");
         // Lógica de API para remover o usuário do grupo aqui...
         setUserState("no-group"); // Volta para o estado sem grupo
     };
 
+    const onAcceptInvitation = () => {
+        setInvitations([]);
+    }
+
     const renderContent = useMemo(() => {
         if (invitations.length > 0 && user?.group == null) {
             return (
-                <>
+                <div className="flex flex-col gap-2 w-full h-full p-6">
                     {invitations.map((invitation) => (
                         <InvitationSection
+                            onAccept={onAcceptInvitation}
                             invitation={invitation}
-                            onAccept={handleAcceptInvitation}
                             key={`${invitation.id}-${invitation.userId}`}
                         />
                     ))}
-                </>
+                </div>
             );
         }
         if (user?.group) {
@@ -204,19 +204,19 @@ const GroupManagement = () => {
             );
         }
         return <NoGroupSection onCreateClick={() => setIsAddModalOpen(true)} />;
-    }, [handleAcceptInvitation, invitations, user?.group]);
+    }, [invitations, user?.group]);
 
-    console.log(user?.group)
+
+    const hasMember1 = (user?.group?.users.length || 0) > 1;
+    const hasMember2 = (user?.group?.users.length || 0) > 2;
 
     useEffect(() => {
-        if(isLoadingInvitations || !user?.group) return;
-
         loadInvitations();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loadInvitations]);
 
     return (
-        <>
+        <div className="h-full bg-gradient-to-br from-white to-slate-50">
             {renderContent}
 
             {isAddModalOpen && !user?.group && (
@@ -230,10 +230,12 @@ const GroupManagement = () => {
             {isAddMemberModalOpen && user?.group && (
                 <AddMemberModal
                     onClose={() => setIsAddMemberModalOpen(false)}
+                    hasMember1={hasMember1}
+                    hasMember2={hasMember2}
                     groupInvitations={invitations}
                 />
             )}
-        </>
+        </div>
     );
 };
 

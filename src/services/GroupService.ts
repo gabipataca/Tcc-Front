@@ -102,7 +102,7 @@ class GroupService {
         const response = await apiRequest<
             ServerSideResponse<AcceptGroupInvitationResponse>
         >(`/api/group/accept/${groupId}`, {
-            method: "POST",
+            method: "PUT",
         });
 
         return response.data;

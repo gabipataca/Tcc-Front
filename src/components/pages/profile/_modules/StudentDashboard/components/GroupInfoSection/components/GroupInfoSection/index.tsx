@@ -62,7 +62,7 @@ const GroupInfoSection = ({
                                 <span className="text-lg font-medium">
                                     {member.name}
                                 </span>
-                                {group.leaderId == user?.id && (
+                                {group.leaderId == member.id && (
                                     <Badge variant="outline">Líder</Badge>
                                 )}
                             </div>

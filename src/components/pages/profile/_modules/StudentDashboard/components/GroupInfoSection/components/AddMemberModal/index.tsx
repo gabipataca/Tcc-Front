@@ -21,31 +21,20 @@ import { useState } from "react";
 const AddMemberModal = ({
     groupInvitations,
     onClose,
+    hasMember1,
+    hasMember2,
 }: {
     groupInvitations: GroupInvitation[];
     onClose: () => void;
+    hasMember1: boolean;
+    hasMember2: boolean;
 }) => {
     const { user, setUser } = useUser();
 
     const [isLoading, setIsLoading] = useState(false);
-    const [memberRA1, setMemberRA1] = useState(
-        user?.group?.users.length || 0 < 1
-            ? user?.group?.groupInvitations?.length || 0 >= 1
-                ? user!.group!.groupInvitations![1].user.ra
-                : ""
-            : user?.group!.users?.length || 0 >= 1
-            ? user!.group!.users[1].ra
-            : ""
-    );
-    const [memberRA2, setMemberRA2] = useState(
-        user?.group?.users.length || 0 <= 2
-            ? user?.group?.groupInvitations?.length || 0 > 1
-                ? user!.group!.groupInvitations![1].user.ra
-                : ""
-            : user?.group?.users.length == 2
-            ? user.group.users[1].ra
-            : ""
-    );
+
+    const [memberRA1, setMemberRA1] = useState("");
+    const [memberRA2, setMemberRA2] = useState("");
     const slotsAvailable =
         3 - (user!.group!.users.length + groupInvitations.length);
 
@@ -63,6 +52,10 @@ const AddMemberModal = ({
                     [];
 
                 for (const ra of membersToAdd) {
+                    if(user?.group?.groupInvitations?.some(x => x.user.ra == ra)) {
+                        continue;
+                    }
+
                     try {
                         const response =
                             await GroupService.SendGroupInvitationToUser({
@@ -108,6 +101,8 @@ const AddMemberModal = ({
                             };
                         }
                     );
+                    
+                    console.log(newInvitations);
 
                     setUser((prev) => ({
                         ...prev!,
