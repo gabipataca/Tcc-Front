@@ -19,29 +19,8 @@ const Button = ({
     disabled,
     loading,
 }: ButtonProps) => {
-    if (type == "button") {
-        return (
-            <button
-                className={`${styles.button}
-                    ${styles[variant] ?? styles.primary}
-                    ${rounded ? styles.rounded : ""}
-                    ${fullWidth ? styles.fullWidth : ""}
-                    ${styles[size]}
-                    ${className ?? ""}
-                `}
-                onClick={onClick}
-                role={role}
-                disabled={disabled}
-            >
-                {children}
-                {loading && (
-                    <div className="relative w-4 h-auto flex justify-center items-center">
-                        <Loading colorClass="fill-slate-100" variant="spinner" size="md" />
-                    </div>
-                )}
-            </button>
-        );
-    } else {
+
+    if (linkHref) {
         return (
             <Link
                 className={`${styles.button}
@@ -51,12 +30,35 @@ const Button = ({
                     ${className}
                 `}
                 role={"link"}
-                href={linkHref!}
+                href={linkHref}
             >
                 {children}
             </Link>
         );
     }
+
+    return (
+        <button
+            className={`${styles.button}
+                ${styles[variant] ?? styles.primary}
+                ${rounded ? styles.rounded : ""}
+                ${fullWidth ? styles.fullWidth : ""}
+                ${styles[size]}
+                ${className ?? ""}
+            `}
+            onClick={onClick}
+            role={role}
+            type={type} 
+            disabled={disabled || loading} 
+        >
+            {children}
+            {loading && (
+                <div className="relative w-4 h-auto flex justify-center items-center">
+                    <Loading colorClass="fill-slate-100" variant="spinner" size="md" />
+                </div>
+            )}
+        </button>
+    );
 };
 
 export default Button;
