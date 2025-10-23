@@ -107,6 +107,17 @@ class GroupService {
 
         return response.data;
     }
+
+    static async getGroupById(id: number) {
+        const response = await apiRequest<ServerSideResponse<GroupResponse>>(
+            `/api/group/${id}`,
+            {
+                method: "GET",
+            }
+        )
+
+        return response.data;
+    }
 }
 
 export default GroupService;

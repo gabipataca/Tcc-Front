@@ -66,6 +66,7 @@ const useEditStudentInfoModal = (currentUser: User, onClose: () => void) => {
                             vertical: "bottom",
                             horizontal: "right",
                         },
+                        disableWindowBlurListener: true
                     });
                     setIsLoading(false);
                     onClose();
