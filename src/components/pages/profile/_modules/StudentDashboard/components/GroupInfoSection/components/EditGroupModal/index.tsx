@@ -39,10 +39,9 @@ const EditGroupModal = ({
         setIsLoading(true);
 
         try {
-            await GroupService.UpdateGroup({
-                groupId: user!.group!.id,
+            await GroupService.UpdateGroup(user!.group!.id, {
                 name: groupName,
-                usersToRemove: membersToRemove,
+                userIds: membersToRemove,
             });
 
             setUser((prev) => ({

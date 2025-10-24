@@ -40,8 +40,7 @@ const AddMemberModal = ({
 
     const { enqueueSnackbar } = useSnackbar();
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSubmit = async () => {
         try {
             setIsLoading(true);
             const membersToAdd = [memberRA1, memberRA2].filter(
@@ -130,7 +129,7 @@ const AddMemberModal = ({
     return (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
             <Card className="w-full max-w-md">
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={(e) => { e.preventDefault(); }}>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <Plus /> Adicionar Integrantes
@@ -189,6 +188,7 @@ const AddMemberModal = ({
                             type="button"
                             rounded
                             variant="primary"
+                            onClick={handleSubmit}
                             disabled={isLoading}
                             loading={isLoading}
                         >

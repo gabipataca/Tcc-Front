@@ -53,74 +53,6 @@ const CardContent = ({
     children: React.ReactNode;
     className?: string;
 }) => <div className={`p-6 pt-0 ${className}`}>{children}</div>;
-const CardFooter = ({
-    children,
-    className = "",
-}: {
-    children: React.ReactNode;
-    className?: string;
-}) => (
-    <div className={`flex items-center p-6 pt-0 ${className}`}>{children}</div>
-);
-
-const Button = ({
-    children,
-    className = "",
-    style = "primary",
-    size = "md",
-    ...props
-}: {
-    children: React.ReactNode;
-    className?: string;
-    style?: string;
-    size?: string;
-    [key: string]: any;
-}) => {
-    const baseStyle =
-        "inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50";
-    const styles: { [key: string]: string } = {
-        primary: "bg-[#4F85A6] text-white hover:bg-[#3C6B88]",
-        outline:
-            "border border-slate-200 bg-white hover:bg-slate-100 hover:text-slate-900",
-    };
-    const sizes: { [key: string]: string } = {
-        sm: "h-9 rounded-md px-3",
-        md: "h-10 px-4 py-2",
-    };
-    return (
-        <button
-            className={`${baseStyle} ${styles[style]} ${sizes[size]} ${className}`}
-            {...props}
-        >
-            {children}
-        </button>
-    );
-};
-const Input = ({
-    className = "",
-    ...props
-}: React.InputHTMLAttributes<HTMLInputElement>) => (
-    <input
-        className={`flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
-        {...props}
-    />
-);
-const Label = ({
-    children,
-    className = "",
-    ...props
-}: {
-    children: React.ReactNode;
-    className?: string;
-    [key: string]: any;
-}) => (
-    <label
-        className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${className}`}
-        {...props}
-    >
-        {children}
-    </label>
-);
 
 // --- Componente da Seção de Informações do Aluno (do seu código) ---
 const StudentInfoSection: React.FC<{
@@ -158,7 +90,7 @@ const StudentInfoSection: React.FC<{
                     </div>
                     <div>
                         <span className="font-medium text-slate-600 text-xl">
-                            Data de Nascimento
+                            Data de Ingresso
                         </span>
                         <p className="text-slate-900 font-semibold text-lg">
                             {info?.joinYear}
@@ -222,7 +154,7 @@ const StudentProfile = () => {
                 onEditClick={() => setEditModalOpen(true)}
             />
 
-            {(isEditModalOpen && user) && (
+            {isEditModalOpen && user && (
                 <EditStudentInfoModal
                     onClose={() => setEditModalOpen(false)}
                     currentUser={user}

@@ -118,6 +118,18 @@ class GroupService {
 
         return response.data;
     }
+
+
+    static async removeUserFromGroup(groupId: number, userId: string) {
+        const response = await apiRequest<ServerSideResponse<unknown>>(
+            `/api/group/${groupId}/exit/${userId}`,
+            {
+                method: "DELETE",
+            }
+        )
+
+        return response.data;
+    }
 }
 
 export default GroupService;
