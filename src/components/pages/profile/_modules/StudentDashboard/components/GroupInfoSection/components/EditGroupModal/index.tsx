@@ -39,28 +39,41 @@ const EditGroupModal = ({
         setIsLoading(true);
 
         try {
-            await GroupService.UpdateGroup({
+            await GroupService.UpdateGroup(user!.group!.id, {
                 groupId: user!.group!.id,
                 name: groupName,
                 usersToRemove: membersToRemove,
             });
+            
+            if (membersToRemove.includes(user!.id)) {
+                // Se SIM (líder ou membro saindo):
+                // Define o grupo como nulo no contexto, fazendo a tela sumir.
+                setUser((prev) => ({ ...prev!, group: null }));
+                enqueueSnackbar("Você saiu do grupo.", {
+                    variant: "info",
+                    autoHideDuration: 3000,
+                    anchorOrigin: { vertical: "bottom", horizontal: "right" },
+                });
+            } else {
+                // Se NÃO (líder está apenas removendo outros):
+                // Apenas atualiza a lista de membros do grupo.
+                setUser((prev) => ({
+                    ...prev!,
+                    group: {
+                        ...prev!.group!,
+                        name: groupName,
+                        users: prev!.group!.users.filter(
+                            (u) => !membersToRemove.includes(u.id)
+                        ),
+                    },
+                }));
+                enqueueSnackbar("Grupo atualizado com sucesso!", {
+                    variant: "success",
+                    autoHideDuration: 3000,
+                    anchorOrigin: { vertical: "bottom", horizontal: "right" },
+                });
+            }
 
-            setUser((prev) => ({
-                ...prev!,
-                group: {
-                    ...prev!.group!,
-                    name: groupName,
-                    users: prev!.group!.users.filter(
-                        (u) => !membersToRemove.includes(u.id)
-                    ),
-                },
-            }));
-
-            enqueueSnackbar("Grupo atualizado com sucesso!", {
-                variant: "success",
-                autoHideDuration: 3000,
-                anchorOrigin: { vertical: "bottom", horizontal: "right" },
-            });
             onClose();
 
         } catch (error: any) {
@@ -101,11 +114,11 @@ const EditGroupModal = ({
                         <div className="space-y-2">
                             <Label>Integrantes</Label>
                             <div className="space-y-2 rounded-md border p-2">
-                                {user!.group!.users.map((user) => (
+                                {user!.group!.users.map((member) => (
                                     <div
-                                        key={user.id}
+                                        key={member.id}
                                         className={`flex items-center justify-between p-2 rounded ${
-                                            membersToRemove.includes(user.id)
+                                            membersToRemove.includes(member.id)
                                                 ? "bg-red-100"
                                                 : ""
                                         }`}
@@ -113,47 +126,49 @@ const EditGroupModal = ({
                                         <span
                                             className={`${
                                                 membersToRemove.includes(
-                                                    user.id
+                                                    member.id
                                                 )
                                                     ? "line-through text-slate-500"
                                                     : ""
                                             }`}
                                         >
-                                            {user.name}{" "}
-                                            {user.id === "user-1"
-                                                ? "(Líder)"
+                                            {member.name}{" "}
+                                            {member.id === user!.id
+                                                ? "(Você)"
                                                 : ""}
+                                            {/* Assumindo que a API informa quem é o líder */
+                                            /* {member.isLeader ? " (Líder)" : ""} */
+                                            }
                                         </span>
-                                        {user.id !== "user-1" && (
-                                            <Button
-                                                type="button"
-                                                size="sm"
-                                                variant={
-                                                    membersToRemove.includes(
-                                                        user.id
-                                                    )
-                                                        ? "light-success"
-                                                        : "outline"
-                                                }
-                                                onClick={() =>
-                                                    handleToggleRemove(user.id)
-                                                }
-                                                disabled={isLoading}
-                                            >
-                                                {membersToRemove.includes(
-                                                    user.id
-                                                ) ? (
-                                                    <Plus className="h-4 w-4 mr-1" />
-                                                ) : (
-                                                    <UserX className="h-4 w-4 mr-1" />
-                                                )}
-                                                {membersToRemove.includes(
-                                                    user.id
+                                        {/* O botão aparece para todos, permitindo que você se remova */}
+                                        <Button
+                                            type="button"
+                                            size="sm"
+                                            variant={
+                                                membersToRemove.includes(
+                                                    member.id
                                                 )
-                                                    ? "Manter"
-                                                    : "Remover"}
-                                            </Button>
-                                        )}
+                                                    ? "light-success"
+                                                    : "outline"
+                                            }
+                                            onClick={() =>
+                                                handleToggleRemove(member.id)
+                                            }
+                                            disabled={isLoading}
+                                        >
+                                            {membersToRemove.includes(
+                                                member.id
+                                            ) ? (
+                                                <Plus className="h-4 w-4 mr-1" />
+                                            ) : (
+                                                <UserX className="h-4 w-4 mr-1" />
+                                            )}
+                                            {membersToRemove.includes(
+                                                member.id
+                                            )
+                                                ? "Manter"
+                                                : "Remover"}
+                                        </Button>
                                     </div>
                                 ))}
                             </div>
