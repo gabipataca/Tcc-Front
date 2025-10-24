@@ -40,14 +40,11 @@ const EditGroupModal = ({
 
         try {
             await GroupService.UpdateGroup(user!.group!.id, {
-<<<<<<< HEAD
                 groupId: user!.group!.id,
-=======
->>>>>>> f32adf37c12b21cac4c86530ad7997fe74d23d48
                 name: groupName,
                 userIds: membersToRemove,
             });
-            
+
             if (membersToRemove.includes(user!.id)) {
                 // Se SIM (líder ou membro saindo):
                 // Define o grupo como nulo no contexto, fazendo a tela sumir.
