@@ -10,9 +10,7 @@ import { NextRequest, NextResponse } from "next/server";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function GET(req: NextRequest) {
     const cookie = await cookies();
-    const token = cookie.get("CompetitionAuthToken")?.value || null;
-
-    cookie.delete("CompetitionAuthToken");
+    const token = cookie.get("CompetitionAuthToken")?.value;
 
     if(token == null) {
         return NextResponse.json(
@@ -34,9 +32,7 @@ export async function GET(req: NextRequest) {
     try {
         res = await apiRequest<LogoutUserResponse>("/Auth/logout", {
             method: "GET",
-            cookies: {
-                CompetitionAuthToken: token,
-            },
+            cookies: req.cookies.toString()
         });
     }
     catch(exc) {
@@ -59,7 +55,13 @@ export async function GET(req: NextRequest) {
         );
     }
 
-    cookie.delete("CompetitionAuthToken");
+    cookie.delete({
+        name: "CompetitionAuthToken",
+        path: "/",
+        httpOnly: true,
+        secure: true,
+        sameSite: "lax",
+    });
 
     return NextResponse.json(
         {

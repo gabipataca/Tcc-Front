@@ -15,11 +15,13 @@ const GroupInfoSection = ({
     onEditClick,
     onAddMemberClick,
     onLeaveClick,
+    isLeavingGroup,
 }: {
     group: Group;
     onEditClick: () => void;
     onAddMemberClick: () => void;
-    onLeaveClick: () => void;
+    onLeaveClick: (groupId: number) => Promise<void>;
+    isLeavingGroup: boolean;
 }) => {
     const { user } = useUser();
 
@@ -98,7 +100,9 @@ const GroupInfoSection = ({
                             variant="destructive"
                             size="sm"
                             className="text-md"
-                            onClick={onLeaveClick}
+                            loading={isLeavingGroup}
+                            disabled={isLeavingGroup}
+                            onClick={() => onLeaveClick(group.id)}
                         >
                             <UserX className="h-4 w-4 mr-2" />
                             Sair do Grupo

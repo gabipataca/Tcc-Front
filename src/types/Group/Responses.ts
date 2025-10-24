@@ -82,6 +82,8 @@ export interface InviteUserToGroupResponse {
     userId: string;
     /** The group information. */
     group: GroupResponse;
+
+    user: GenericUserInfo;
 }
 
 export interface AcceptGroupInvitationResponse {

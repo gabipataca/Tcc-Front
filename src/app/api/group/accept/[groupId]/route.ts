@@ -12,7 +12,7 @@ export async function PUT(
     try {
         res = await apiRequest<
             AcceptGroupInvitationResponse
-        >(`/Group/Accept/${groupId}`, {
+        >(`/Group/accept/${groupId}`, {
             method: "PUT",
             cookies: req.cookies.toString(),
         });
@@ -22,6 +22,7 @@ export async function PUT(
             { status: 500 }
         );
     }
+
     return NextResponse.json({
         data: res.data,
         status: res.status,
