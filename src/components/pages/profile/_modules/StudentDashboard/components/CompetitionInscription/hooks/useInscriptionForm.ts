@@ -30,13 +30,13 @@ export const useInscriptionForm = () => {
 
     const [competitionName, setCompetitionName] = useState("");
     const [quantityStudents, setQuantityStudents] = useState(1);
-    const [members, setMembers] = useState<string[]>(
-        user!.group!.users.map((u) => u.name)
+    const [members, setMembers] = useState<string[] | null>(
+        user?.group?.users.map((u) => u.name) || null
     );
     const [initialRegistration, setInitialRegistration] = useState("");
     const [registrationEnd, setRegistrationEnd] = useState("");
     const [maxMembers, setMaxMembers] = useState(3);
-    const [groupName, setGroupName] = useState(user!.group!.name);
+    const [groupName, setGroupName] = useState(user?.group?.name || null);
 
     const handleQuantidadeChange = useCallback((value: string) => {
         const quantity = Number.parseInt(value, 10);
@@ -69,6 +69,8 @@ export const useInscriptionForm = () => {
     );
 
     const isFormValid = useMemo(() => {
+        if (!members || !groupName) return false;
+
         const allMembersFilled = members.every(
             (member) => member.trim() !== ""
         );

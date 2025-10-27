@@ -11,6 +11,7 @@ import ChampionTeamsSection from "./components/ChampionsTeamsSection";
 import { useUser } from "@/contexts/UserContext";
 import { Trophy, Users } from "lucide-react";
 import Modal from "@/components/_ui/Modal";
+import CompetitionInscription from "./components/CompetitionInscription";
 
 interface ModalConfig {
     title: string;
@@ -22,8 +23,13 @@ interface ModalConfig {
 
 const StudentDashboard: React.FC = () => {
     const { user } = useUser();
-    const { groupInfo, competitionHistory, championTeams } =
-        useStudentDashboardData();
+    const {
+        activeMenu,
+        toggleMenu,
+        groupInfo,
+        competitionHistory,
+        championTeams,
+    } = useStudentDashboardData();
 
     const [isRegistrationOpen] = useState(true);
     const [isUserRegistered] = useState(false);
@@ -111,7 +117,7 @@ const StudentDashboard: React.FC = () => {
                                     variant="primary"
                                     rounded
                                     className="text-xl"
-                                    onClick={handleRegistrationClick}
+                                    onClick={() => toggleMenu("inscription")}
                                     disabled={!isRegistrationOpen}
                                 >
                                     <Users className="h-4 w-4 mr-2" />
@@ -133,32 +139,44 @@ const StudentDashboard: React.FC = () => {
 
                     <main className="px-40 py-8">
                         <div className="max-w-full space-y-8">
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                <StudentInfoSection />
-                                <GroupInfoSection />
-                            </div>
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                <CompetitionHistorySection
-                                    history={competitionHistory}
-                                />
-                                <ChampionTeamsSection teams={championTeams} />
-                            </div>
+                            {activeMenu == "dashboard" && (
+                                <>
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                        <StudentInfoSection />
+                                        <GroupInfoSection />
+                                    </div>
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                        <CompetitionHistorySection
+                                            history={competitionHistory}
+                                        />
+                                        <ChampionTeamsSection
+                                            teams={championTeams}
+                                        />
+                                    </div>
+                                </>
+                            )}
+
+                            {(activeMenu == "inscription") && (
+                                <CompetitionInscription />
+                            )}
                         </div>
                     </main>
                 </div>
             </div>
 
-            <Modal
-                open={isModalOpen}
-                onClose={closeModal}
-                title={modalConfig.title}
-                bodyContent={modalConfig.bodyContent}
-                hasConfirmButton={modalConfig.hasConfirmButton}
-                confirmButtonContent={modalConfig.confirmButtonContent}
-                onConfirm={modalConfig.onConfirm}
-                hasCancelButton={false}
-                size="sm"
-            />
+            {isModalOpen && (
+                <Modal
+                    open={isModalOpen}
+                    onClose={closeModal}
+                    title={modalConfig.title}
+                    bodyContent={modalConfig.bodyContent}
+                    hasConfirmButton={modalConfig.hasConfirmButton}
+                    confirmButtonContent={modalConfig.confirmButtonContent}
+                    onConfirm={modalConfig.onConfirm}
+                    hasCancelButton={false}
+                    size="sm"
+                />
+            )}
         </>
     );
 };

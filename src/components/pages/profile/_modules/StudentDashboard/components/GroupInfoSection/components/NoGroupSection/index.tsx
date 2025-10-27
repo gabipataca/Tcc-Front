@@ -17,7 +17,7 @@ const NoGroupSection = ({ onCreateClick }: { onCreateClick: () => void }) => (
                 Informações do Grupo
             </CardTitle>
         </CardHeader>
-        <CardContent className="text-center p-10">
+        <CardContent className="flex flex-col text-center justify-center items-center p-10">
             <p className="text-slate-600 mb-4">
                 Você ainda não faz parte de um grupo.
             </p>

@@ -23,7 +23,7 @@ import {
 import { Badge } from "@/components/_ui/Badge";
 import { useInscriptionForm } from "./hooks/useInscriptionForm";
 
-const Inscricao: React.FC = () => {
+const CompetitionInscription: React.FC = () => {
     const {
         competitionName,
         quantityStudents,
@@ -167,7 +167,7 @@ const Inscricao: React.FC = () => {
                                         <Input
                                             id="group-name"
                                             type="text"
-                                            value={groupName}
+                                            value={groupName || ""}
                                             onChange={(e) =>
                                                 setGroupName(e.target.value)
                                             }
@@ -219,7 +219,7 @@ const Inscricao: React.FC = () => {
                                         </div>
 
                                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                            {members.map((member, index) => (
+                                            {members?.map((member, index) => (
                                                 <div
                                                     key={index}
                                                     className="space-y-2"
@@ -305,4 +305,4 @@ const Inscricao: React.FC = () => {
     );
 };
 
-export default Inscricao;
+export default CompetitionInscription;
