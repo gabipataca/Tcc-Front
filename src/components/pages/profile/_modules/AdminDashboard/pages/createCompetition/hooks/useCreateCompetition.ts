@@ -105,17 +105,17 @@ const useCreateCompetition = () => {
 
     const {
         addCompetitionModel,
-        updateCompetition,
+        updateTemplateCompetition,
         competitionModels,
-        loadCompetitions,
-        isLoading: isLoadingCompetitions,
+        loadTemplateCompetitions,
+        isTemplateLoading,
     } = useCompetition();
 
     const { enqueueSnackbar } = useSnackbar();
     const { toggleMenu } = useProfileMenu();
 
     useEffect(() => {
-        loadCompetitions();
+        loadTemplateCompetitions();
     }, []);
 
     const {
@@ -289,7 +289,7 @@ const useCreateCompetition = () => {
                         activeCompetition.endInscriptions!.toISOString(),
                 };
 
-                //await updateCompetition(payload);
+                await updateTemplateCompetition(payload);
 
                 enqueueSnackbar({
                     message: "Competição criada com sucesso!",
@@ -311,7 +311,13 @@ const useCreateCompetition = () => {
                 }
             }
         },
-        [activeCompetition, enqueueSnackbar, selectedExercises, toggleMenu, updateCompetition]
+        [
+            activeCompetition,
+            enqueueSnackbar,
+            selectedExercises,
+            toggleMenu,
+            updateTemplateCompetition,
+        ]
     );
 
     useEffect(() => {
@@ -355,7 +361,7 @@ const useCreateCompetition = () => {
         trigger,
         currentPage,
         isLoadingExercises: loadingExercises,
-        isLoadingCompetitions,
+        isTemplateLoading,
         maxPages,
         nextPage,
         prevPage,

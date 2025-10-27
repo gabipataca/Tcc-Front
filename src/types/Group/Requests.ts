@@ -18,18 +18,17 @@ export interface CreateGroupRequest {
 }
 
 
-export interface UpdateGroupRequest {
-    name: string;
-    userIds: string[];
-}
+
 /**
  * Represents the request to update a group.
  */
 export interface UpdateGroupRequest {
     /** The new name of the group. */
     name: string;
-    /** The list of user IDs to be included in the group. */
-    userIds: string[];
+    /**
+     * The list of member RAs (academic registration numbers) to be removed from the group.
+     */
+    membersToRemove: string[];
 }
 
 /**

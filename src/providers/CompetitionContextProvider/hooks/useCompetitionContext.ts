@@ -1,38 +1,37 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 import useLoadCompetitions from "./useLoadCompetitions";
 import { Competition } from "@/types/Competition";
 import { CreateCompetitionRequest } from "@/types/Competition/Requests";
 import CompetitionService from "@/services/CompetitionService";
 import { convertTimeSpanToNumber } from "@/libs/utils";
 import { enqueueSnackbar } from "notistack";
-import { useWebSocketContext } from "@/contexts/WebSocketContext";
 
 const useCompetitionContext = () => {
     const {
-        competitions,
-        isLoading,
-        loadCompetitions,
-        addNewCompetition,
-        toggleLoading,
-        updateCompetition,
+        templateCompetitions,
+        isTemplateLoading,
+        loadTemplateCompetitions,
+        addNewTemplateCompetition,
+        toggleTemplateLoading,
+        updateTemplateCompetition,
     } = useLoadCompetitions();
 
 
     const competitionModels = useMemo(() => {
-        return competitions.filter((x) => x.status == 5);
-    }, [competitions]);
+        return templateCompetitions.filter((x) => x.status == 5);
+    }, [templateCompetitions]);
 
     const addCompetitionModel = useCallback(
         (newCompetitionModel: Competition) => {
-            addNewCompetition(newCompetitionModel);
+            addNewTemplateCompetition(newCompetitionModel);
         },
-        [addNewCompetition]
+        [addNewTemplateCompetition]
     );
 
     const createCompetition = useCallback(
         async (payload: CreateCompetitionRequest) => {
             try {
-                toggleLoading();
+                toggleTemplateLoading();
                 const res = await CompetitionService.createCompetition(payload);
 
                 if (res.status == 201) {
@@ -87,7 +86,7 @@ const useCompetitionContext = () => {
                             },
                         }
                     );
-                    toggleLoading();
+                    toggleTemplateLoading();
                     return;
                 }
             } catch (error) {
@@ -98,22 +97,22 @@ const useCompetitionContext = () => {
                     anchorOrigin: { vertical: "bottom", horizontal: "right" },
                 });
             } finally {
-                toggleLoading();
+                toggleTemplateLoading();
             }
         },
-        [addCompetitionModel, toggleLoading]
+        [addCompetitionModel, toggleTemplateLoading]
     );
 
     return {
-        competitions,
+        templateCompetitions,
         competitionModels,
-        isLoading,
+        isTemplateLoading,
         addCompetitionModel,
         createCompetition,
-        loadCompetitions,
-        addNewCompetition,
-        toggleLoading,
-        updateCompetition,
+        loadTemplateCompetitions,
+        addNewTemplateCompetition,
+        toggleTemplateLoading,
+        updateTemplateCompetition,
     };
 };
 

@@ -5,7 +5,7 @@ import SignUpMarathon from "@/components/pages/profile/_modules/StudentDashboard
 const UserSubscription: React.FC = () => {
 
   return(
-    <SignUpMarathon/>
+    <SignUpMarathon />
   )
 };
 

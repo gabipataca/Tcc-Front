@@ -68,6 +68,11 @@ export interface Competition {
     maxExercises: number | null;
 
     /**
+     * Maximum number of members allowed in a group for the competition.
+     */
+    maxMembers: number | null;
+
+    /**
      * Maximum size of submissions in kb.
      */
     maxSubmissionSize: number;

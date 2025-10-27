@@ -12,6 +12,9 @@ export const useStudentDashboardData = () => {
     >([]);
     const [championTeams, setChampionTeams] = useState<ChampionTeam[]>([]);
 
+
+    
+
     return {
         groupInfo,
         competitionHistory,

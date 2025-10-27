@@ -51,6 +51,8 @@ const useEditUserDialog = ({
                 name: editUserFormValues.name,
                 status: Boolean(editUserFormValues.status) ? 1 : 0,
                 groupId: Number(editUserFormValues.group) || undefined,
+                department: user.department,
+                joinYear: user.joinYear!,
             });
             enqueueSnackbar("Usuário editado com sucesso!", {
                 variant: "success",
@@ -77,7 +79,9 @@ const useEditUserDialog = ({
         enqueueSnackbar,
         onConfirm,
         toggleDialog,
+        user.department,
         user.id,
+        user.joinYear,
     ]);
 
     return {

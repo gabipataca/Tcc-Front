@@ -9,7 +9,7 @@ const ProfileLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
     return (
         <ProfileMenuContextProvider>
             <PrivateTokenContextProvider>
-                <div className="flex bg-gradient-to-br from-slate-50 to-slate-100">
+                <div className="flex flex-1 bg-gradient-to-br from-slate-50 to-slate-100">
                     <SideMenu />
 
                     {children}

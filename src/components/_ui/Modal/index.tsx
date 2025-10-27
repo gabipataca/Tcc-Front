@@ -72,6 +72,7 @@ const Modal: React.FC<ModalProps> = ({
                                 variant="destructive"
                                 rounded
                                 onClick={onCancel}
+                                disabled={loading}
                                 type="button"
                             >
                                 {cancelButtonContent || "Cancelar"}
@@ -85,6 +86,7 @@ const Modal: React.FC<ModalProps> = ({
                                 variant="success"
                                 rounded
                                 onClick={onConfirm}
+                                disabled={loading}
                                 type="button"
                             >
                                 {confirmButtonContent || "Confirmar"}

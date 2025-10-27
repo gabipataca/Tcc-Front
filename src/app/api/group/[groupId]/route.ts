@@ -45,5 +45,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ grou
         );
     }
 
-    return NextResponse.json(res.data, { status: res.status });
+    return NextResponse.json({
+        data: res.data,
+        status: res.status,
+    } satisfies ServerSideResponse<UpdateGroupResponse>, { status: res.status });
 }

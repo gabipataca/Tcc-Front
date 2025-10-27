@@ -9,90 +9,23 @@ import {
 import Input from "@/components/_ui/Input";
 import Label from "@/components/_ui/Label";
 import { useUser } from "@/contexts/UserContext";
-import GroupService from "@/services/GroupService";
 import { Edit, Plus, UserX } from "lucide-react";
-import { useSnackbar } from "notistack";
-import { useState } from "react";
+import useEditGroup from "./hooks/useEditGroup";
 
-const EditGroupModal = ({
-    onClose,
-}: {
-    onClose: () => void;
-}) => {
-    const { user, setUser } = useUser();
-    const { enqueueSnackbar } = useSnackbar();
+const EditGroupModal = ({ onClose }: { onClose: () => void }) => {
+    const {
+        groupName,
+        setGroupName,
+        membersToRemove,
+        handleToggleRemove,
+        isLoading,
+        handleSubmit,
+    } = useEditGroup(onClose);
 
-    const [groupName, setGroupName] = useState(user!.group!.name);
-    const [membersToRemove, setMembersToRemove] = useState<string[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
-
-    const handleToggleRemove = (userId: string) => {
-        setMembersToRemove((prev) =>
-            prev.includes(userId)
-                ? prev.filter((id) => id !== userId)
-                : [...prev, userId]
-        );
-    };
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsLoading(true);
-
-        try {
-            await GroupService.UpdateGroup(user!.group!.id, {
-                groupId: user!.group!.id,
-                name: groupName,
-                userIds: membersToRemove,
-            });
-
-            if (membersToRemove.includes(user!.id)) {
-                // Se SIM (líder ou membro saindo):
-                // Define o grupo como nulo no contexto, fazendo a tela sumir.
-                setUser((prev) => ({ ...prev!, group: null }));
-                enqueueSnackbar("Você saiu do grupo.", {
-                    variant: "info",
-                    autoHideDuration: 3000,
-                    anchorOrigin: { vertical: "bottom", horizontal: "right" },
-                });
-            } else {
-                // Se NÃO (líder está apenas removendo outros):
-                // Apenas atualiza a lista de membros do grupo.
-                setUser((prev) => ({
-                    ...prev!,
-                    group: {
-                        ...prev!.group!,
-                        name: groupName,
-                        users: prev!.group!.users.filter(
-                            (u) => !membersToRemove.includes(u.id)
-                        ),
-                    },
-                }));
-                enqueueSnackbar("Grupo atualizado com sucesso!", {
-                    variant: "success",
-                    autoHideDuration: 3000,
-                    anchorOrigin: { vertical: "bottom", horizontal: "right" },
-                });
-            }
-
-            onClose();
-
-        } catch (error: any) {
-            console.error("Erro ao editar grupo:", error);
-            enqueueSnackbar(
-                error.message || "Não foi possível atualizar o grupo.",
-                {
-                    variant: "error",
-                    autoHideDuration: 3000,
-                    anchorOrigin: { vertical: "bottom", horizontal: "right" },
-                }
-            );
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    const { user } = useUser();
 
     return (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+        <div className="fixed h-full inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
             <Card className="w-full max-w-md">
                 <form onSubmit={handleSubmit}>
                     <CardHeader>
@@ -104,6 +37,8 @@ const EditGroupModal = ({
                         <div className="space-y-2">
                             <Label htmlFor="editGroupName">Nome do Grupo</Label>
                             <Input
+                                type="text"
+                                name="editGroupName"
                                 id="editGroupName"
                                 value={groupName}
                                 onChange={(e) => setGroupName(e.target.value)}
@@ -137,8 +72,7 @@ const EditGroupModal = ({
                                                 ? "(Você)"
                                                 : ""}
                                             {/* Assumindo que a API informa quem é o líder */
-                                            /* {member.isLeader ? " (Líder)" : ""} */
-                                            }
+                                            /* {member.isLeader ? " (Líder)" : ""} */}
                                         </span>
                                         {/* O botão aparece para todos, permitindo que você se remova */}
                                         <Button
@@ -163,9 +97,7 @@ const EditGroupModal = ({
                                             ) : (
                                                 <UserX className="h-4 w-4 mr-1" />
                                             )}
-                                            {membersToRemove.includes(
-                                                member.id
-                                            )
+                                            {membersToRemove.includes(member.id)
                                                 ? "Manter"
                                                 : "Remover"}
                                         </Button>
@@ -180,6 +112,7 @@ const EditGroupModal = ({
                             variant="outline"
                             onClick={onClose}
                             disabled={isLoading}
+                            rounded
                         >
                             Cancelar
                         </Button>
@@ -188,6 +121,7 @@ const EditGroupModal = ({
                             variant="primary"
                             disabled={isLoading}
                             loading={isLoading}
+                            rounded
                         >
                             Salvar Alterações
                         </Button>

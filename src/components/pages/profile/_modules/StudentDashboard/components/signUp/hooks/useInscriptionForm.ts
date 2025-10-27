@@ -1,3 +1,6 @@
+import { useUser } from "@/contexts/UserContext";
+import useLoadCompetitions from "@/providers/CompetitionContextProvider/hooks/useLoadCompetitions";
+import { Competition } from "@/types/Competition";
 import { useState, useEffect, useCallback, useMemo } from "react";
 
 interface CompetitionConfig {
@@ -13,32 +16,27 @@ interface InscricaoFormData {
     competitionName: string;
 }
 
-export const useInscricaoForm = () => {
+export const useInscriptionForm = () => {
+    const { user } = useUser();
+
+    const [activeCompetition, setActiveCompetition] =
+        useState<Competition | null>(null);
+
+    const {
+        openSubCompetitions,
+        isSubCompetitionsLoading,
+        loadOpenSubCompetitions,
+    } = useLoadCompetitions();
+
     const [competitionName, setCompetitionName] = useState("");
     const [quantityStudents, setQuantityStudents] = useState(1);
-    const [members, setMembers] = useState<string[]>([""]);
+    const [members, setMembers] = useState<string[]>(
+        user!.group!.users.map((u) => u.name)
+    );
     const [initialRegistration, setInitialRegistration] = useState("");
     const [registrationEnd, setRegistrationEnd] = useState("");
     const [maxMembers, setMaxMembers] = useState(3);
-    const [groupName, setGroupName] = useState("");
-
-    useEffect(() => {
-        const fetchMaratonaConfig = async () => {
-            const data: CompetitionConfig = {
-                nome: "Maratona de Programação 2024",
-                initialRegistration: "2024-01-15",
-                registrationEnd: "2024-02-15",
-                maxMembers: 3,
-            };
-            setCompetitionName(data.nome);
-            setInitialRegistration(data.initialRegistration);
-            setRegistrationEnd(data.registrationEnd);
-            setMaxMembers(data.maxMembers);
-            setQuantityStudents(1);
-            setMembers([""]);
-        };
-        fetchMaratonaConfig();
-    }, []);
+    const [groupName, setGroupName] = useState(user!.group!.name);
 
     const handleQuantidadeChange = useCallback((value: string) => {
         const quantity = Number.parseInt(value, 10);
@@ -77,7 +75,35 @@ export const useInscricaoForm = () => {
         return groupName.trim() !== "" && allMembersFilled;
     }, [groupName, members]);
 
+    useEffect(() => {
+        loadOpenSubCompetitions();
+    }, [loadOpenSubCompetitions]);
+
+    useEffect(() => {
+        const res =
+            openSubCompetitions.sort((a, b) => {
+                if (!a.endInscriptions || !b.endInscriptions) return 0;
+
+                return (
+                    a.endInscriptions.getTime() - b.endInscriptions.getTime()
+                );
+            })[0] || null;
+
+        if (res == null) {
+            return;
+        }
+
+        setCompetitionName(res.name);
+        setQuantityStudents(res.maxMembers!);
+        setMaxMembers(res.maxMembers!);
+        setInitialRegistration(res.startInscriptions!.toLocaleDateString());
+        setRegistrationEnd(res.endInscriptions!.toLocaleDateString());
+        setActiveCompetition(res);
+    }, [openSubCompetitions]);
+
     return {
+        isSubCompetitionsLoading,
+        activeCompetition,
         competitionName,
         quantityStudents,
         members,

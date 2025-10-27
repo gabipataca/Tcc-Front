@@ -131,7 +131,6 @@ const StudentDashboard: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Content */}
                     <main className="px-40 py-8">
                         <div className="max-w-full space-y-8">
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -149,7 +148,6 @@ const StudentDashboard: React.FC = () => {
                 </div>
             </div>
 
-            {/* 4. Renderizar o seu Modal com as props corretas */}
             <Modal
                 open={isModalOpen}
                 onClose={closeModal}
@@ -158,8 +156,8 @@ const StudentDashboard: React.FC = () => {
                 hasConfirmButton={modalConfig.hasConfirmButton}
                 confirmButtonContent={modalConfig.confirmButtonContent}
                 onConfirm={modalConfig.onConfirm}
-                hasCancelButton={false} // Para este caso, não precisamos do botão de cancelar
-                size="sm" // Ajuste o tamanho conforme necessário
+                hasCancelButton={false}
+                size="sm"
             />
         </>
     );

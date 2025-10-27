@@ -26,7 +26,7 @@ export interface ButtonProps {
     /**
      * The type of the button, either "button" or "link".
      */
-    type?: "button" | "link";
+    type?: HTMLButtonElement["type"] | "link";
 
     /**
      * The href attribute for the link, if the button type is "link".

@@ -6,20 +6,51 @@ import { useSnackbar } from "notistack";
 import { useCallback, useState } from "react";
 
 export const useLoadCompetitions = () => {
-    const [competitions, setCompetitions] = useState<Competition[]>([]);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [templateCompetitions, setTemplateCompetitions] = useState<Competition[]>([]);
+    const [isTemplateLoading, setIsTemplateLoading] = useState<boolean>(true);
+
+    const [openSubCompetitions, setOpenSubCompetitions] = useState<Competition[]>([]);
+    const [isSubCompetitionsLoading, setIsSubCompetitionsLoading] = useState<boolean>(false);
 
     const { enqueueSnackbar } = useSnackbar();
 
-    const addNewCompetition = useCallback((newCompetition: Competition) => {
-        setCompetitions((prev) => [...prev, newCompetition]);
+    const addNewTemplateCompetition = useCallback((newCompetition: Competition) => {
+        setTemplateCompetitions((prev) => [...prev, newCompetition]);
     }, []);
 
-    const toggleLoading = useCallback(() => {
-        setIsLoading((prev) => !prev);
+    const toggleTemplateLoading = useCallback(() => {
+        setIsTemplateLoading((prev) => !prev);
     }, []);
 
-    const loadCompetitions = useCallback(async () => {
+    const loadOpenSubCompetitions = useCallback(async () => {
+        setIsSubCompetitionsLoading(true);
+        try {
+            const response = await CompetitionService.getCompetitionsOpenForInscription();
+            if (response.status !== 200) {
+                enqueueSnackbar("Erro ao carregar competições abertas.", {
+                    variant: "error",
+                    anchorOrigin: { vertical: "bottom", horizontal: "right" },
+                    autoHideDuration: 3000,
+                });
+                setIsSubCompetitionsLoading(false);
+                return;
+            }
+            setOpenSubCompetitions(response.data!);
+        } catch (error) {
+            console.error("Error loading open sub competitions:", error);
+            enqueueSnackbar("Erro ao carregar competições abertas.", {
+                variant: "error",
+                anchorOrigin: { vertical: "bottom", horizontal: "right" },
+                autoHideDuration: 3000,
+            });
+        } finally {
+            setIsSubCompetitionsLoading(false);
+        }
+    }, [enqueueSnackbar]);
+
+    const loadTemplateCompetitions = useCallback(async () => {
+        setIsTemplateLoading(true);
+
         try {
             const response = await CompetitionService.getCompetitionTemplates();
             if (response.status !== 200) {
@@ -28,7 +59,7 @@ export const useLoadCompetitions = () => {
                     anchorOrigin: { vertical: "bottom", horizontal: "right" },
                     autoHideDuration: 3000,
                 });
-                toggleLoading();
+                setIsTemplateLoading(false);
                 return;
             }
 
@@ -47,7 +78,9 @@ export const useLoadCompetitions = () => {
                 comp.endTime = new Date(comp.endTime!);
             });
 
-            setCompetitions(data);
+            setTemplateCompetitions(data);
+
+            setIsTemplateLoading(false);
         } catch (error) {
             console.error("Error loading competitions:", error);
             enqueueSnackbar("Erro ao carregar modelos de competições.", {
@@ -55,15 +88,14 @@ export const useLoadCompetitions = () => {
                 anchorOrigin: { vertical: "bottom", horizontal: "right" },
                 autoHideDuration: 3000,
             });
-        } finally {
-            toggleLoading();
+            setIsTemplateLoading(false);
         }
-    }, [enqueueSnackbar, toggleLoading]);
+    }, [enqueueSnackbar, setIsTemplateLoading]);
 
-    const updateCompetition = useCallback(
+    const updateTemplateCompetition = useCallback(
         async (data: UpdateCompetitionRequest) => {
             try {
-                toggleLoading();
+                setIsTemplateLoading(true);
                 const response = await CompetitionService.updateCompetition(
                     data
                 );
@@ -76,10 +108,10 @@ export const useLoadCompetitions = () => {
                         },
                         autoHideDuration: 3000,
                     });
-                    toggleLoading();
+                    setIsTemplateLoading(false);
                     return;
                 }
-                setCompetitions((prev) =>
+                setTemplateCompetitions((prev) =>
                     prev.map((comp) =>
                         comp.id === response.data!.id
                             ? ({
@@ -129,19 +161,22 @@ export const useLoadCompetitions = () => {
                     autoHideDuration: 3000,
                 });
             } finally {
-                toggleLoading();
+                setIsTemplateLoading(false);
             }
         },
-        [enqueueSnackbar, toggleLoading]
+        [enqueueSnackbar, setIsTemplateLoading]
     );
 
     return {
-        loadCompetitions,
-        competitions,
-        isLoading,
-        updateCompetition,
-        toggleLoading,
-        addNewCompetition,
+        loadTemplateCompetitions,
+        templateCompetitions,
+        isTemplateLoading,
+        updateTemplateCompetition,
+        toggleTemplateLoading,
+        addNewTemplateCompetition,
+        openSubCompetitions,
+        isSubCompetitionsLoading,
+        loadOpenSubCompetitions,
     };
 };
 

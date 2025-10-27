@@ -10,27 +10,27 @@ const CompetitionContextProvider = ({
     children: ReactNode;
 }) => {
     const {
-        competitions,
+        templateCompetitions,
         competitionModels,
-        isLoading,
+        isTemplateLoading,
         createCompetition,
         addCompetitionModel,
-        loadCompetitions,
-        toggleLoading,
-        updateCompetition,
+        loadTemplateCompetitions,
+        toggleTemplateLoading,
+        updateTemplateCompetition,
     } = useCompetitionContext();
 
     return (
         <CompetitionContext.Provider
             value={{
                 createCompetition,
-                competitions,
+                templateCompetitions,
                 competitionModels,
                 addCompetitionModel,
-                isLoading,
-                toggleLoading,
-                loadCompetitions,
-                updateCompetition,
+                isTemplateLoading,
+                toggleTemplateLoading,
+                loadTemplateCompetitions,
+                updateTemplateCompetition,
             }}
         >
             {children}

@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { Plus, Users } from "lucide-react";
 import AddGroupModal from "./components/AddGroupModal";
 import EditGroupModal from "./components/EditGroupModal";
 import AddMemberModal from "./components/AddMemberModal";
@@ -11,116 +10,8 @@ import InvitationSection from "./components/InvitationSection";
 import GroupService from "@/services/GroupService";
 import { useSnackbar } from "notistack";
 import { GroupInvitation } from "@/types/Group";
-import { group } from "console";
 import Loading from "@/components/_ui/Loading";
-
-// --- Componentes de UI Falsos (Mock) ---
-// Para que este código seja executável, criei versões simples dos seus componentes de UI.
-// Substitua estes pelos seus componentes reais de "@/components/_ui/..."
-
-const Card = ({
-    children,
-    className = "",
-}: {
-    children: React.ReactNode;
-    className?: string;
-}) => (
-    <div
-        className={`rounded-xl border bg-white text-slate-900 shadow-sm ${className}`}
-    >
-        {children}
-    </div>
-);
-const CardHeader = ({
-    children,
-    className = "",
-}: {
-    children: React.ReactNode;
-    className?: string;
-}) => (
-    <div className={`flex flex-col space-y-1.5 p-6 ${className}`}>
-        {children}
-    </div>
-);
-const CardTitle = ({
-    children,
-    className = "",
-}: {
-    children: React.ReactNode;
-    className?: string;
-}) => (
-    <h3
-        className={`text-2xl font-semibold leading-none tracking-tight ${className}`}
-    >
-        {children}
-    </h3>
-);
-const CardContent = ({
-    children,
-    className = "",
-}: {
-    children: React.ReactNode;
-    className?: string;
-}) => <div className={`p-6 pt-0 ${className}`}>{children}</div>;
-
-const Button = ({
-    children,
-    className = "",
-    style = "primary",
-    size = "md",
-    ...props
-}: {
-    children: React.ReactNode;
-    className?: string;
-    style?: string;
-    size?: string;
-    [key: string]: any;
-}) => {
-    const baseStyle =
-        "inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50";
-    const styles: { [key: string]: string } = {
-        primary: "bg-[#4F85A6] text-white hover:bg-[#3C6B88]",
-        "light-success": "bg-green-100 text-green-800 hover:bg-green-200",
-        outline:
-            "border border-slate-200 bg-white hover:bg-slate-100 hover:text-slate-900",
-        danger: "bg-red-500 text-slate-50 hover:bg-red-500/90",
-    };
-    const sizes: { [key: string]: string } = {
-        sm: "h-9 rounded-md px-3",
-        md: "h-10 px-4 py-2",
-    };
-    return (
-        <button
-            className={`${baseStyle} ${styles[style]} ${sizes[size]} ${className}`}
-            {...props}
-        >
-            {children}
-        </button>
-    );
-};
-
-// --- Seção para quando não há grupo ---
-const NoGroupSection = ({ onCreateClick }: { onCreateClick: () => void }) => (
-    <Card className="h-full shadow-lg hover:shadow-xl transition-all duration-300 border-0 bg-gradient-to-br from-white to-slate-50">
-        <CardHeader>
-            <CardTitle className="text-2xl text-[#4F85A6] flex items-center gap-3">
-                <div className="w-10 h-10 bg-[#4F85A6]/10 rounded-full flex items-center justify-center">
-                    <Users className="h-5 w-5 text-[#4F85A6]" />
-                </div>
-                Informações do Grupo
-            </CardTitle>
-        </CardHeader>
-        <CardContent className="text-center p-10">
-            <p className="text-slate-600 mb-4">
-                Você ainda não faz parte de um grupo.
-            </p>
-            <Button style="primary" size="md" onClick={onCreateClick}>
-                <Plus className="h-4 w-4 mr-2" />
-                Criar um Grupo
-            </Button>
-        </CardContent>
-    </Card>
-);
+import NoGroupSection from "./components/NoGroupSection";
 
 const GroupManagement = () => {
     const { user, setUser } = useUser();
@@ -139,7 +30,9 @@ const GroupManagement = () => {
             setIsLoadingGroupInfo(true);
             const [invitationsResponse, groupResponse] = await Promise.all([
                 GroupService.GetGroupInvitations(),
-                (user!.group) ? GroupService.getGroupById(user!.group!.id) : Promise.resolve({ status: 204, data: null }),
+                user!.group
+                    ? GroupService.getGroupById(user!.group!.id)
+                    : Promise.resolve({ status: 204, data: null }),
             ]);
 
             if (groupResponse.status == 200 || groupResponse.status != 500) {

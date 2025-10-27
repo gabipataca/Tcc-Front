@@ -104,16 +104,39 @@ const useLoadUsers = (role: UserRole) => {
     const updateUser = useCallback(
         async (user: UserEditRequest) => {
             try {
-                const data = await UserService.updateUser(user.id, user);
-                const usersCopy = users.filter((st) => st.id !== data.id);
-                usersCopy.push(data);
+                const response = await UserService.updateUser(user.id, user);
+
+                if (response.status != 200 || response.data == undefined) {
+                    enqueueSnackbar("Erro ao atualizar usuário.", {
+                        variant: "error",
+                        autoHideDuration: 3000,
+                        anchorOrigin: {
+                            vertical: "bottom",
+                            horizontal: "right",
+                        },
+                    });
+                    return;
+                }
+
+                const usersCopy = users.filter(
+                    (st) => st.id !== response.data!.id
+                );
+                usersCopy.push(response.data!);
                 usersCopy.sort((a, b) => (a.id! < b.id! ? -1 : 1));
                 setUsers([...usersCopy]);
             } catch (error) {
                 console.error("Error updating user:", error);
+                enqueueSnackbar("Erro ao atualizar usuário.", {
+                    variant: "error",
+                    autoHideDuration: 3000,
+                    anchorOrigin: {
+                        vertical: "bottom",
+                        horizontal: "right",
+                    },
+                });
             }
         },
-        [users]
+        [enqueueSnackbar, users]
     );
 
     useEffect(() => {

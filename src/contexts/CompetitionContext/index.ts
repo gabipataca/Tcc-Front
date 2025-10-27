@@ -6,14 +6,14 @@ import { Competition } from '@/types/Competition';
 import { CreateCompetitionRequest, UpdateCompetitionRequest } from '@/types/Competition/Requests';
 
 interface CompetitionContextType {
-  competitions: Competition[];
+  templateCompetitions: Competition[];
   competitionModels: Competition[];
   createCompetition: (request: CreateCompetitionRequest) => Promise<void>;
   addCompetitionModel: (competitionModel: Competition) => void;
-  isLoading: boolean;
-  loadCompetitions: () => Promise<void>;
-  toggleLoading: () => void;
-  updateCompetition: (request: UpdateCompetitionRequest) => void;
+  isTemplateLoading: boolean;
+  loadTemplateCompetitions: () => Promise<void>;
+  toggleTemplateLoading: () => void;
+  updateTemplateCompetition: (request: UpdateCompetitionRequest) => void;
 }
 
 export const CompetitionContext = createContext<CompetitionContextType | null>(null);

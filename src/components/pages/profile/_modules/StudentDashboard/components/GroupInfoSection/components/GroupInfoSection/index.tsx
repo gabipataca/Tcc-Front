@@ -26,7 +26,7 @@ const GroupInfoSection = ({
     const { user } = useUser();
 
     return (
-        <Card className="shadow-lg hover:shadow-xl transition-all duration-300 border-0 bg-gradient-to-br from-white to-slate-50">
+        <Card className="h-full shadow-lg hover:shadow-xl transition-all duration-300 border-0 bg-gradient-to-br from-white to-slate-50">
             <CardHeader className="pb-4 bg-gradient-to-r from-[#4F85A6]/5 to-[#3C6B88]/5 rounded-t-lg">
                 <CardTitle className="text-2xl text-[#4F85A6] flex items-center gap-3">
                     <div className="w-10 h-10 bg-[#4F85A6]/10 rounded-full flex items-center justify-center">

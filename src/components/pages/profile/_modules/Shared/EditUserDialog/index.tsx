@@ -105,6 +105,7 @@ const EditUserDialog: FC<EditUserDialogProps> = ({
                         variant="success"
                         rounded
                         disabled={loading}
+                        loading={loading}
                         onClick={handleConfirm}
                         className="bg-[#4F85A6] hover:bg-[#3f3c40] text-white"
                     >

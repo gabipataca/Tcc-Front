@@ -40,7 +40,7 @@ const CreateCompetition: React.FC = () => {
     prevPage,
     resetPagination,
     isLoadingExercises,
-    isLoadingCompetitions,
+    isTemplateLoading,
   } = useCreateCompetition()
 
   const competitionModelsOptions = useMemo(() => {
@@ -51,7 +51,10 @@ const CreateCompetition: React.FC = () => {
           label: model.name,
         }) as DropdownOption,
     )
-  }, [competitionModels])
+  }, [competitionModels]);
+
+  console.log(competitionModelsOptions);
+  console.log(isTemplateLoading);
 
   useMemo(() => {
     resetPagination();
@@ -98,7 +101,7 @@ const CreateCompetition: React.FC = () => {
                           selectCompetition(Number.parseInt(val))
                         }}
                         value={activeCompetition?.id ?? null}
-                        disabled={isLoadingCompetitions}
+                        disabled={isTemplateLoading}
                         type="normalDropdown"
                         grow={true}
                       />

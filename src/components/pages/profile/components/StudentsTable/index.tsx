@@ -82,6 +82,9 @@ const StudentsTable: FC = () => {
                         email: editDialog.user!.email,
                         status: 1,
                         groupId: editDialog.user!.group?.id,
+                        joinYear: editDialog.user!.joinYear,
+                        department: editDialog.user!.department,
+                        group: editDialog.user!.group,
                     }}
                 />
             )}

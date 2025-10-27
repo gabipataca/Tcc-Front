@@ -32,6 +32,17 @@ class CompetitionService {
         return response.data;
     }
 
+    static async getCompetitionsOpenForInscription() {
+        const response = await apiRequest<ServerSideResponse<Competition[]>>(
+            "/api/competition/open",
+            {
+                method: "GET",
+            }
+        );
+
+        return response.data;
+    }
+
     static async createCompetition(data: CreateCompetitionRequest) {
         const response = await apiRequest<
             ServerSideResponse<CompetitionResponse>,
