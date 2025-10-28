@@ -28,54 +28,44 @@ export const useInscriptionForm = () => {
         loadOpenSubCompetitions,
     } = useLoadCompetitions();
 
-    const [competitionName, setCompetitionName] = useState("");
-    const [quantityStudents, setQuantityStudents] = useState(1);
-    const [members, setMembers] = useState<string[] | null>(
+    const [groupExists] = useState(!!user?.group);
+    const [initialMembers] = useState<string[] | null>(
         user?.group?.users.map((u) => u.name) || null
     );
+
+    const [competitionName, setCompetitionName] = useState("");
+    const [quantityStudents, setQuantityStudents] = useState(
+        initialMembers?.length || 0
+    );
+    const [members, setMembers] = useState<string[] | null>(initialMembers);
     const [initialRegistration, setInitialRegistration] = useState("");
     const [registrationEnd, setRegistrationEnd] = useState("");
     const [maxMembers, setMaxMembers] = useState(3);
     const [groupName, setGroupName] = useState(user?.group?.name || null);
+    const [groupSizeError, setGroupSizeError] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [isInscriptionsOpen, setIsInscriptionsOpen] = useState(true);
 
-    const handleQuantidadeChange = useCallback((value: string) => {
-        const quantity = Number.parseInt(value, 10);
-        setQuantityStudents(quantity);
-        setMembers(Array(quantity).fill(""));
-    }, []);
-
-    const handleIntegranteChange = useCallback(
-        (index: number, value: string) => {
-            const newMembers = [...members];
-            newMembers[index] = value;
-            setMembers(newMembers);
-        },
-        [members]
-    );
+    const isFormValid = useMemo(() => {
+        return groupExists && !groupSizeError && isInscriptionsOpen;
+    }, [groupExists, groupSizeError, isInscriptionsOpen]);
 
     const handleSubmit = useCallback(
         (e: React.FormEvent) => {
             e.preventDefault();
-            const dataInscricao: InscricaoFormData = {
+            if (!isFormValid) return;
+
+            const dataInscricao = {
                 groupName,
                 members,
                 competitionName,
             };
             console.log("Form submitted:", dataInscricao);
 
-            alert("Equipe inscrita com sucesso!");
+            setIsSuccess(true);
         },
-        [groupName, members, competitionName]
+        [groupName, members, competitionName, isFormValid]
     );
-
-    const isFormValid = useMemo(() => {
-        if (!members || !groupName) return false;
-
-        const allMembersFilled = members.every(
-            (member) => member.trim() !== ""
-        );
-        return groupName.trim() !== "" && allMembersFilled;
-    }, [groupName, members]);
 
     useEffect(() => {
         loadOpenSubCompetitions();
@@ -85,23 +75,44 @@ export const useInscriptionForm = () => {
         const res =
             openSubCompetitions.sort((a, b) => {
                 if (!a.endInscriptions || !b.endInscriptions) return 0;
-
                 return (
                     a.endInscriptions.getTime() - b.endInscriptions.getTime()
                 );
             })[0] || null;
 
         if (res == null) {
+            setIsInscriptionsOpen(false);
             return;
         }
 
+        const now = new Date();
+        const endDate = res.endInscriptions;
+
+        const isOpen = endDate ? now < endDate : false;
+        setIsInscriptionsOpen(isOpen);
+
         setCompetitionName(res.name);
-        setQuantityStudents(res.maxMembers!);
         setMaxMembers(res.maxMembers!);
-        setInitialRegistration(res.startInscriptions!.toLocaleDateString());
-        setRegistrationEnd(res.endInscriptions!.toLocaleDateString());
+        setInitialRegistration(
+            res.startInscriptions?.toLocaleDateString("pt-BR") || "N/A"
+        );
+        setRegistrationEnd(endDate?.toLocaleDateString("pt-BR") || "N/A");
         setActiveCompetition(res);
-    }, [openSubCompetitions]);
+
+        if (initialMembers) {
+            if (res.maxMembers! < initialMembers.length) {
+                setGroupSizeError(true);
+            } else {
+                setGroupSizeError(false);
+            }
+            setQuantityStudents(initialMembers.length);
+            setMembers(initialMembers);
+        } else {
+            setGroupSizeError(false);
+            setQuantityStudents(0);
+            setMembers([]);
+        }
+    }, [openSubCompetitions, initialMembers]);
 
     return {
         isSubCompetitionsLoading,
@@ -114,9 +125,12 @@ export const useInscriptionForm = () => {
         maxMembers,
         groupName,
         setGroupName,
-        handleQuantidadeChange,
-        handleIntegranteChange,
         handleSubmit,
         isFormValid,
+        groupExists,
+        groupSizeError,
+        isSuccess,
+        setIsSuccess,
+        isInscriptionsOpen,
     };
 };
