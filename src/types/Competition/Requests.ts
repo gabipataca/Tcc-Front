@@ -45,3 +45,9 @@ export interface UpdateCompetitionRequest
      */
     id: number;
 }
+
+
+export interface InscribeGroupInCompetitionRequest {
+    competitionId: number;
+    groupId: number;
+}

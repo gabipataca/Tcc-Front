@@ -32,3 +32,10 @@ export interface CompetitionResponse extends CreateCompetitionRequest {
  */
 export interface UpdateCompetitionResponse
     extends Omit<CompetitionResponse, "exerciseIds"> {}
+
+
+export interface InscribeGroupInCompetitionResponse {
+    competitionId: number;
+    groupId: number;
+    createdOn: string;
+}

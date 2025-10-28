@@ -53,9 +53,6 @@ const CreateCompetition: React.FC = () => {
     )
   }, [competitionModels]);
 
-  console.log(competitionModelsOptions);
-  console.log(isTemplateLoading);
-
   useMemo(() => {
     resetPagination();
 

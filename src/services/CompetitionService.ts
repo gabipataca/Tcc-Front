@@ -2,10 +2,12 @@ import { apiRequest } from "@/libs/apiClient";
 import { Competition } from "@/types/Competition";
 import {
     CreateCompetitionRequest,
+    InscribeGroupInCompetitionRequest,
     UpdateCompetitionRequest,
 } from "@/types/Competition/Requests";
 import {
     CompetitionResponse,
+    InscribeGroupInCompetitionResponse,
 } from "@/types/Competition/Responses";
 import { ServerSideResponse } from "@/types/Global";
 
@@ -61,6 +63,19 @@ class CompetitionService {
             UpdateCompetitionRequest
         >(`/api/competition/${data.id}`, {
             method: "PUT",
+            data: data,
+        });
+
+        return response.data;
+    }
+
+
+    static async inscribeGroupInCompetition(data: InscribeGroupInCompetitionRequest) {
+        const response = await apiRequest<
+            ServerSideResponse<InscribeGroupInCompetitionResponse>,
+            InscribeGroupInCompetitionRequest
+        >(`/api/competition/inscribe`, {
+            method: "POST",
             data: data,
         });
 
