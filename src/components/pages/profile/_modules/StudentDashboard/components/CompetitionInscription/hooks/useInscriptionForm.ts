@@ -1,35 +1,29 @@
 import { useUser } from "@/contexts/UserContext";
 import { parseDate } from "@/libs/utils";
 import useLoadCompetitions from "@/providers/CompetitionContextProvider/hooks/useLoadCompetitions";
+import CompetitionService from "@/services/CompetitionService";
 import { Competition } from "@/types/Competition";
+import { InscribeGroupInCompetitionRequest } from "@/types/Competition/Requests";
+import { useSnackbar } from "notistack";
 import { useState, useEffect, useCallback, useMemo } from "react";
 
-interface CompetitionConfig {
-    nome: string;
-    initialRegistration: string;
-    registrationEnd: string;
-    maxMembers: number;
-}
-
-interface InscricaoFormData {
-    groupName: string;
-    members: string[];
-    competitionName: string;
-}
-
-export const useInscriptionForm = () => {
+export const useInscriptionForm = (
+    toggleMenu: (menu: "dashboard" | "inscription") => void
+) => {
     const { user } = useUser();
+
+    const { enqueueSnackbar } = useSnackbar();
 
     const [activeCompetition, setActiveCompetition] =
         useState<Competition | null>(null);
+
+    const [blockedState, setBlockedState] = useState(false);
 
     const {
         openSubCompetitions,
         isSubCompetitionsLoading,
         loadOpenSubCompetitions,
     } = useLoadCompetitions();
-
-    console.log(openSubCompetitions);
 
     const [groupExists] = useState(!!user?.group);
     const [initialMembers] = useState<string[] | null>(
@@ -54,20 +48,49 @@ export const useInscriptionForm = () => {
     }, [groupExists, groupSizeError, isInscriptionsOpen]);
 
     const handleSubmit = useCallback(
-        (e: React.FormEvent) => {
+        async (e: React.FormEvent) => {
             e.preventDefault();
             if (!isFormValid) return;
-
-            const dataInscricao = {
-                groupName,
-                members,
-                competitionName,
+            const payload: InscribeGroupInCompetitionRequest = {
+                competitionId: activeCompetition!.id,
+                groupId: user!.group!.id,
             };
-            console.log("Form submitted:", dataInscricao);
 
-            setIsSuccess(true);
+            try {
+                const response =
+                    await CompetitionService.inscribeGroupInCompetition(
+                        payload
+                    );
+
+                if (response.status == 200) {
+                    setIsSuccess(true);
+                }
+
+                if (response.status !== 200) {
+                    enqueueSnackbar(response.data.message, {
+                        variant: "warning",
+                        anchorOrigin: {
+                            vertical: "bottom",
+                            horizontal: "right",
+                        },
+                        autoHideDuration: 3000,
+                    });
+                }
+            } catch (error) {
+                console.error("Error during inscription:", error);
+                enqueueSnackbar("Erro ao inscrever o grupo na competição.", {
+                    variant: "error",
+                    anchorOrigin: {
+                        vertical: "bottom",
+                        horizontal: "right",
+                    },
+                    autoHideDuration: 3000,
+                });
+
+                setIsSuccess(false);
+            }
         },
-        [groupName, members, competitionName, isFormValid]
+        [isFormValid, activeCompetition, user, enqueueSnackbar]
     );
 
     useEffect(() => {
@@ -89,9 +112,9 @@ export const useInscriptionForm = () => {
         }
 
         const now = new Date();
-        const endDate = new Date(parseDate(res.endInscriptions));
-        res.endInscriptions = new Date(parseDate(res.endInscriptions));
-        res.startInscriptions = new Date(parseDate(res.startInscriptions))
+        const endDate = parseDate(res.endInscriptions);
+        res.endInscriptions = parseDate(res.endInscriptions);
+        res.startInscriptions = parseDate(res.startInscriptions);
 
         const isOpen = endDate ? now < endDate : false;
         setIsInscriptionsOpen(isOpen);
@@ -99,9 +122,13 @@ export const useInscriptionForm = () => {
         setCompetitionName(res.name);
         setMaxMembers(res.maxMembers!);
         setInitialRegistration(
-            res.startInscriptions?.toLocaleDateString() || "N/A"
+            Intl.DateTimeFormat("pt-BR").format(
+                res.startInscriptions || undefined
+            ) || "N/A"
         );
-        setRegistrationEnd(endDate?.toLocaleDateString() || "N/A");
+        setRegistrationEnd(
+            Intl.DateTimeFormat("pt-BR").format(endDate || undefined) || "N/A"
+        );
         setActiveCompetition(res);
 
         if (initialMembers) {

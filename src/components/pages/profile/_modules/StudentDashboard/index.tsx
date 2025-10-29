@@ -165,7 +165,7 @@ const StudentDashboard: React.FC = () => {
                                 )}
 
                                 {(activeMenu == "inscription") && (
-                                    <CompetitionInscription />
+                                    <CompetitionInscription toggleMenu={toggleMenu} />
                                 )}
                             </div>
                         </main>
