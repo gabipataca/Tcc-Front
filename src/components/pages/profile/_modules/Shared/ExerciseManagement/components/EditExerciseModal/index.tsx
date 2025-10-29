@@ -31,7 +31,7 @@ const EditExerciseModal: React.FC<EditExerciseModalProps> = ({
         handleOnInputChange,
         handleOnOutputChange,
         handleOnTitleChange,
-        handleOnDescriptionChange, //troquei pelo botão de upload
+        handleOnDescriptionChange, 
         handleOnExerciseTypeChange,
     } = useEditExerciseModal(editingExercise, saveEdit, cancelEdit, onClose);
     const fileInputRef = useRef<HTMLInputElement>(null);

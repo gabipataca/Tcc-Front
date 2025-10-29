@@ -138,7 +138,7 @@ const CompetitionInscription: React.FC<{
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent className="p-10 space-y-6">
-                                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                    <div className="grid grid-rows-1 lg:grid-rows-2 gap-6">
                                         <div className="lg:col-span-2">
                                             <Label
                                                 htmlFor="competition-name"
@@ -164,7 +164,7 @@ const CompetitionInscription: React.FC<{
                                             )}
                                         </div>
 
-                                        <div className="flex flex-col">
+                                        <div className="flex flex-row">
                                             <Label className="text-xl font-medium text-slate-700">
                                                 Máximo de Membros
                                             </Label>
@@ -250,12 +250,18 @@ const CompetitionInscription: React.FC<{
                                                 <br />
                                                 Para se inscrever, você precisa
                                                 primeiro criar um grupo no seu{" "}
-                                                <Link
-                                                    href="/Profile"
-                                                    className="underline font-medium hover:text-yellow-950"
+                                                <span
+                                                    onClick={() => {
+                                                        window.scroll({
+                                                            behavior: "instant",
+                                                            top: 0
+                                                        })
+                                                        toggleMenu("dashboard");
+                                                    }}
+                                                    className="underline cursor-pointer font-medium hover:text-yellow-950"
                                                 >
                                                     perfil
-                                                </Link>
+                                                </span>
                                                 .
                                             </p>
                                         </div>
