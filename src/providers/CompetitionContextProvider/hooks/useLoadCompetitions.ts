@@ -115,41 +115,44 @@ export const useLoadCompetitions = () => {
                     prev.map((comp) =>
                         comp.id === response.data!.id
                             ? ({
-                                  id: response.data!.id,
-                                  name: response.data!.name,
-                                  description: response.data!.description || "",
-                                  blockSubmissions: response.data
-                                      ?.blockSubmissions
-                                      ? new Date(
-                                            response.data!.blockSubmissions
-                                        )
-                                      : null,
-                                  duration: convertTimeSpanToNumber(
-                                      response.data!.duration
-                                  ),
-                                  startInscriptions: response.data
-                                      ?.startInscriptions
-                                      ? new Date(
-                                            response.data!.startInscriptions
-                                        )
-                                      : null,
-                                  endInscriptions: response.data
-                                      ?.endInscriptions
-                                      ? new Date(response.data!.endInscriptions)
-                                      : null,
-                                  startTime: new Date(response.data!.startTime),
-                                  endTime: new Date(response.data!.endTime),
-                                  maxExercises: response.data!.maxExercises,
-                                  maxSubmissionSize:
-                                      response.data!.maxSubmissionSize,
-                                  submissionPenalty: convertTimeSpanToNumber(
-                                      response.data!.submissionPenalty
-                                  ),
-                                  stopRanking: new Date(
-                                      response.data!.stopRanking
-                                  ),
-                                  status: response.data!.status,
-                              } satisfies Competition)
+                                id: response.data!.id,
+                                name: response.data!.name,
+                                description: response.data!.description || "",
+                                blockSubmissions: response.data
+                                    ?.blockSubmissions
+                                    ? new Date(
+                                        response.data!.blockSubmissions
+                                    )
+                                    : null,
+                                duration: convertTimeSpanToNumber(
+                                    response.data!.duration
+                                ),
+                                startInscriptions: response.data
+                                    ?.startInscriptions
+                                    ? new Date(
+                                        response.data!.startInscriptions
+                                    )
+                                    : null,
+                                endInscriptions: response.data
+                                    ?.endInscriptions
+                                    ? new Date(response.data!.endInscriptions)
+                                    : null,
+                                startTime: new Date(response.data!.startTime),
+                                endTime: new Date(response.data!.endTime),
+                                maxExercises: response.data!.maxExercises,
+                                maxSubmissionSize: response.data!.maxSubmissionSize,
+                                submissionPenalty: convertTimeSpanToNumber(
+                                    response.data!.submissionPenalty
+                                ),
+                                stopRanking: new Date(
+                                    response.data!.stopRanking
+                                ),
+                                status: response.data!.status,
+                                maxMembers: null,
+                                exercises: [],
+                                groups: [],
+                                competitionRankings: []
+                            } satisfies Competition)
                             : comp
                     )
                 );

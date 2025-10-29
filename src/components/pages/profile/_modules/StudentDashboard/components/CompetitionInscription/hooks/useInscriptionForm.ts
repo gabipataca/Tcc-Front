@@ -1,4 +1,5 @@
 import { useUser } from "@/contexts/UserContext";
+import { parseDate } from "@/libs/utils";
 import useLoadCompetitions from "@/providers/CompetitionContextProvider/hooks/useLoadCompetitions";
 import { Competition } from "@/types/Competition";
 import { useState, useEffect, useCallback, useMemo } from "react";
@@ -27,6 +28,8 @@ export const useInscriptionForm = () => {
         isSubCompetitionsLoading,
         loadOpenSubCompetitions,
     } = useLoadCompetitions();
+
+    console.log(openSubCompetitions);
 
     const [groupExists] = useState(!!user?.group);
     const [initialMembers] = useState<string[] | null>(
@@ -86,7 +89,9 @@ export const useInscriptionForm = () => {
         }
 
         const now = new Date();
-        const endDate = res.endInscriptions;
+        const endDate = new Date(parseDate(res.endInscriptions));
+        res.endInscriptions = new Date(parseDate(res.endInscriptions));
+        res.startInscriptions = new Date(parseDate(res.startInscriptions))
 
         const isOpen = endDate ? now < endDate : false;
         setIsInscriptionsOpen(isOpen);
@@ -94,9 +99,9 @@ export const useInscriptionForm = () => {
         setCompetitionName(res.name);
         setMaxMembers(res.maxMembers!);
         setInitialRegistration(
-            res.startInscriptions?.toLocaleDateString("pt-BR") || "N/A"
+            res.startInscriptions?.toLocaleDateString() || "N/A"
         );
-        setRegistrationEnd(endDate?.toLocaleDateString("pt-BR") || "N/A");
+        setRegistrationEnd(endDate?.toLocaleDateString() || "N/A");
         setActiveCompetition(res);
 
         if (initialMembers) {

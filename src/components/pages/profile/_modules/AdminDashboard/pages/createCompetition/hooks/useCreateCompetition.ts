@@ -287,6 +287,7 @@ const useCreateCompetition = () => {
                         activeCompetition.startInscriptions!.toISOString(),
                     endInscriptions:
                         activeCompetition.endInscriptions!.toISOString(),
+                    maxMembers: activeCompetition.maxMembers!,
                 };
 
                 await updateTemplateCompetition(payload);

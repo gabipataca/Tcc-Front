@@ -18,6 +18,9 @@ const CompetitionContextProvider = ({
         loadTemplateCompetitions,
         toggleTemplateLoading,
         updateTemplateCompetition,
+        openSubCompetitions,
+        isSubCompetitionsLoading,
+        loadOpenSubCompetitions,
     } = useCompetitionContext();
 
     return (
@@ -31,6 +34,9 @@ const CompetitionContextProvider = ({
                 toggleTemplateLoading,
                 loadTemplateCompetitions,
                 updateTemplateCompetition,
+                openSubCompetitions,
+                isSubCompetitionsLoading,
+                loadOpenSubCompetitions,
             }}
         >
             {children}

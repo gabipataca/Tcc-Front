@@ -14,6 +14,9 @@ const useCompetitionContext = () => {
         addNewTemplateCompetition,
         toggleTemplateLoading,
         updateTemplateCompetition,
+        openSubCompetitions,
+        loadOpenSubCompetitions,
+        isSubCompetitionsLoading,
     } = useLoadCompetitions();
 
 
@@ -107,6 +110,9 @@ const useCompetitionContext = () => {
         templateCompetitions,
         competitionModels,
         isTemplateLoading,
+        openSubCompetitions,
+        isSubCompetitionsLoading,
+        loadOpenSubCompetitions,
         addCompetitionModel,
         createCompetition,
         loadTemplateCompetitions,

@@ -14,6 +14,9 @@ interface CompetitionContextType {
   loadTemplateCompetitions: () => Promise<void>;
   toggleTemplateLoading: () => void;
   updateTemplateCompetition: (request: UpdateCompetitionRequest) => void;
+  openSubCompetitions: Competition[];
+  isSubCompetitionsLoading: boolean;
+  loadOpenSubCompetitions: () => Promise<void>;
 }
 
 export const CompetitionContext = createContext<CompetitionContextType | null>(null);
