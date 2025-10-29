@@ -13,56 +13,15 @@ import {
 import StudentsTable from "../../components/StudentsTable";
 import GroupsTable from "../../components/GroupsTable";
 import StatsCard from "../../components/StatsCard";
-import { groupsData, studentsData, Student, Group } from "../../hooks/mockData";
 import useProfileMenu from "../../hooks/useProfileMenu";
 import ExerciseManagement from "../Shared/ExerciseManagement";
-import { EditDeleteModal } from "@/components/pages/perfilAdm/EditDeleteModal";
-import DepartmentModal from "@/components/_ui/DepartmentModal";
+import DepartmentModal from "@/components/pages/profile/_modules/TeacherDashboard/components/DepartmentModal";
 
 const TeacherDashboard: FC = () => {
     const { activeMenu, toggleMenu } = useProfileMenu();
     const [activeTab, setActiveTab] = useState("students");
 
-    const [students, setStudents] = useState<Student[]>(studentsData);
-    const [groups, setGroups] = useState<Group[]>(groupsData);
-    const [modalState, setModalState] = useState<{
-        isOpen: boolean;
-        mode: "edit" | "delete";
-        item: Student | Group | null;
-        itemType: string;
-    }>({
-        isOpen: false,
-        mode: "edit",
-        item: null,
-        itemType: "",
-    });
-
     const [isDeptModalOpen, setIsDeptModalOpen] = useState(false);
-    const [departmentInfo, setDepartmentInfo] = useState({
-        departamento: "Departamento de Computação",
-        descricao: "Gerencie os grupos e alunos do curso.",
-        email: "computacao@fho.edu.br",
-    });
-
-    const openModal = (item: Student | Group, itemType: string, mode: "edit" | "delete") => {
-        setModalState({ isOpen: true, item, itemType, mode });
-    };
-
-    const closeModal = () => {
-        setModalState({ isOpen: false, item: null, itemType: "", mode: "edit" });
-    };
-
-    const handleConfirmModal = (updatedItem?: Student | Group) => {
-        const { mode, item, itemType } = modalState;
-        if (mode === "delete" && item) {
-            if (itemType === "Aluno") setStudents(prev => prev.filter(s => s.id !== item.id));
-            if (itemType === "Grupo") setGroups(prev => prev.filter(g => g.id !== item.id));
-        } else if (mode === "edit" && updatedItem) {
-            if (itemType === "Aluno") setStudents(prev => prev.map(s => s.id === updatedItem.id ? (updatedItem as Student) : s));
-            if (itemType === "Grupo") setGroups(prev => prev.map(g => g.id === updatedItem.id ? (updatedItem as Group) : g));
-        }
-        closeModal();
-    };
 
     const stats = [
         {
@@ -76,7 +35,7 @@ const TeacherDashboard: FC = () => {
         {
             id: "students",
             title: "Total de Alunos",
-            value: students.length,
+            value: 2,
             description: "Ativos no último mês",
             icon: Users,
             action: () => {
@@ -87,7 +46,7 @@ const TeacherDashboard: FC = () => {
         {
             id: "groups",
             title: "Grupos Ativos",
-            value: groups.filter((g) => g.status === "active").length,
+            value: 2,
             description: "Ativos no último mês",
             icon: UserCheck,
             action: () => {
@@ -172,17 +131,11 @@ const TeacherDashboard: FC = () => {
 
                         <TabsContent value="students" className="space-y-0 mt-0">
                             <StudentsTable
-                                students={students}
-                            onEdit={(s) => openModal(s, "Aluno", "edit")}
-                            onDelete={(s) => openModal(s, "Aluno", "delete")}
                         />
                     </TabsContent>
 
                     <TabsContent value="groups" className="space-y-0 mt-0">
                         <GroupsTable
-                            groups={groups}
-                            onEdit={(g) => openModal(g, "Grupo", "edit")}
-                            onDelete={(g) => openModal(g, "Grupo", "delete")}
                         />
                     </TabsContent>
                 </Tabs>
@@ -190,31 +143,10 @@ const TeacherDashboard: FC = () => {
                 <ExerciseManagement />
             ) : null}
 
-            {modalState.isOpen && (
-                <EditDeleteModal
-                    isOpen={modalState.isOpen}
-                    onClose={closeModal}
-                    onConfirm={handleConfirmModal}
-                    item={modalState.item}
-                    itemType={modalState.itemType}
-                    mode={modalState.mode}
-                />
-            )}
-
             {isDeptModalOpen && (
                 <DepartmentModal
                     open={isDeptModalOpen}
                     onClose={() => setIsDeptModalOpen(false)}
-                    onConfirm={(updatedInfo) => {
-                        setDepartmentInfo(updatedInfo);
-                        setIsDeptModalOpen(false);
-                    }}
-                    initialData={{
-                        ...departmentInfo,
-                        labelTitulo: "Alterar informações",
-                        labelSubtitulo: "Altere seus dados",
-                        labelCampo: "Departamento",
-                    }}
                 />
             )}
             </div>
