@@ -1,5 +1,4 @@
-import { RawAxiosRequestHeaders, ResponseType } from "axios";
-
+import type { RawAxiosRequestHeaders, ResponseType } from "axios";
 
 /**
  * Represents the options for making an API request.

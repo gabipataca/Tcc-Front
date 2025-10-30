@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ApiRequestOptions } from "./types";
+import type { ApiRequestOptions } from "./types";
 
 /**
  * Base URL for the API. This should be set in your environment variables.
@@ -47,7 +47,7 @@ export async function apiRequest<T, X = unknown>(
     const headers = {
         ...options.headers,
         ...(cookieHeader ? { Cookie: cookieHeader } : {}),
-    }
+    };
 
     if (!("Content-Type" in headers) || headers["Content-Type"] === undefined) {
         headers["Content-Type"] = "application/json";

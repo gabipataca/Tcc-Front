@@ -1,24 +1,26 @@
 import { apiRequest } from "@/libs/apiClient";
-import { Competition } from "@/types/Competition";
-import {
+import type { Competition } from "@/types/Competition";
+import type {
     CreateCompetitionRequest,
     InscribeGroupInCompetitionRequest,
     UpdateCompetitionRequest,
+    SubmitExerciseRequest, //já deixei sincronizado com oq tem no back, precisa ver se vai usar
 } from "@/types/Competition/Requests";
-import {
+import type {
     CompetitionResponse,
     InscribeGroupInCompetitionResponse,
+    CurrentCompetitionResponse, //já deixei sincronizado com oq tem no back, precisa ver se vai usar
+    SubmissionResponse, //já deixei sincronizado com oq tem no back, precisa ver se vai usar
 } from "@/types/Competition/Responses";
-import { ServerSideResponse } from "@/types/Global";
+import type { ServerSideResponse } from "@/types/Global";
 
 class CompetitionService {
     static async getExistentCompetition() {
-        const response = await apiRequest<ServerSideResponse<CompetitionResponse>>(
-            "/api/competition",
-            {
-                method: "GET",
-            }
-        );
+        const response = await apiRequest<
+            ServerSideResponse<CompetitionResponse>
+        >("/api/competition", {
+            method: "GET",
+        });
 
         return response.data;
     }
@@ -69,14 +71,45 @@ class CompetitionService {
         return response.data;
     }
 
-
-    static async inscribeGroupInCompetition(data: InscribeGroupInCompetitionRequest) {
+    static async inscribeGroupInCompetition(
+        data: InscribeGroupInCompetitionRequest
+    ) {
         const response = await apiRequest<
             ServerSideResponse<InscribeGroupInCompetitionResponse>,
             InscribeGroupInCompetitionRequest
         >(`/api/competition/inscribe`, {
             method: "POST",
             data: data,
+        });
+
+        return response.data;
+    }
+
+    static async getCurrentCompetitionWithRanking() {
+        const response = await apiRequest<
+            ServerSideResponse<CurrentCompetitionResponse>
+        >(`/api/competition/current`, {
+            method: "GET",
+        });
+
+        return response.data;
+    }
+
+    static async submitExerciseSolution(data: SubmitExerciseRequest) {
+        const formData = new FormData();
+        formData.append("competitionId", data.competitionId.toString());
+        formData.append("exerciseId", data.exerciseId.toString());
+        formData.append("languageId", data.languageId.toString());
+        formData.append("solutionFile", data.solutionFile);
+
+        const response = await apiRequest<
+            ServerSideResponse<SubmissionResponse>
+        >(`/api/competition/submit`, {
+            method: "POST",
+            data: formData,
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
         });
 
         return response.data;

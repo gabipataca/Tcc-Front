@@ -5,6 +5,7 @@ import { useState, useCallback } from "react"
 import { Box, Paper, Typography } from "@mui/material"
 import Button from "@/components/_ui/Button"
 import { FaUpload, FaPaperPlane, FaDownload } from "react-icons/fa"
+import CompetitionService from "@/services/CompetitionService"
 
 // Exercícios e linguagens
 const exercises = [..."ABCDEFGHIJ"]
@@ -30,6 +31,17 @@ const languageTemplates: Record<string, string> = {
   JavaScript: "template.js",
   PHP: "template.php",
   Python: "template.py",
+}
+
+const languageIds: Record<string, number> = {
+  C: 1,
+  "C++": 2,
+  "C#": 3,
+  Go: 4,
+  Java: 5,
+  JavaScript: 6,
+  PHP: 7,
+  Python: 8,
 }
 
 // Hook separado
@@ -76,16 +88,45 @@ const useSendExercise = () => {
 
     setIsSubmitting(true)
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-      alert("Análise enviada com sucesso!")
+      const exerciseId = exercises.indexOf(selectedExercise) + 1
+      const languageId = languageIds[selectedLanguage]
+
+      // TODO: Substituir 1 pelo ID da competição atual
+      const competitionId = 1
+
+      console.log("[v0] Submetendo exercício:", {
+        competitionId,
+        exerciseId,
+        languageId,
+        fileName: file.name,
+      })
+
+      const response = await CompetitionService.submitExerciseSolution({
+        competitionId,
+        exerciseId,
+        languageId,
+        solutionFile: file,
+      })
+
+      if (response.success) {
+        if (response.accepted) {
+          alert(`✅ Solução aceita! Tempo de execução: ${response.executionTime}ms`)
+        } else {
+          alert(`❌ Solução rejeitada: ${response.errorMessage || "Erro desconhecido"}`)
+        }
+      } else {
+        alert(`Erro ao enviar: ${response.message}`)
+      }
+
       setAttachedFileName(null)
       setFile(null)
-    } catch {
+    } catch (error) {
+      console.error("[v0] Erro ao submeter exercício:", error)
       alert("Ocorreu um erro ao enviar a análise. Tente novamente.")
     } finally {
       setIsSubmitting(false)
     }
-  }, [file])
+  }, [file, selectedExercise, selectedLanguage])
 
   return {
     selectedExercise,
