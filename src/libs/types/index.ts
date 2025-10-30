@@ -1,4 +1,4 @@
-import { RawAxiosRequestHeaders } from "axios";
+import { RawAxiosRequestHeaders, ResponseType } from "axios";
 
 
 /**
@@ -38,5 +38,13 @@ export interface ApiRequestOptions<T> {
      */
     data?: T;
 
+    /**
+     * Optional AbortSignal to cancel the request if needed.
+     */
     signal?: AbortSignal;
+
+    /**
+     * Optional response type for the API request.
+     */
+    responseType?: ResponseType;
 }

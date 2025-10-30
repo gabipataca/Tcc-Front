@@ -66,5 +66,6 @@ export async function apiRequest<T, X = unknown>(
         },
         headers: headers,
         signal: options.signal,
+        responseType: options.responseType,
     });
 }

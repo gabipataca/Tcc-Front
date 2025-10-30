@@ -22,6 +22,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/_ui/Dialog"
+import FileService from "@/services/FileService"
+import { downloadBlobFile } from "@/libs/utils"
 
 const ExerciseManagement: React.FC = () => {
   const {
@@ -90,12 +92,17 @@ const ExerciseManagement: React.FC = () => {
     }
   }
 
-  const handleViewPdf = (exercise: any) => {
-    if (exercise.pdfUrl) {
-      window.open(exercise.pdfUrl, "_blank")
-    } else {
-      alert("Nenhum PDF disponível para este exercício")
-    }
+  const handleViewPdf = async (fileId: number) => {
+    try {
+      const file = await FileService.downloadFile(fileId);
+      
+	  downloadBlobFile(fileId, file.blob, file.contentDisposition);
+    } catch (error) {
+	  console.error("Erro ao baixar o arquivo PDF:", error);
+	  alert("Nenhum PDF disponível para este exercício")
+	}
+    
+
   }
 
   return (
@@ -195,7 +202,7 @@ const ExerciseManagement: React.FC = () => {
                               variant="ghost"
                               size="sm"
                               className="hover:bg-[#9abbd6]/20 text-[#4F85A6] p-3"
-                              onClick={() => handleViewPdf(exercise)}
+                              onClick={() => handleViewPdf(exercise.attachedFileId)}
                               title="Visualizar PDF"
                             >
                               <Eye className="w-5 h-5" />
