@@ -38,7 +38,9 @@ const ExerciseManagement: React.FC = () => {
     editingExercise,
     handleCreateExercise,
     handleRemoveExercise,
+    updatePdfFile,
     startEdit,
+    handleUpdateFileChange,
     saveEdit,
     cancelEdit,
     exercises,
@@ -360,6 +362,8 @@ const ExerciseManagement: React.FC = () => {
           cancelEdit={cancelEdit}
           saveEdit={saveEdit}
           editingExercise={editingExercise}
+          handleFileChange={handleUpdateFileChange}
+          pdfFile={updatePdfFile}
         />
       )}
 

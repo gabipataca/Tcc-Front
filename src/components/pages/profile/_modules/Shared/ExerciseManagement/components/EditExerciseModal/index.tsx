@@ -1,7 +1,7 @@
 "use client";
 
 import Input from "@/components/_ui/Input";
-import { useRef} from "react";
+import { useRef } from "react";
 import Modal from "@/components/_ui/Modal";
 import { Textarea } from "@/components/_ui/Textarea";
 import { Edit } from "lucide-react";
@@ -12,7 +12,7 @@ import { EditExerciseModalProps } from "./types";
 import useEditExerciseModal from "./hooks/useEditExerciseModal";
 import { ExerciseType } from "@/types/Exercise";
 import { ButtonAdm } from "@/components/_ui/ButtonAdm";
-import {Upload} from "lucide-react";
+import { Upload } from "lucide-react";
 
 const EditExerciseModal: React.FC<EditExerciseModalProps> = ({
     open,
@@ -31,9 +31,15 @@ const EditExerciseModal: React.FC<EditExerciseModalProps> = ({
         handleOnInputChange,
         handleOnOutputChange,
         handleOnTitleChange,
-        handleOnDescriptionChange, 
+        handleOnDescriptionChange,
         handleOnExerciseTypeChange,
-    } = useEditExerciseModal(editingExercise, saveEdit, cancelEdit, onClose);
+    } = useEditExerciseModal(
+        editingExercise,
+        pdfFile,
+        saveEdit,
+        cancelEdit,
+        onClose
+    );
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     return (

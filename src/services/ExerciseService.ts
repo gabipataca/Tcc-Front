@@ -55,10 +55,10 @@ class ExerciseService {
         return response.data;
     }
 
-    static async updateExercise(exercise: FormData): Promise<Exercise> {
+    static async updateExercise(exercise: FormData): Promise<ServerSideResponse<Exercise>> {
         const exerciseId = exercise.get("id");
 
-        const response = await apiRequest<Exercise>(
+        const response = await apiRequest<ServerSideResponse<Exercise>>(
             `/api/exercise/${exerciseId}`,
             {
                 method: "PUT",

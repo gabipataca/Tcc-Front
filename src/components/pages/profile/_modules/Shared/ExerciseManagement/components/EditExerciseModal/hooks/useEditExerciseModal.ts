@@ -10,7 +10,7 @@ const schema = z.object({
     id: z.number().min(1),
     title: z.string().min(2).max(100),
     exerciseType: z.custom<ExerciseType>(),
-    description: z.string().min(10).max(1000, "Descrição muito longa"),
+    description: z.string().optional(),
     inputs: z
         .string()
         .min(1, "O exercício deve ter pelo menos um input")
@@ -23,6 +23,7 @@ const schema = z.object({
 
 const useEditExerciseModal = (
     data: Exercise,
+    pdfFile: File | null,
     saveEdit: (exercise: EditExerciseRequest) => Promise<void>,
     cancelEdit: () => void,
     onClose: () => void
@@ -33,7 +34,7 @@ const useEditExerciseModal = (
         exerciseTypeId: data.exerciseTypeId,
         createdAt: data.createdAt,
         description: data.description,
-        estimatedTime: data.estimatedTime,
+        estimatedTime: 0,
         judgeUuid: data.judgeUuid ?? "",
         inputs: data.inputs.map((x, idx) => ({
             id: x.id,
@@ -48,6 +49,7 @@ const useEditExerciseModal = (
             exerciseInputId: x.exerciseInputId,
             orderId: idx,
         })),
+        pdfFile: new File([], "")
     });
 
     const {
@@ -180,9 +182,16 @@ const useEditExerciseModal = (
 
     const handleValidConfirm = useCallback(
         async (data: EditExerciseRequest) => {
-            await saveEdit(exerciseState);
+            if(pdfFile == null) {
+                return;
+            }
+
+            await saveEdit({
+                ...exerciseState,
+                pdfFile: pdfFile
+            });
         },
-        [exerciseState, saveEdit]
+        [exerciseState, pdfFile, saveEdit]
     );
 
     const handleInvalidConfirm: SubmitErrorHandler<EditExerciseRequestFormValues> =

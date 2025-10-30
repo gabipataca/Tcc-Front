@@ -38,6 +38,8 @@ export const useExerciseManagement = () => {
     const [outputValues, setOutputValues] = useState<string>("");
     const [pdfFile, setPdfFile] = useState<File | null>(null);
 
+    const [updatePdfFile, setUpdatePdfFile] = useState<File | null>(null);
+
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(
         null
@@ -54,6 +56,12 @@ export const useExerciseManagement = () => {
     const handleFileChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             setPdfFile(e.target.files[0]);
+        }
+    }, []);
+
+    const handleUpdateFileChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            setUpdatePdfFile(e.target.files[0]);
         }
     }, []);
 
@@ -148,9 +156,9 @@ export const useExerciseManagement = () => {
 
     const saveEdit = useCallback(
         async (exercise: EditExerciseRequest) => {
-            if (!editingExercise || editingExercise.id == -1) return;
+            if (!editingExercise || editingExercise.id == -1 || updatePdfFile == null) return;
 
-            await updateExercise({
+            await updateExercise(exercise.id, {
                 id: exercise.id,
                 description: exercise.description,
                 judgeUuid: exercise.judgeUuid!,
@@ -160,11 +168,12 @@ export const useExerciseManagement = () => {
                 title: exercise.title,
                 createdAt: exercise.createdAt,
                 estimatedTime: exercise.estimatedTime,
+                pdfFile: updatePdfFile
             });
 
             toggleEditExerciseModal();
         },
-        [editingExercise, toggleEditExerciseModal, updateExercise]
+        [editingExercise, updatePdfFile, toggleEditExerciseModal, updateExercise]
     );
 
     const handleLoadExercises = useCallback(async () => {
@@ -196,6 +205,7 @@ export const useExerciseManagement = () => {
         exerciseTypeFilter,
         toggleExerciseTypeFilter,
         pdfFile,
+        updatePdfFile,
         handleFileChange,
         searchTerm,
         setSearchTerm,
@@ -218,6 +228,7 @@ export const useExerciseManagement = () => {
         nextPage,
         prevPage,
         handleLoadExercises,
+        handleUpdateFileChange,
         loadingExercises,
     };
 };
