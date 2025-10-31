@@ -6,7 +6,6 @@
  */
 export type QuestionType = 0 | 1 | 2;
 
-
 /**
  * Represents a question in the system.
  * It can be a general question, an exercise question, or a question related to problems or issues.
@@ -50,4 +49,40 @@ export interface Question {
      * @remarks This can be a general question, an exercise question, or a question related to problems or issues.
      */
     questionType: QuestionType;
+}
+
+export interface Answer {
+    id: number;
+    content: string;
+    userId: string;
+}
+
+export interface QuestionDisplay {
+    id: number;
+    title: string;
+    question: string;
+    askedBy: string;
+    askedAt: string;
+    status: "pending" | "answered";
+    answer?: string;
+    answeredAt?: string;
+    language?: string;
+}
+
+export interface QuestionUser {
+    id: number;
+    ra: string;
+    email: string;
+    createdAt: string;
+    joinYear: number;
+    lastLoggedAt: string;
+    name: string;
+    group: QuestionGroup;
+}
+
+export interface QuestionGroup {
+    id: number;
+    leaderId: number;
+    name: string;
+    users: Omit<QuestionUser, "group">[]; // ou users: QuestionUser[]; pq não esta aceitando any
 }

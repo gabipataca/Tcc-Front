@@ -1,7 +1,6 @@
-import { Question, QuestionType } from ".";
-import { PagedResult } from "../Global";
-import { GenericUserInfo } from "../User";
-
+import type { QuestionType } from ".";
+import type { PagedResult } from "../Global";
+import type { GenericUserInfo } from "../User";
 
 export interface AnswerResponse {
     id: number;
@@ -21,5 +20,14 @@ export interface QuestionResponse {
     questionType: QuestionType;
 }
 
-
 export type GetQuestionsResponse = PagedResult<QuestionResponse>;
+
+export interface CreateQuestionResponse {
+    id: number;
+    message: string;
+}
+
+export interface AnswerQuestionResponse {
+    id: number;
+    message: string;
+}

@@ -4,13 +4,13 @@ import type {
     CreateCompetitionRequest,
     InscribeGroupInCompetitionRequest,
     UpdateCompetitionRequest,
-    SubmitExerciseRequest, //já deixei sincronizado com oq tem no back, precisa ver se vai usar
+    SubmitExerciseRequest, //já deixei sincronizado com oq tem no back(ta faltando coisa no back que tem no frontend), precisa ver se vai usar
 } from "@/types/Competition/Requests";
 import type {
     CompetitionResponse,
     InscribeGroupInCompetitionResponse,
-    CurrentCompetitionResponse, //já deixei sincronizado com oq tem no back, precisa ver se vai usar
-    SubmissionResponse, //já deixei sincronizado com oq tem no back, precisa ver se vai usar
+    CurrentCompetitionResponse, //já deixei sincronizado com oq tem no back (ta faltando coisa no back que tem no frontend), precisa ver se vai usar
+    SubmissionResponse, //já deixei sincronizado com oq tem no back(ta faltando coisa no back que tem no frontend), precisa ver se vai usar
 } from "@/types/Competition/Responses";
 import type { ServerSideResponse } from "@/types/Global";
 
