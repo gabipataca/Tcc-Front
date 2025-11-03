@@ -5,7 +5,8 @@ import { useState, useCallback } from "react"
 import { Box, Paper, Typography } from "@mui/material"
 import Button from "@/components/_ui/Button"
 import { FaUpload, FaPaperPlane, FaDownload } from "react-icons/fa"
-import CompetitionService from "@/services/CompetitionService"
+import { useCompetitionHub } from "@/contexts/CompetitionHubContext"
+import { useUser } from "@/contexts/UserContext"
 
 // Exercícios e linguagens
 const exercises = [..."ABCDEFGHIJ"]
@@ -33,19 +34,22 @@ const languageTemplates: Record<string, string> = {
   Python: "template.py",
 }
 
+// Judge0 language IDs
 const languageIds: Record<string, number> = {
-  C: 1,
-  "C++": 2,
-  "C#": 3,
-  Go: 4,
-  Java: 5,
-  JavaScript: 6,
-  PHP: 7,
-  Python: 8,
+  C: 50,        // C (GCC 9.2.0)
+  "C++": 54,    // C++ (GCC 9.2.0)
+  "C#": 51,     // C# (Mono 6.6.0.161)
+  Go: 60,       // Go (1.13.5)
+  Java: 62,     // Java (OpenJDK 13.0.1)
+  JavaScript: 63, // JavaScript (Node.js 12.14.0)
+  PHP: 68,      // PHP (7.4.1)
+  Python: 71,   // Python (3.8.1)
 }
 
 // Hook separado
 const useSendExercise = () => {
+  const { user } = useUser()
+  const { sendExerciseAttempt, ongoingCompetition } = useCompetitionHub()
   const [selectedExercise, setSelectedExercise] = useState<string>(exercises[0])
   const [selectedLanguage, setSelectedLanguage] = useState<string>(languages[0])
   const [attachedFileName, setAttachedFileName] = useState<string | null>(null)
@@ -86,47 +90,51 @@ const useSendExercise = () => {
       return
     }
 
+    if (!user?.group?.id || !ongoingCompetition?.id) {
+      alert("Erro: Dados do usuário ou competição não encontrados.")
+      return
+    }
+
     setIsSubmitting(true)
     try {
       const exerciseId = exercises.indexOf(selectedExercise) + 1
       const languageId = languageIds[selectedLanguage]
 
-      // TODO: Substituir 1 pelo ID da competição atual
-      const competitionId = 1
+      console.log("[analiseJugde] Reading file content for submission...")
+      
+      // Read file content
+      const code = await file.text()
 
-      console.log("[v0] Submetendo exercício:", {
-        competitionId,
+      console.log("[analiseJugde] Submetendo exercício:", {
+        groupId: user.group.id,
+        competitionId: ongoingCompetition.id,
         exerciseId,
         languageId,
         fileName: file.name,
+        codeLength: code.length,
       })
 
-      const response = await CompetitionService.submitExerciseSolution({
-        competitionId,
+      // Send via SignalR - response will come via ReceiveExerciseAttemptResponse event
+      await sendExerciseAttempt({
+        groupId: user.group.id,
+        competitionId: ongoingCompetition.id,
         exerciseId,
         languageId,
-        solutionFile: file,
+        code,
       })
 
-      if (response.success) {
-        if (response.accepted) {
-          alert(`✅ Solução aceita! Tempo de execução: ${response.executionTime}ms`)
-        } else {
-          alert(`❌ Solução rejeitada: ${response.errorMessage || "Erro desconhecido"}`)
-        }
-      } else {
-        alert(`Erro ao enviar: ${response.message}`)
-      }
+      // User will be notified automatically by the CompetitionHubContext
+      alert(`📤 Submissão enviada! Aguarde o resultado do judge...`)
 
       setAttachedFileName(null)
       setFile(null)
     } catch (error) {
-      console.error("[v0] Erro ao submeter exercício:", error)
+      console.error("[analiseJugde] Erro ao submeter exercício:", error)
       alert("Ocorreu um erro ao enviar a análise. Tente novamente.")
     } finally {
       setIsSubmitting(false)
     }
-  }, [file, selectedExercise, selectedLanguage])
+  }, [file, selectedExercise, selectedLanguage, user, ongoingCompetition, sendExerciseAttempt])
 
   return {
     selectedExercise,

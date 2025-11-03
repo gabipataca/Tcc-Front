@@ -51,3 +51,21 @@ export interface InscribeGroupInCompetitionRequest {
     competitionId: number;
     groupId: number;
 }
+
+
+export type LanguageType =
+    | 0 // CSharp
+    | 1 // Java
+    | 2 // Javascript
+    | 3 // Go
+    | 4 // Python
+    | 5 // C
+    | 6 // C++
+    | 7 // PHP;
+
+
+export interface GroupExerciseAttemptRequest {
+    exerciseId: number;
+    languageType: LanguageType;
+    code: string;
+}

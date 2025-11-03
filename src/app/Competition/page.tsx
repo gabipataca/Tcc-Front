@@ -1,14 +1,13 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import Balao from "@/components/_ui/Balao"
 import { Box, Modal } from "@mui/material"
 import Button from "@/components/_ui/Button"
 import { StyledRankingCellContainer } from "@/components/pages/ranking/styles"
 import AnaliseJuiz from "../Competition/analiseJugde"
-// import CompetitionService from "@/services/CompetitionService"
-// import type { CompetitionRanking } from "@/types/Competition"
+import { useRanking } from "@/contexts/CompetitionHubContext/hooks/useRanking"
 
 const letras = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
 
@@ -157,64 +156,39 @@ data.sort((a, b) => {
 
 const RankingPage: React.FC = () => {
   const [open, setOpen] = useState(false)
+  const { liveRanking } = useRanking()
 
-  /*
-  const [data, setData] = useState<GroupRankingData[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  // Transform SignalR ranking data to component format
+  const data = useMemo(() => {
+    return liveRanking.map((rank) => {
+      const exercisesAccepteds: string[] = []
+      const times: { [key: string]: string } = {}
 
-  useEffect(() => {
-    const fetchRanking = async () => {
-      try {
-        setLoading(true)
-        const response = await CompetitionService.getCurrentCompetitionWithRanking()
+      // Process each exercise attempt
+      rank.exerciseAttempts?.forEach((attempt) => {
+        const exerciseLetter = letras[attempt.exerciseId - 1]
+        if (!exerciseLetter) return
 
-        if (!response?.success || !response.data) {
-          throw new Error("Erro ao buscar ranking")
+        // If there are attempts, the exercise was solved (accepted)
+        if (attempt.attempts > 0 && !exercisesAccepteds.includes(exerciseLetter)) {
+          exercisesAccepteds.push(exerciseLetter)
         }
 
-        const transformedData: GroupRankingData[] = response.data.competitionRankings
-          .map((ranking: CompetitionRanking) => ({
-            group: ranking.group?.name || `Grupo ${ranking.groupId}`,
-            exercisesAccepteds: [],
-            times: {},
-            total: `${ranking.points} (${Math.round(ranking.penalty)})`,
-            totalCount: ranking.points,
-            totalScore: Math.round(ranking.penalty),
-          }))
-          .sort((a, b) => {
-            if (a.totalCount === b.totalCount) return a.totalScore - b.totalScore
-            return b.totalCount - a.totalCount
-          })
+        // Format: "attempts/time" (e.g., "2/64" means 2 attempts, 64 minutes)
+        // Using a placeholder time since penalty is at ranking level, not per exercise
+        times[exerciseLetter] = `${attempt.attempts}/-`
+      })
 
-        setData(transformedData)
-        setError(null)
-      } catch (err: any) {
-        setError(err.message || "Erro ao carregar ranking")
-      } finally {
-        setLoading(false)
+      return {
+        group: rank.group.name,
+        exercisesAccepteds,
+        times,
+        total: `${rank.points} (${Math.round(rank.penalty)})`,
+        totalCount: rank.points,
+        totalScore: Math.round(rank.penalty),
       }
-    }
-
-    fetchRanking()
-  }, [])
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <p className="text-xl text-gray-600">Carregando ranking...</p>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <p className="text-xl text-red-600">{error}</p>
-      </div>
-    )
-  }
-  */
+    })
+  }, [liveRanking])
 
   return (
     <div className="relative flex flex-col items-center p-8 bg-gray-100 min-h-screen">

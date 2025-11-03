@@ -4,7 +4,7 @@ import type React from "react"
 import MuiButton from "@mui/material/Button"
 import AddIcon from "@mui/icons-material/Add"
 
-import { useState, useEffect } from "react"
+import { useState, useMemo } from "react"
 import { useSnackbar } from "notistack"
 import {
   Box,
@@ -22,7 +22,9 @@ import {
 } from "@mui/material"
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown"
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp"
-import type { Question } from "./questions-student-screen"
+import type { Question } from "@/components/pages/Competition/pages/Questions/types"
+import { useQuestions } from "@/components/pages/Competition/contexts/QuestionsContext"
+import { useUser } from "@/contexts/UserContext"
 
 // Mock data para demonstração
 const mockQuestions: Question[] = [
@@ -197,33 +199,16 @@ const UserQuestions = ({ onOpenModal }: { onOpenModal?: () => void }) => {
   const { enqueueSnackbar } = useSnackbar()
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
-  const [questions, setQuestions] = useState<Question[]>(mockQuestions)
-  const [loading, setLoading] = useState(false)
-
-  useEffect(() => {
-    const fetchQuestions = async () => {
-      setLoading(true)
-      try {
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 500))
-        // In production, replace with actual API call:
-        // const response = await fetch('/api/questions')
-        // const data = await response.json()
-        // setQuestions(data)
-        setQuestions(mockQuestions)
-      } catch (error) {
-        enqueueSnackbar("Erro ao carregar as perguntas. Tente novamente.", {
-          variant: "error",
-          autoHideDuration: 2500,
-          anchorOrigin: { vertical: "bottom", horizontal: "right" },
-        })
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchQuestions()
-  }, [enqueueSnackbar])
+  
+  // Use questions from SignalR context instead of mock data
+  const { questions: allQuestions } = useQuestions()
+  const { user } = useUser()
+  
+  // Filter questions from current user's group
+  const questions = useMemo(() => {
+    if (!user?.group?.id) return [];
+    return allQuestions.filter(q => q.askedBy === user.name || q.askedBy === `Grupo ${user.group?.id ?? ''}`);
+  }, [allQuestions, user])
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage)
@@ -360,20 +345,14 @@ const UserQuestions = ({ onOpenModal }: { onOpenModal?: () => void }) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {loading ? (
-                <TableRow>
-                  <TableCell colSpan={6} align="center" sx={{ fontSize: "18px", py: 3 }}>
-                    Carregando perguntas...
-                  </TableCell>
-                </TableRow>
-              ) : paginatedQuestions.length === 0 ? (
+              {paginatedQuestions.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} align="center" sx={{ fontSize: "18px", py: 3 }}>
                     Nenhuma dúvida encontrada.
                   </TableCell>
                 </TableRow>
               ) : (
-                paginatedQuestions.map((question) => <QuestionRow key={question.id} question={question} />)
+                paginatedQuestions.map((question: Question) => <QuestionRow key={question.id} question={question} />)
               )}
             </TableBody>
           </Table>

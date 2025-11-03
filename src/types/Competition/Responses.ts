@@ -1,4 +1,5 @@
 import { Competition, CompetitionStatus } from ".";
+import { JudgeResponseEnum } from "../Exercise";
 import { CreateCompetitionRequest } from "./Requests";
 
 /**
@@ -38,4 +39,13 @@ export interface InscribeGroupInCompetitionResponse {
     competitionId: number;
     groupId: number;
     createdOn: string;
+}
+
+
+export interface ExerciseSubmissionResponse {
+    id: number;
+    exerciseId: number;
+    groupId: number;
+    accepted: boolean;
+    judgeResponse: JudgeResponseEnum;
 }

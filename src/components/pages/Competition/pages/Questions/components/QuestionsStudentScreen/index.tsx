@@ -20,7 +20,9 @@ import CodeIcon from "@mui/icons-material/Code"
 import TitleIcon from "@mui/icons-material/Title"
 import CloseIcon from "@mui/icons-material/Close"
 import { SnackbarProvider, useSnackbar } from "notistack"
-import UserQuestions from "./components/UserQuestions";
+import UserQuestions from "./components/UserQuestions"
+import { useUser } from "@/contexts/UserContext"
+import { useCompetitionHub } from "@/contexts/CompetitionHubContext"
 
 interface InputFieldProps {
   label: string
@@ -134,6 +136,8 @@ const MuiSelectField = ({ label, options, placeholder, icon }: MuiSelectFieldPro
 
 const AskQuestionsContent = ({ onClose }: { onClose: () => void }) => {
   const { enqueueSnackbar } = useSnackbar()
+  const { user } = useUser()
+  const { sendQuestion, ongoingCompetition } = useCompetitionHub()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formData, setFormData] = useState({
     exercise: "",
@@ -143,13 +147,36 @@ const AskQuestionsContent = ({ onClose }: { onClose: () => void }) => {
   })
 
   const handleSubmit = async () => {
+    if (!formData.question.trim()) {
+      enqueueSnackbar("Por favor, escreva sua pergunta.", {
+        variant: "warning",
+        autoHideDuration: 2500,
+        anchorOrigin: { vertical: "bottom", horizontal: "right" },
+      })
+      return
+    }
+
+    if (!user?.group?.id || !ongoingCompetition?.id) {
+      enqueueSnackbar("Erro: Dados do usuário ou competição não encontrados.", {
+        variant: "error",
+        autoHideDuration: 2500,
+        anchorOrigin: { vertical: "bottom", horizontal: "right" },
+      })
+      return
+    }
+
     setIsSubmitting(true)
     let errored = false
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => {
-        setTimeout(resolve, 1000)
+      const exerciseLetters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
+      const exerciseId = formData.exercise ? exerciseLetters.indexOf(formData.exercise) + 1 : null
+
+      await sendQuestion({
+        groupId: user.group.id,
+        competitionId: ongoingCompetition.id,
+        exerciseId: exerciseId,
+        questionText: formData.question.trim(),
       })
 
       enqueueSnackbar("Pergunta enviada com sucesso!", {
@@ -157,7 +184,7 @@ const AskQuestionsContent = ({ onClose }: { onClose: () => void }) => {
         autoHideDuration: 2500,
         anchorOrigin: { vertical: "bottom", horizontal: "right" },
       })
-    } catch (error) {
+    } catch {
       errored = true
       enqueueSnackbar("Ocorreu um erro ao enviar a pergunta. Tente novamente.", {
         variant: "error",

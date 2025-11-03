@@ -2,14 +2,11 @@
 
 import { FC, ReactNode } from "react";
 import QuestionsContextProvider from "../../components/pages/Competition/providers/QuestionsContextProvider";
-import OngoingCompetitionContextProvider from "../../components/pages/Competition/providers/OngoingCompetitionContextProvider";
-
-
-import NavbarCompetition from "@/components/_ui/NavbarCompetition"; 
+import { CompetitionHubProvider } from "@/contexts/CompetitionHubContext";
 
 const CompetitionPageProviders: FC<{ children: ReactNode }> = ({ children }) => {
     return(
-        <OngoingCompetitionContextProvider>
+        <CompetitionHubProvider>
             <QuestionsContextProvider>
             
                 <main className="flex-grow w-full">
@@ -17,7 +14,7 @@ const CompetitionPageProviders: FC<{ children: ReactNode }> = ({ children }) => 
                 </main>
 
             </QuestionsContextProvider>
-        </OngoingCompetitionContextProvider>
+        </CompetitionHubProvider>
     );
 }
 
