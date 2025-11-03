@@ -2,52 +2,78 @@ import { apiRequest } from "@/libs/apiClient";
 import type { ServerSideResponse } from "@/types/Global";
 import type { UserEditRequest } from "@/types/User/Requests";
 import type { GetUsersResponse } from "@/types/User/Responses";
-import type { GenericUserInfo } from "@/types/User";
+import type { GenericUserInfo, User, UserRole } from "@/types/User";
 
 class UserService {
-    public async GetUsers(page: number, pageSize: number, search?: string) {
+    static async getUserInfoSSR(): Promise<User> {
+        const response = await apiRequest<User>(`/User`, {
+            method: "GET",
+        });
+
+        return response.data;
+    }
+
+    static async GetUsers(
+        page: number,
+        pageSize: number,
+        search: string,
+        abortSignal: AbortSignal,
+        role: UserRole
+    ): Promise<ServerSideResponse<GetUsersResponse>> {
         const response = await apiRequest<ServerSideResponse<GetUsersResponse>>(
-            "/api/user",
+            `/api/user`,
             {
                 method: "GET",
                 params: {
                     page,
                     pageSize,
                     search,
+                    role,
                 },
+                signal: abortSignal,
             }
         );
+
         return response.data;
     }
 
-    public async GetUserById(id: string) {
-        const response = await apiRequest<ServerSideResponse<GenericUserInfo>>(
-            `/api/user/${id}`,
-            {
-                method: "GET",
-            }
-        );
+    static async GetTeacherUsers(
+        page: number,
+        pageSize: number,
+        search: string,
+        abortSignal: AbortSignal
+    ): Promise<GetUsersResponse> {
+        const response = await apiRequest<GetUsersResponse>(`/api/user`, {
+            method: "GET",
+            params: {
+                page,
+                pageSize,
+                search,
+                role: "Teacher",
+            },
+            signal: abortSignal,
+        });
+
         return response.data;
     }
 
-    public async UpdateUser(id: string, request: UserEditRequest) {
+    static async updateUser(userId: string, request: UserEditRequest) {
         const response = await apiRequest<ServerSideResponse<GenericUserInfo>>(
-            `/api/user/${id}`,
+            `/api/user/${userId}`,
             {
                 method: "PUT",
                 data: request,
             }
         );
+
         return response.data;
     }
 
-    public async DeleteUser(id: string) {
-        const response = await apiRequest<ServerSideResponse<void>>(
-            `/api/user/${id}`,
-            {
-                method: "DELETE",
-            }
-        );
+    static async deleteUser(userId: string) {
+        const response = await apiRequest<void>(`/api/user/${userId}`, {
+            method: "DELETE",
+        });
+
         return response.data;
     }
 }
