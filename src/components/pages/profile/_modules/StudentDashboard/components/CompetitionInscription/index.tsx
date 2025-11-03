@@ -144,7 +144,7 @@ const CompetitionInscription: React.FC<{
                                                 htmlFor="competition-name"
                                                 className="text-xl font-medium text-slate-700"
                                             >
-                                                Nome da Maratona
+                                                Nome da Maratona:
                                             </Label>
                                             {isSubCompetitionsLoading ? (
                                                 <Skeleton
@@ -164,11 +164,11 @@ const CompetitionInscription: React.FC<{
                                             )}
                                         </div>
 
-                                        <div className="flex flex-row">
+                                        <div className="flex flex-row items-center">
                                             <Label className="text-xl font-medium text-slate-700">
-                                                Máximo de Membros
+                                                Máximo de Membros:
                                             </Label>
-                                            <div className="mt-2 p-4 h-full flex items-center justify-center bg-slate-50 rounded-lg border border-slate-200">
+                                            <div className="ml-4 mt-2 py-2 px-4  flex items-center justify-center bg-slate-50 rounded-lg border border-slate-200 w-fit">
                                                 <div className="flex items-center justify-center gap-2">
                                                     <Users className="h-5 w-5 flex-shrink-0 text-[#4F85A6]" />
                                                     {isSubCompetitionsLoading ? (
