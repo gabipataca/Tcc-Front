@@ -1,60 +1,12 @@
 import React, { useState } from "react";
-import { Calendar, Edit, Hash, Mail, UserCheck, Users, X } from "lucide-react";
+import { Calendar, Edit, Hash, Mail, UserCheck, Users } from "lucide-react";
 import { ButtonAdm } from "@/components/_ui/ButtonAdm";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/_ui/Card";
 import { useUser } from "@/contexts/UserContext";
 import { User } from "@/types/User";
 import EditStudentInfoModal from "./components/EditStudentInfoModal";
 
-// --- Componentes de UI Falsos (Mock) ---
-// Para que este código seja executável, adicionei versões simples dos seus componentes de UI.
-// Substitua estes pelos seus componentes reais de "@/components/_ui/..."
-
-const Card = ({
-    children,
-    className = "",
-}: {
-    children: React.ReactNode;
-    className?: string;
-}) => (
-    <div
-        className={`rounded-xl border bg-white text-slate-900 shadow-sm ${className}`}
-    >
-        {children}
-    </div>
-);
-const CardHeader = ({
-    children,
-    className = "",
-}: {
-    children: React.ReactNode;
-    className?: string;
-}) => (
-    <div className={`flex flex-col space-y-1.5 p-6 ${className}`}>
-        {children}
-    </div>
-);
-const CardTitle = ({
-    children,
-    className = "",
-}: {
-    children: React.ReactNode;
-    className?: string;
-}) => (
-    <h3
-        className={`text-2xl font-semibold leading-none tracking-tight ${className}`}
-    >
-        {children}
-    </h3>
-);
-const CardContent = ({
-    children,
-    className = "",
-}: {
-    children: React.ReactNode;
-    className?: string;
-}) => <div className={`p-6 pt-0 ${className}`}>{children}</div>;
-
-// --- Componente da Seção de Informações do Aluno (do seu código) ---
+// --- Student Information Section Component ---
 const StudentInfoSection: React.FC<{
     info?: User;
     onEditClick: () => void;
