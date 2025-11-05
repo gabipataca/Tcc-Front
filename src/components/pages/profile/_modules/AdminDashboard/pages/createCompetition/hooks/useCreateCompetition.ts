@@ -304,7 +304,6 @@ const useCreateCompetition = () => {
                 setTimeout(() => {
                     setIsSubmitting(false);
                 }, 500);
-                return;
                 if (!errored) {
                     setTimeout(() => {
                         toggleMenu("Main");
