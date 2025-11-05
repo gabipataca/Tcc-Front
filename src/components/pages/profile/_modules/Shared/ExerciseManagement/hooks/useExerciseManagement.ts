@@ -92,8 +92,12 @@ export const useExerciseManagement = () => {
 
     const handleCreateExercise = useCallback(async () => {
         if (!title.trim() || !type || !pdfFile) {
-            alert(
-                "Por favor, preencha o título, selecione o tipo e anexe um arquivo PDF."
+            enqueueSnackbar(
+                "Por favor, preencha o título, selecione o tipo e anexe um arquivo PDF.",
+                {
+                    variant: "warning",
+                    anchorOrigin: { vertical: "bottom", horizontal: "right" }
+                }
             );
             return;
         }
