@@ -74,6 +74,56 @@ export interface ExerciseSubmissionResponse {
 }
 
 /**
+ * Generic user information returned in responses.
+ */
+export interface GenericUserInfoResponse {
+    /**
+     * User UUID.
+     */
+    id: string;
+
+    /**
+     * User's full name.
+     */
+    name: string;
+
+    /**
+     * User's email address.
+     */
+    email: string;
+
+    /**
+     * Account creation timestamp (ISO 8601).
+     */
+    createdAt: string;
+
+    /**
+     * Last login timestamp (ISO 8601).
+     */
+    lastLoggedAt: string;
+
+    /**
+     * Student registration number.
+     */
+    ra: string;
+
+    /**
+     * Year the student joined.
+     */
+    joinYear: number;
+
+    /**
+     * Department (nullable).
+     */
+    department: string | null;
+
+    /**
+     * Exercises created (nullable).
+     */
+    exercisesCreated: null;
+}
+
+/**
  * Question created during competition.
  */
 export interface QuestionResponse {
@@ -83,44 +133,44 @@ export interface QuestionResponse {
     id: number;
 
     /**
-     * Identifier of the group that asked.
-     */
-    groupId: number;
-
-    /**
      * Identifier of the competition.
      */
     competitionId: number;
 
     /**
-     * Exercise ID if question is about a specific exercise.
+     * Exercise ID if question is about a specific exercise (optional).
      */
     exerciseId?: number | null;
 
     /**
-     * The question text.
+     * UUID of the user who created the question.
      */
-    questionText: string;
+    userId: string;
 
     /**
-     * Timestamp when asked (ISO 8601).
+     * Complete user information of the person who asked.
      */
-    askedAt: string;
+    user: GenericUserInfoResponse;
 
     /**
-     * Name of the user who asked.
+     * The question content/text.
      */
-    askedBy: string;
+    content: string;
 
     /**
-     * Whether the question has been answered.
+     * Answer ID if the question has been answered (optional).
      */
-    isAnswered: boolean;
+    answerId?: number | null;
 
     /**
-     * Associated answer if available.
+     * Associated answer if available (optional).
      */
     answer?: AnswerResponse | null;
+
+    /**
+     * Type of the question (enum).
+     */
+    questionType: number;
 }
 
 /**
@@ -133,34 +183,24 @@ export interface AnswerResponse {
     id: number;
 
     /**
-     * Identifier of the question being answered.
+     * The answer content/text.
      */
-    questionId: number;
+    content: string;
 
     /**
-     * The answer text.
+     * UUID of the user who answered (teacher/admin).
      */
-    answerText: string;
+    userId: string;
 
     /**
-     * Timestamp when answered (ISO 8601).
+     * Complete user information of the person who answered.
      */
-    answeredAt: string;
+    user: GenericUserInfoResponse;
 
     /**
-     * Name of the teacher/admin who answered.
+     * Identifier of the question being answered (for reference).
      */
-    answeredBy: string;
-
-    /**
-     * ID of the teacher/admin who answered.
-     */
-    answeredById: string;
-
-    /**
-     * Whether answer is private to the asking group.
-     */
-    isPrivate: boolean;
+    questionId?: number;
 }
 
 /**

@@ -108,6 +108,8 @@ export const CompetitionHubProvider: React.FC<{ children: React.ReactNode }> = (
         // Connection established - receive competition data
         webSocketConnection.on("OnConnectionResponse", (data: OnConnectionResponse) => {
             console.log("📡 OnConnectionResponse:", data);
+            setRanking(data?.competitionRankings || []);
+            console.log(data?.competitionRankings);
             setOngoingCompetition(data);
             setIsConnected(true);
         });
@@ -115,6 +117,16 @@ export const CompetitionHubProvider: React.FC<{ children: React.ReactNode }> = (
         // Pong response for health check
         webSocketConnection.on("Pong", (response: { message: string }) => {
             console.log("🏓 Pong:", response.message);
+        });
+
+        // Exercise submission error - validation failed before processing
+        webSocketConnection.on("ReceiveExerciseAttemptError", (error: { message: string }) => {
+            console.error("❌ ReceiveExerciseAttemptError:", error);
+            enqueueSnackbar(error.message, {
+                variant: "error",
+                autoHideDuration: 5000,
+                anchorOrigin: { vertical: "bottom", horizontal: "right" },
+            });
         });
 
         // Exercise submission responses - for the student who submitted
@@ -283,6 +295,7 @@ export const CompetitionHubProvider: React.FC<{ children: React.ReactNode }> = (
             // Cleanup listeners
             webSocketConnection.off("OnConnectionResponse");
             webSocketConnection.off("Pong");
+            webSocketConnection.off("ReceiveExerciseAttemptError");
             webSocketConnection.off("ReceiveExerciseAttemptResponse");
             webSocketConnection.off("ReceiveExerciseAttempt");
             webSocketConnection.off("ReceiveRankingUpdate");

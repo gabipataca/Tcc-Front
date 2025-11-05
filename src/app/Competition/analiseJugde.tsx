@@ -1,15 +1,15 @@
 "use client"
 
 import type React from "react"
-import { useState, useCallback } from "react"
+import { useState, useCallback, useMemo } from "react"
 import { Box, Paper, Typography } from "@mui/material"
 import Button from "@/components/_ui/Button"
 import { FaUpload, FaPaperPlane, FaDownload } from "react-icons/fa"
 import { useCompetitionHub } from "@/contexts/CompetitionHubContext"
 import { useUser } from "@/contexts/UserContext"
+import { toBase64 } from "@/libs/utils"
 
 // Exercícios e linguagens
-const exercises = [..."ABCDEFGHIJ"]
 const languages = ["C", "C++", "C#", "Go", "Java", "JavaScript", "PHP", "Python"]
 
 const languageExtensions: Record<string, string> = {
@@ -36,25 +36,39 @@ const languageTemplates: Record<string, string> = {
 
 // Judge0 language IDs
 const languageIds: Record<string, number> = {
-  C: 50,        // C (GCC 9.2.0)
-  "C++": 54,    // C++ (GCC 9.2.0)
-  "C#": 51,     // C# (Mono 6.6.0.161)
-  Go: 60,       // Go (1.13.5)
-  Java: 62,     // Java (OpenJDK 13.0.1)
-  JavaScript: 63, // JavaScript (Node.js 12.14.0)
-  PHP: 68,      // PHP (7.4.1)
-  Python: 71,   // Python (3.8.1)
+  C: 5,        // C (GCC 9.2.0)
+  "C++": 6,    // C++ (GCC 9.2.0)
+  "C#": 0,     // C# (Mono 6.6.0.161)
+  Go: 3,       // Go (1.13.5)
+  Java: 1,     // Java (OpenJDK 13.0.1)
+  JavaScript: 2, // JavaScript (Node.js 12.14.0)
+  PHP: 7,      // PHP (7.4.1)
+  Python: 4,   // Python (3.8.1)
 }
 
 // Hook separado
 const useSendExercise = () => {
-  const { user } = useUser()
-  const { sendExerciseAttempt, ongoingCompetition } = useCompetitionHub()
-  const [selectedExercise, setSelectedExercise] = useState<string>(exercises[0])
-  const [selectedLanguage, setSelectedLanguage] = useState<string>(languages[0])
-  const [attachedFileName, setAttachedFileName] = useState<string | null>(null)
-  const [file, setFile] = useState<File | null>(null)
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+  const { user } = useUser();
+  const { sendExerciseAttempt, ongoingCompetition } = useCompetitionHub();
+
+  // A => Char Code 65
+  const exercisesInCompetition = useMemo(() => {
+    const charCodesWithId: Record<string, number> = {};
+    const exerciseIds = ongoingCompetition?.exercises?.map((ex) => ex.id) || [];
+    exerciseIds.forEach((id, index) => {
+      const char = String.fromCharCode(65 + index);
+      charCodesWithId[char] = id;
+    });
+
+    return charCodesWithId;
+  }, [ongoingCompetition?.exercises]);
+
+
+  const [selectedExercise, setSelectedExercise] = useState<string>("A");
+  const [selectedLanguage, setSelectedLanguage] = useState<string>(languages[0]);
+  const [attachedFileName, setAttachedFileName] = useState<string | null>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const handleExerciseChange = useCallback((event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedExercise(event.target.value)
@@ -97,13 +111,13 @@ const useSendExercise = () => {
 
     setIsSubmitting(true)
     try {
-      const exerciseId = exercises.indexOf(selectedExercise) + 1
+      const exerciseId = exercisesInCompetition[selectedExercise];
       const languageId = languageIds[selectedLanguage]
 
       console.log("[analiseJugde] Reading file content for submission...")
       
       // Read file content
-      const code = await file.text()
+      const code = toBase64((await file.text()));
 
       console.log("[analiseJugde] Submetendo exercício:", {
         groupId: user.group.id,
@@ -134,7 +148,7 @@ const useSendExercise = () => {
     } finally {
       setIsSubmitting(false)
     }
-  }, [file, selectedExercise, selectedLanguage, user, ongoingCompetition, sendExerciseAttempt])
+  }, [file, user?.group?.id, ongoingCompetition?.id, exercisesInCompetition, selectedExercise, selectedLanguage, sendExerciseAttempt])
 
   return {
     selectedExercise,
@@ -146,7 +160,7 @@ const useSendExercise = () => {
     handleSubmitAnalysis,
     handleDownloadTemplate,
     isSubmitting,
-    exercises,
+    exercisesInCompetition,
     languages,
   }
 }
@@ -163,7 +177,7 @@ const AnaliseJuiz: React.FC = () => {
     handleSubmitAnalysis,
     handleDownloadTemplate,
     isSubmitting,
-    exercises,
+    exercisesInCompetition,
     languages,
   } = useSendExercise()
 
@@ -265,7 +279,7 @@ const AnaliseJuiz: React.FC = () => {
               onChange={handleExerciseChange}
               disabled={isSubmitting}
             >
-              {exercises.map((letter: string) => (
+              {Object.keys(exercisesInCompetition).map((letter: string) => (
                 <option key={letter} value={letter}>
                   {letter}
                 </option>

@@ -40,19 +40,16 @@ export interface CreateGroupQuestionRequest {
     groupId: number;
 
     /**
-     * Identifier of the competition.
-     */
-    competitionId: number;
-
-    /**
      * Exercise ID if question is about a specific exercise.
      */
     exerciseId?: number | null;
 
     /**
-     * The question text.
+     * The question content.
      */
-    questionText: string;
+    content: string;
+
+    questionType: 0 | 1 | 2;
 }
 
 /**

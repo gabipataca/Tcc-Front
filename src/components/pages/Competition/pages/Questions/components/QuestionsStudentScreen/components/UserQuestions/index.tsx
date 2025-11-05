@@ -5,7 +5,6 @@ import MuiButton from "@mui/material/Button"
 import AddIcon from "@mui/icons-material/Add"
 
 import { useState, useMemo } from "react"
-import { useSnackbar } from "notistack"
 import {
   Box,
   Paper,
@@ -26,94 +25,11 @@ import type { Question } from "@/components/pages/Competition/pages/Questions/ty
 import { useQuestions } from "@/components/pages/Competition/contexts/QuestionsContext"
 import { useUser } from "@/contexts/UserContext"
 
-// Mock data para demonstração
-const mockQuestions: Question[] = [
-  {
-    id: 1,
-    title: "Dúvida sobre laço for no Exercício A",
-    question: "Como faço para iterar sobre um array usando for?",
-    askedBy: "João Silva",
-    askedAt: "2024-01-15T10:30:00",
-    status: "answered",
-    answer: "Você pode usar for(int i = 0; i < array.length; i++) para iterar sobre o array.",
-    answeredAt: "2024-01-15T14:20:00",
-    language: "C",
-  },
-  {
-    id: 2,
-    title: "Problema com ponteiros em C",
-    question: "Não estou conseguindo entender como funcionam os ponteiros.",
-    askedBy: "João Silva",
-    askedAt: "2024-01-16T09:15:00",
-    status: "pending",
-    language: "C",
-  },
-  {
-    id: 3,
-    title: "Erro de compilação no Exercício B",
-    question: "Estou recebendo um erro de sintaxe na linha 15.",
-    askedBy: "João Silva",
-    askedAt: "2024-01-17T11:45:00",
-    status: "answered",
-    answer: "Você esqueceu de adicionar um ponto e vírgula no final da linha 14.",
-    answeredAt: "2024-01-17T13:30:00",
-    language: "Java",
-  },
-  {
-    id: 4,
-    title: "Como usar funções recursivas?",
-    question: "Preciso de ajuda para entender recursão no Exercício C.",
-    askedBy: "João Silva",
-    askedAt: "2024-01-18T08:20:00",
-    status: "pending",
-    language: "Python",
-  },
-  {
-    id: 5,
-    title: "Dúvida sobre arrays multidimensionais",
-    question: "Como declarar e usar matrizes em C++?",
-    askedBy: "João Silva",
-    askedAt: "2024-01-19T10:00:00",
-    status: "answered",
-    answer: "Use int matriz[linhas][colunas] para declarar uma matriz.",
-    answeredAt: "2024-01-19T15:45:00",
-    language: "C++",
-  },
-  {
-    id: 6,
-    title: "Problema com strings em C",
-    question: "Como concatenar duas strings?",
-    askedBy: "João Silva",
-    askedAt: "2024-01-20T09:30:00",
-    status: "pending",
-    language: "C",
-  },
-  {
-    id: 7,
-    title: "Erro de lógica no Exercício D",
-    question: "Meu código não está retornando o resultado esperado.",
-    askedBy: "João Silva",
-    askedAt: "2024-01-21T14:15:00",
-    status: "answered",
-    answer: "Você precisa inverter a condição do if na linha 20.",
-    answeredAt: "2024-01-21T16:00:00",
-    language: "Java",
-  },
-  {
-    id: 8,
-    title: "Como usar structs em C?",
-    question: "Não entendi como criar e usar estruturas.",
-    askedBy: "João Silva",
-    askedAt: "2024-01-22T11:00:00",
-    status: "pending",
-    language: "C",
-  },
-]
-
 function QuestionRow({ question }: { question: Question }) {
   const [open, setOpen] = useState(false)
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return "N/A";
     const date = new Date(dateString)
     return date.toLocaleDateString("pt-BR", {
       day: "2-digit",
@@ -123,6 +39,12 @@ function QuestionRow({ question }: { question: Question }) {
       minute: "2-digit",
     })
   }
+
+  // Determine if question is answered
+  const isAnswered = question.answer !== null && question.answer !== undefined;
+  const answerText = typeof question.answer === 'string' 
+    ? question.answer 
+    : question.answer?.content;
 
   return (
     <>
@@ -136,7 +58,7 @@ function QuestionRow({ question }: { question: Question }) {
           {question.id}
         </TableCell>
         <TableCell align="center" sx={{ fontSize: "16px" }}>
-          {question.title}
+          {question.title || `Pergunta #${question.id}`}
         </TableCell>
         <TableCell align="center" sx={{ fontSize: "16px" }}>
           {question.language || "-"}
@@ -151,11 +73,11 @@ function QuestionRow({ question }: { question: Question }) {
               p: 0.5,
               borderRadius: 1,
               fontWeight: "bold",
-              backgroundColor: question.status === "pending" ? "#ffeb3b" : "#c8e6c9",
-              color: question.status === "pending" ? "#333" : "#2e7d32",
+              backgroundColor: isAnswered ? "#c8e6c9" : "#ffeb3b",
+              color: isAnswered ? "#2e7d32" : "#333",
             }}
           >
-            {question.status === "pending" ? "Pendente" : "Respondida"}
+            {isAnswered ? "Respondida" : "Pendente"}
           </Box>
         </TableCell>
       </TableRow>
@@ -168,18 +90,23 @@ function QuestionRow({ question }: { question: Question }) {
                   Pergunta:
                 </Typography>
                 <Typography variant="body2" sx={{ color: "#333" }}>
-                  {question.question}
+                  {question.content || question.question}
                 </Typography>
               </Box>
 
-              {question.status === "answered" && question.answer && (
+              {isAnswered && answerText && (
                 <Box sx={{ bgcolor: "#f1f8e9", p: 2, borderRadius: 1 }}>
                   <Typography variant="subtitle2" sx={{ fontWeight: "bold", color: "#558b2f", mb: 1 }}>
                     Resposta:
                   </Typography>
                   <Typography variant="body2" sx={{ mb: 1, color: "#333" }}>
-                    {question.answer}
+                    {answerText}
                   </Typography>
+                  {typeof question.answer === 'object' && question.answer?.userName && (
+                    <Typography variant="caption" sx={{ color: "#666", display: "block", mb: 0.5 }}>
+                      Respondido por: {question.answer.userName}
+                    </Typography>
+                  )}
                   {question.answeredAt && (
                     <Typography variant="caption" sx={{ color: "#666" }}>
                       Respondido em: {formatDate(question.answeredAt)}
@@ -196,7 +123,6 @@ function QuestionRow({ question }: { question: Question }) {
 }
 
 const UserQuestions = ({ onOpenModal }: { onOpenModal?: () => void }) => {
-  const { enqueueSnackbar } = useSnackbar()
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
   
@@ -204,10 +130,14 @@ const UserQuestions = ({ onOpenModal }: { onOpenModal?: () => void }) => {
   const { questions: allQuestions } = useQuestions()
   const { user } = useUser()
   
-  // Filter questions from current user's group
+  // Filter questions from current user (by userId or userName)
   const questions = useMemo(() => {
-    if (!user?.group?.id) return [];
-    return allQuestions.filter(q => q.askedBy === user.name || q.askedBy === `Grupo ${user.group?.id ?? ''}`);
+    if (!user?.id) return [];
+    return allQuestions.filter(q => 
+      q.userId === user.id || 
+      q.userName === user.name ||
+      q.askedBy === user.name
+    );
   }, [allQuestions, user])
 
   const handleChangePage = (event: unknown, newPage: number) => {

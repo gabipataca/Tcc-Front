@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState, type FC } from "react"
+import { useMemo, useState, type FC } from "react"
 import { FaPaperPlane } from "react-icons/fa"
 import {
   Box,
@@ -28,15 +28,19 @@ interface InputFieldProps {
   label: string
   placeholder: string
   icon?: React.ReactNode
+  value: string
+  onChange: (value: string) => void
 }
 
-const InputField = ({ label, placeholder, icon }: InputFieldProps) => (
+const InputField = ({ label, placeholder, icon, value, onChange }: InputFieldProps) => (
   <Box sx={{ mb: 4 }}>
     <TextField
       fullWidth
       label={label}
       placeholder={placeholder}
       variant="outlined"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
       slotProps={{ inputLabel: { shrink: true } }}
       InputProps={{
         startAdornment: icon ? <InputAdornment position="start">{icon}</InputAdornment> : null,
@@ -59,7 +63,12 @@ const InputField = ({ label, placeholder, icon }: InputFieldProps) => (
   </Box>
 )
 
-const TextareaField = () => (
+interface TextareaFieldProps {
+  value: string
+  onChange: (value: string) => void
+}
+
+const TextareaField = ({ value, onChange }: TextareaFieldProps) => (
   <Box sx={{ mb: 4 }}>
     <TextField
       fullWidth
@@ -68,6 +77,8 @@ const TextareaField = () => (
       label="Escreva suas dúvidas:"
       placeholder="Digite aqui sua dúvida sobre o exercício..."
       variant="outlined"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
       slotProps={{ inputLabel: { shrink: true } }}
       sx={{
         "& .MuiOutlinedInput-root": {
@@ -92,15 +103,19 @@ interface MuiSelectFieldProps {
   options: string[]
   placeholder?: string
   icon?: React.ReactNode
+  value: string | null
+  onChange: (value: string | null) => void
 }
 
-const MuiSelectField = ({ label, options, placeholder, icon }: MuiSelectFieldProps) => {
+const MuiSelectField = ({ label, options, placeholder, icon, value, onChange }: MuiSelectFieldProps) => {
   return (
     <Box sx={{ mb: 4, width: "100%" }}>
       <Autocomplete
         disablePortal
         id={`autocomplete-${label.replace(/\s/g, "-")}`}
         options={options}
+        value={value}
+        onChange={(_, newValue) => onChange(newValue)}
         fullWidth
         renderInput={(params) => (
           <TextField
@@ -140,11 +155,23 @@ const AskQuestionsContent = ({ onClose }: { onClose: () => void }) => {
   const { sendQuestion, ongoingCompetition } = useCompetitionHub()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formData, setFormData] = useState({
-    exercise: "",
-    language: "",
+    exercise: null as string | null,
+    language: null as string | null,
     title: "",
     question: "",
-  })
+  });
+
+    // A => Char Code 65
+    const exercisesInCompetition = useMemo(() => {
+      const charCodesWithId: Record<string, number> = {};
+      const exerciseIds = ongoingCompetition?.exercises?.map((ex) => ex.id) || [];
+      exerciseIds.forEach((id, index) => {
+        const char = String.fromCharCode(65 + index);
+        charCodesWithId[char] = id;
+      });
+  
+      return charCodesWithId;
+    }, [ongoingCompetition?.exercises]);
 
   const handleSubmit = async () => {
     if (!formData.question.trim()) {
@@ -169,14 +196,13 @@ const AskQuestionsContent = ({ onClose }: { onClose: () => void }) => {
     let errored = false
 
     try {
-      const exerciseLetters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
-      const exerciseId = formData.exercise ? exerciseLetters.indexOf(formData.exercise) + 1 : null
+      const exerciseId = formData.exercise ? exercisesInCompetition[formData.exercise] : null
 
       await sendQuestion({
         groupId: user.group.id,
-        competitionId: ongoingCompetition.id,
         exerciseId: exerciseId,
-        questionText: formData.question.trim(),
+        content: formData.question.trim(),
+        questionType: 0,
       })
 
       enqueueSnackbar("Pergunta enviada com sucesso!", {
@@ -198,8 +224,8 @@ const AskQuestionsContent = ({ onClose }: { onClose: () => void }) => {
           onClose()
           // Reset form
           setFormData({
-            exercise: "",
-            language: "",
+            exercise: null,
+            language: null,
             title: "",
             question: "",
           })
@@ -231,6 +257,7 @@ const AskQuestionsContent = ({ onClose }: { onClose: () => void }) => {
           boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.1)",
         }}
       >
+        
         <Typography
           variant="h4"
           component="h2"
@@ -241,14 +268,17 @@ const AskQuestionsContent = ({ onClose }: { onClose: () => void }) => {
             letterSpacing: "0.05em",
           }}
         >
-          Retire suas dúvidas sobre o exercício
+          Retire suas dúvidas
         </Typography>
-
+        
+        {/*}
         <MuiSelectField
           label="Escolha o exercício:"
-          options={[..."ABCDEFGHIJ"]}
+          options={Object.keys(exercisesInCompetition)}
           placeholder="Selecione o exercício"
           icon={<BookIcon sx={{ color: "#4F85A6" }} />}
+          value={formData.exercise}
+          onChange={(value) => setFormData((prev) => ({ ...prev, exercise: value }))}
         />
 
         <MuiSelectField
@@ -256,15 +286,23 @@ const AskQuestionsContent = ({ onClose }: { onClose: () => void }) => {
           options={["C", "C++", "C#", "Java", "PHP", "Python"]}
           placeholder="Selecione a linguagem"
           icon={<CodeIcon sx={{ color: "#4F85A6" }} />}
+          value={formData.language}
+          onChange={(value) => setFormData((prev) => ({ ...prev, language: value }))}
         />
+        */}
 
         <InputField
           label="Título da Pergunta:"
           placeholder="Ex: Dúvida sobre o laço for no Exercício A"
           icon={<TitleIcon sx={{ color: "#4F85A6" }} />}
+          value={formData.title}
+          onChange={(value) => setFormData((prev) => ({ ...prev, title: value }))}
         />
 
-        <TextareaField />
+        <TextareaField
+          value={formData.question}
+          onChange={(value) => setFormData((prev) => ({ ...prev, question: value }))}
+        />
 
         <MuiButton
           variant="contained"

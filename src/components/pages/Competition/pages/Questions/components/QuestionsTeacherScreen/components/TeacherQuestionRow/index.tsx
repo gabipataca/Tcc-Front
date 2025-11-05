@@ -25,12 +25,19 @@ const TeacherQuestionRow: FC<TeacherQuestionRowProps> = ({ question }) => {
     const { updateQuestion, editQuestion } = useQuestions();
 
     const [open, setOpen] = useState(false);
-    const [answerText, setAnswerText] = useState(question.answer || "");
     const [submitting, setSubmitting] = useState(false);
+    
+    // Determine if question is answered
+    const isAnswered = question.answer !== null && question.answer !== undefined;
+    const existingAnswer = typeof question.answer === 'string' 
+        ? question.answer 
+        : question.answer?.content || "";
+    
+    const [answerText, setAnswerText] = useState(existingAnswer);
 
     useEffect(() => {
-        setAnswerText(question.answer || "");
-    }, [question]);
+        setAnswerText(existingAnswer);
+    }, [existingAnswer]);
 
     const handleSubmitAnswer = () => {
         if (!answerText.trim()) {
@@ -53,8 +60,6 @@ const TeacherQuestionRow: FC<TeacherQuestionRowProps> = ({ question }) => {
             setSubmitting(false);
         }, 1000);
     };
-
-    const isAnswered = question.status === "answered";
 
     return (
         <React.Fragment>
@@ -83,13 +88,15 @@ const TeacherQuestionRow: FC<TeacherQuestionRowProps> = ({ question }) => {
                     {question.title}
                 </TableCell>
                 <TableCell sx={{ fontSize: "18px", textAlign: "center" }}>
-                    {question.askedBy}
+                    {question.askedBy || question.userName || "N/A"}
                 </TableCell>
                 <TableCell sx={{ fontSize: "18px", textAlign: "center" }}>
                     {question.language || "N/A"}
                 </TableCell>
                 <TableCell sx={{ fontSize: "18px", textAlign: "center" }}>
-                    {new Date(question.askedAt).toLocaleString("pt-BR")}
+                    {question.askedAt 
+                        ? new Date(question.askedAt).toLocaleString("pt-BR")
+                        : "N/A"}
                 </TableCell>
                 <TableCell sx={{ fontSize: "18px", textAlign: "center" }}>
                     <Box
@@ -99,18 +106,12 @@ const TeacherQuestionRow: FC<TeacherQuestionRowProps> = ({ question }) => {
                             borderRadius: 1,
                             fontWeight: "bold",
                             backgroundColor:
-                                question.status === "pending"
-                                    ? "#ffeb3b"
-                                    : "#c8e6c9",
+                                isAnswered ? "#c8e6c9" : "#ffeb3b",
                             color:
-                                question.status === "pending"
-                                    ? "#333"
-                                    : "#2e7d32",
+                                isAnswered ? "#2e7d32" : "#333",
                         }}
                     >
-                        {question.status === "pending"
-                            ? "Pendente"
-                            : "Respondida"}
+                        {isAnswered ? "Respondida" : "Pendente"}
                     </Box>
                 </TableCell>
             </TableRow>
@@ -139,7 +140,7 @@ const TeacherQuestionRow: FC<TeacherQuestionRowProps> = ({ question }) => {
                                     backgroundColor: "#f9f9f9",
                                 }}
                             >
-                                {question.question}
+                                {question.question || question.content}
                             </Typography>
 
                             <Typography
@@ -168,14 +169,23 @@ const TeacherQuestionRow: FC<TeacherQuestionRowProps> = ({ question }) => {
                                 sx={{ mb: 2 }}
                             />
 
-                            {isAnswered && (
+                            {isAnswered && typeof question.answer === 'object' && question.answer?.userName && (
                                 <Typography
                                     variant="body2"
                                     color="text.secondary"
                                     sx={{ mb: 2 }}
                                 >
-                                    Respondida em {question.answeredAt || "N/A"}
-                                    .
+                                    Respondida por: {question.answer.userName}
+                                    {question.answeredAt && ` em ${new Date(question.answeredAt).toLocaleString("pt-BR")}`}
+                                </Typography>
+                            )}
+                            {isAnswered && (!question.answer || typeof question.answer === 'string') && question.answeredAt && (
+                                <Typography
+                                    variant="body2"
+                                    color="text.secondary"
+                                    sx={{ mb: 2 }}
+                                >
+                                    Respondida em {new Date(question.answeredAt).toLocaleString("pt-BR")}
                                 </Typography>
                             )}
                             <Button

@@ -1,5 +1,6 @@
 import { Exercise } from "../Exercise";
 import { Group } from "../Group";
+import { CompetitionRankingResponse } from "../SignalR";
 
 
 /**
@@ -93,6 +94,11 @@ export interface Competition {
     status: CompetitionStatus;
 
     /**
+     * Indicates if the logged-in group is inscribed in the competition.
+     */
+    isLoggedGroupInscribed?: boolean | null;
+
+    /**
      * List of exercises included in the competition.
      */
     exercises: Exercise[];
@@ -105,7 +111,7 @@ export interface Competition {
     /**
      * List of competition rankings.
      */
-    competitionRankings: CompetitionRanking[];
+    competitionRankings: CompetitionRankingResponse[];
 }
 
 /**

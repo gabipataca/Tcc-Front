@@ -12,6 +12,9 @@ import { useUser } from "@/contexts/UserContext";
 import { Trophy, Users, ChevronLeft } from "lucide-react";
 import Modal from "@/components/_ui/Modal";
 import CompetitionInscription from "./components/CompetitionInscription";
+import { useWebSocketContext } from "@/contexts/WebSocketContext";
+import { useCompetitionHub } from "@/contexts/CompetitionHubContext";
+import { useRouter } from "next/navigation";
 
 interface ModalConfig {
     title: string;
@@ -31,6 +34,9 @@ const StudentDashboard: React.FC = () => {
         championTeams,
     } = useStudentDashboardData();
 
+    const { webSocketConnection } = useWebSocketContext();
+    const { ongoingCompetition } = useCompetitionHub();
+
     const [isRegistrationOpen] = useState(true);
     const [isUserRegistered] = useState(false);
 
@@ -39,6 +45,8 @@ const StudentDashboard: React.FC = () => {
         title: "",
         bodyContent: null,
     });
+
+    const router = useRouter();
 
     const showModal = (config: ModalConfig) => {
         setModalConfig(config);
@@ -64,7 +72,7 @@ const StudentDashboard: React.FC = () => {
     };
 
     const handleStartMarathonClick = () => {
-        if (isUserRegistered) {
+        if (ongoingCompetition?.isLoggedGroupInscribed) {
             showModal({
                 title: "Iniciando Maratona",
                 bodyContent: (
@@ -76,6 +84,9 @@ const StudentDashboard: React.FC = () => {
                 confirmButtonContent: "Entendido",
                 onConfirm: closeModal,
             });
+            setTimeout(() => {
+                router.push(`/Competition`);
+            }, 1000);
         } else {
             showModal({
                 title: "Aviso",

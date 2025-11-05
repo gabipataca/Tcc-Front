@@ -7,6 +7,7 @@ import CompetitionContextProvider from "@/providers/CompetitionContextProvider";
 import { WebSocketContextProvider } from "@/contexts/WebSocketContext";
 
 import NavbarWrapper from "@/components/_ui/NavbarWrapper";
+import { CompetitionHubProvider } from "@/contexts/CompetitionHubContext";
 
 export const metadata: Metadata = {
     title: "Falcon",
@@ -26,9 +27,11 @@ export default function RootLayout({
                         <UserContextProvider>
                             <WebSocketContextProvider>
                                 <CompetitionContextProvider>
-                                    <NavbarWrapper />
+                                    <CompetitionHubProvider>
+                                        <NavbarWrapper />
 
-                                    {children}
+                                        {children}
+                                    </CompetitionHubProvider>
                                 </CompetitionContextProvider>
                             </WebSocketContextProvider>
                         </UserContextProvider>

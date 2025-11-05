@@ -55,15 +55,22 @@ export const QuestionsProvider: React.FC<QuestionsProviderProps> = ({ children }
       // Return optimistic update (actual update comes via SignalR event)
       return questionResponseToLegacy({
         ...question,
-        isAnswered: true,
+        answerId: 0, // Temporary ID, will be replaced by server response
         answer: {
-          id: 0, // Temporary ID, will be replaced by server response
-          questionId: id,
-          answerText: answerText.trim(),
-          answeredBy: user.name,
-          answeredById: user.id,
-          answeredAt: new Date().toISOString(),
-          isPrivate: false,
+          id: 0,
+          content: answerText.trim(),
+          userId: user.id,
+          user: {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            createdAt: new Date().toISOString(),
+            lastLoggedAt: new Date().toISOString(),
+            ra: user.ra || "",
+            joinYear: user.joinYear || new Date().getFullYear(),
+            department: user.department || null,
+            exercisesCreated: null,
+          },
         },
       });
     },
@@ -73,7 +80,7 @@ export const QuestionsProvider: React.FC<QuestionsProviderProps> = ({ children }
   /**
    * Insert a new question (not implemented - questions are created via form submission)
    */
-  const insertQuestion = useCallback((_question: Question): Question | undefined => {
+  const insertQuestion = useCallback((): Question | undefined => {
     console.warn("[QuestionsProvider] insertQuestion called but not implemented. Use question form to submit.");
     return undefined;
   }, []);
@@ -81,7 +88,7 @@ export const QuestionsProvider: React.FC<QuestionsProviderProps> = ({ children }
   /**
    * Delete a question (not supported by backend)
    */
-  const deleteQuestion = useCallback((_id: number): void => {
+  const deleteQuestion = useCallback((): void => {
     console.warn("[QuestionsProvider] deleteQuestion called but not supported by backend API");
   }, []);
 
@@ -99,7 +106,7 @@ export const QuestionsProvider: React.FC<QuestionsProviderProps> = ({ children }
   /**
    * Edit question (not supported - questions are immutable after creation)
    */
-  const editQuestion = useCallback((_updatedQuestion: Question): void => {
+  const editQuestion = useCallback((): void => {
     console.warn("[QuestionsProvider] editQuestion called but questions are immutable after creation");
   }, []);
 
