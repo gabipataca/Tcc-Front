@@ -21,6 +21,7 @@ const Loading: FC<LoadingProps> = ({
     className,
     bgColor,
     colorClass,
+    notAbsolute = false,
 }) => {
     if (variant === "overlay") {
         return (
@@ -53,14 +54,14 @@ const Loading: FC<LoadingProps> = ({
     return (
         <div
             className={clsx(
-                "absolute top-0 bottom-0 left-0 right-0 flex items-center justify-center z-40",
+                `${(notAbsolute ? "" : "absolute")} top-0 bottom-0 left-0 right-0 flex items-center justify-center z-40`,
                 className
             )}
             role="status"
             aria-label="Loading"
         >
             <svg
-                className={clsx("animate-spin text-blue-600", sizeMap[size])}
+                className={clsx(`animate-spin ${(colorClass) ? colorClass : "text-blue-600"}`, sizeMap[size])}
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"

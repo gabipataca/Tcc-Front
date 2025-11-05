@@ -82,11 +82,55 @@ export type ExerciseType = 1 | 2 | 3 | 4 | 5 | 6 | 7;
 /**
  * Represents an exercise with its details and metadata.
  */
+/**
+ * Describes an exercise/problem entity used by the application.
+ *
+ * This interface aggregates identifying metadata, resource references,
+ * descriptive content, estimated completion time, judge association, and
+ * the structured input/output definitions required to evaluate the exercise.
+ *
+ * @remarks
+ * - `estimatedTime` is expressed in seconds.
+ * - `judgeUuid` is either a UUID string identifying the judge service/instance
+ *   associated with this exercise, or `null` when no judge is assigned.
+ * - `createdAt` is an ISO 8601 timestamp as a string.
+ *
+ * @property id - Unique numeric identifier for the exercise.
+ * @property attachedFileId - Numeric identifier of an attached file/resource.
+ * @property title - Human-readable title of the exercise.
+ * @property exerciseTypeId - The exercise type identifier (see {@link ExerciseType}).
+ * @property description - Full textual description or statement of the exercise.
+ * @property estimatedTime - Estimated time to complete the exercise, in seconds.
+ * @property judgeUuid - UUID of the judge associated with the exercise, or `null` if none.
+ * @property createdAt - ISO 8601 formatted creation timestamp.
+ * @property inputs - Array of {@link ExerciseInput} describing the input specifications.
+ * @property outputs - Array of {@link ExerciseOutput} describing the expected outputs.
+ *
+ * @example
+ * // Example shape (values elided for brevity)
+ * // {
+ * //   id: 1,
+ * //   attachedFileId: 10,
+ * //   title: "Example Problem",
+ * //   exerciseTypeId: ExerciseType.Coding,
+ * //   description: "Do something with input and produce output.",
+ * //   estimatedTime: 600,
+ * //   judgeUuid: null,
+ * //   createdAt: "2023-01-01T00:00:00.000Z",
+ * //   inputs: [...],
+ * //   outputs: [...]
+ * // }
+ */
 export interface Exercise {
     /**
      * Unique identifier for the exercise.
      */
     id: number;
+
+    /**
+     * Identifier of the attached file for the exercise.
+     */
+    attachedFileId: number;
 
     /**
      * Title of the exercise.
@@ -118,8 +162,14 @@ export interface Exercise {
      */
     createdAt: string;
 
+    /**
+     * Array of inputs for the exercise.
+     */
     inputs: Array<ExerciseInput>;
 
+    /**
+     * Array of outputs for the exercise.
+     */
     outputs: Array<ExerciseOutput>;
 }
 

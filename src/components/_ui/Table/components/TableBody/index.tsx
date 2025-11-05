@@ -6,14 +6,19 @@ import { TableBodyProps } from "./types";
 
 
 
-const TableBody: React.FC<TableBodyProps> = ({ children }) => {
 
-    return(
-        <StyledTableBody>
-            {children}
-        </StyledTableBody>
-    )
-}
+import type { ForwardedRef } from "react";
 
+const TableBody = React.forwardRef<HTMLTableSectionElement, TableBodyProps>(
+    ({ children }, ref: ForwardedRef<HTMLTableSectionElement>) => {
+        return (
+            <StyledTableBody ref={ref}>
+                {children}
+            </StyledTableBody>
+        );
+    }
+);
+
+TableBody.displayName = "TableBody";
 
 export default TableBody;

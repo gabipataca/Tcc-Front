@@ -1,10 +1,11 @@
 import React from "react";
+import { TableRowProps as TableRowPropsMui } from "@mui/material";
 
-export interface TableLine {
+export interface TableRow {
     content: string | React.ReactNode;
 }
 
 
-export interface TableLineProps {
+export interface TableRowProps extends TableRowPropsMui {
     children: React.ReactNode;
 }

@@ -38,6 +38,8 @@ export interface RegisterUserRequest {
      * @remarks Only required for teacher registration.
      */
     accessCode?: string;
+
+    department: string | null;
 }
 
 /**

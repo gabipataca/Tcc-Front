@@ -10,17 +10,11 @@ import {
 import StatsCard from "../../pages/profile/components/StatsCard";
 import { useProfileMenuContext } from "@/components/pages/profile/contexts/ProfileMenuContext";
 
-interface DataProps {
-    id: number | string;
-    status?: string;
-}
-
 interface StatsGridProps {
-    studentsData: DataProps[];
+    
 }
 
 const StatsGrid: FC<StatsGridProps> = ({
-    studentsData,
 }) => {
 
     const { toggleMenu } = useProfileMenuContext();

@@ -7,6 +7,18 @@ import {
     EditExerciseOutputRequest,
 } from "@/types/Exercise/Requests";
 
+/**
+ * Processes raw input and output values for exercise creation.
+ *
+ * Splits the provided input and output strings by newlines, trims whitespace,
+ * filters out empty lines, and encodes each value to Base64. Returns arrays of
+ * input and output objects, each containing the encoded value, a null exerciseId,
+ * and the corresponding order index.
+ *
+ * @param inputValues - Multiline string containing input values for the exercise.
+ * @param outputValues - Multiline string containing output values for the exercise.
+ * @returns An object containing arrays of processed inputs and outputs.
+ */
 export const processCreateExerciseValues = (
     inputValues: string,
     outputValues: string
@@ -33,6 +45,14 @@ export const processCreateExerciseValues = (
 };
 
 
+/**
+ * Processes arrays of exercise input and output values, converting their data to base64 and formatting them
+ * into request objects suitable for editing exercises.
+ *
+ * @param inputValues - An array of `ExerciseInput` objects representing the exercise inputs to process.
+ * @param outputValues - An array of `ExerciseOutput` objects representing the exercise outputs to process.
+ * @returns An object containing two arrays: `inputs` (formatted as `EditExerciseInputRequest`) and `outputs` (formatted as `EditExerciseOutputRequest`).
+ */
 export const processEditExerciseValues = (
     inputValues: ExerciseInput[],
     outputValues: ExerciseOutput[]

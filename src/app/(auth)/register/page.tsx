@@ -11,8 +11,15 @@ import useRegister from "@/components/pages/register/hooks/useRegister";
 import Dropdown from "@/components/_ui/Dropdown";
 
 const Cadastro: React.FC = () => {
-    const { control, handleSubmit, handleFormSubmit, formData, roleOptions } =
-        useRegister();
+    const {
+        control,
+        handleSubmit,
+        handleFormSubmit,
+        formData,
+        roleOptions,
+        isLoading,
+        formError,
+    } = useRegister();
 
     return (
         <ScreenContainer>
@@ -25,7 +32,7 @@ const Cadastro: React.FC = () => {
                 <Button
                     type="link"
                     linkHref="/login"
-                    style="secondary"
+                    variant="secondary"
                     rounded={true}
                 >
                     Login
@@ -198,13 +205,19 @@ const Cadastro: React.FC = () => {
                                 )}
                             />
                         )}
-
-                        <Button style="primary" onClick={handleSubmit(handleFormSubmit, (d) =>
-                            console.log(d)
-                        )} rounded={true} fullWidth={true}>
-                            Criar
-                        </Button>
                     </form>
+                    <Button
+                        variant="primary"
+                        onClick={handleSubmit(handleFormSubmit, (d) =>
+                            console.log(d)
+                        )}
+                        rounded={true}
+                        fullWidth={true}
+                        disabled={isLoading}
+                        loading={isLoading}
+                    >
+                        Criar
+                    </Button>
                 </div>
             </div>
         </ScreenContainer>

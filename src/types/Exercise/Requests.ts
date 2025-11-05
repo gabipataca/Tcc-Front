@@ -1,6 +1,5 @@
 import { ExerciseType } from ".";
 
-
 export interface CreateExerciseInputRequest {
     /**
      * The ID of the exercise associated with this input.
@@ -17,7 +16,6 @@ export interface CreateExerciseInputRequest {
      */
     input: string;
 }
-
 
 export interface CreateExerciseOutputRequest {
     /**
@@ -71,6 +69,11 @@ export interface CreateExerciseRequest {
      * List of outputs for the exercise.
      */
     outputs: CreateExerciseOutputRequest[];
+
+    /**
+     * The PDF file associated with the exercise.
+     */
+    pdfFile: File;
 }
 
 /**
@@ -128,7 +131,6 @@ export interface EditExerciseInputRequest {
     input: string;
 }
 
-
 /**
  * Represents an exercise with its details and metadata.
  */
@@ -167,6 +169,11 @@ export interface EditExerciseRequest {
      * ISO string representing when the exercise was created.
      */
     createdAt: string;
+
+    /**
+     * Represents the file associated with the exercise
+     */
+    pdfFile: File;
 
     /**
      * List of inputs for the exercise.

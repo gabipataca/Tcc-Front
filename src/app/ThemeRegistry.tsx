@@ -15,7 +15,7 @@ export default function ThemeRegistry({ children }: ThemeRegistryProps) {
         <AppRouterCacheProvider options={{ key: "mui" }}>
             <ThemeProvider theme={theme}>
                
-                <CssBaseline />
+                <CssBaseline enableColorScheme />
                 {children}
             </ThemeProvider>
         </AppRouterCacheProvider>

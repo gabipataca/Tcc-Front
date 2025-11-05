@@ -1,6 +1,7 @@
+"use client"
+
 import { Exercise, ExerciseType } from "@/types/Exercise";
-import { useState, useMemo, useCallback, useEffect } from "react";
-import { exerciseTypeOptions } from "../constants";
+import { useState, useCallback, useEffect, ChangeEvent } from "react";
 import {
     CreateExerciseRequest,
     EditExerciseRequest,
@@ -30,26 +31,39 @@ export const useExerciseManagement = () => {
 
     const [loadingAddExercise, setLoadingAddExercise] = useState(false);
 
+    // Estados do formulário de criação
     const [title, setTitle] = useState<string>("");
     const [type, setType] = useState<ExerciseType>(1);
-    const [description, setDescription] = useState<string>("");
     const [inputValues, setInputValues] = useState<string>("");
     const [outputValues, setOutputValues] = useState<string>("");
+    const [pdfFile, setPdfFile] = useState<File | null>(null);
+
+    const [updatePdfFile, setUpdatePdfFile] = useState<File | null>(null);
 
     const [searchTerm, setSearchTerm] = useState<string>("");
+    const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(
+        null
+    );
 
+    // Estados do modal de edição
     const [editingExercise, setEditingExercise] = useState<Exercise | null>(
         null
     );
 
     const { enqueueSnackbar } = useSnackbar();
-
     const [showEditExerciseModal, setShowEditExerciseModal] = useState(false);
 
-    const filterOptions = useMemo(
-        () => ["Todos", ...exerciseTypeOptions.map((x) => x.label)],
-        []
-    );
+    const handleFileChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            setPdfFile(e.target.files[0]);
+        }
+    }, []);
+
+    const handleUpdateFileChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            setUpdatePdfFile(e.target.files[0]);
+        }
+    }, []);
 
     const toggleEditExerciseModal = useCallback(() => {
         setShowEditExerciseModal((prev) => !prev);
@@ -77,9 +91,13 @@ export const useExerciseManagement = () => {
     }, []);
 
     const handleCreateExercise = useCallback(async () => {
-        if (!title.trim() || !type) {
-            alert(
-                "Por favor, preencha o título e selecione o tipo do exercício."
+        if (!title.trim() || !type || !pdfFile) {
+            enqueueSnackbar(
+                "Por favor, preencha o título, selecione o tipo e anexe um arquivo PDF.",
+                {
+                    variant: "warning",
+                    anchorOrigin: { vertical: "bottom", horizontal: "right" }
+                }
             );
             return;
         }
@@ -92,7 +110,8 @@ export const useExerciseManagement = () => {
         const newExercise: CreateExerciseRequest = {
             title,
             exerciseTypeId: type,
-            description,
+            pdfFile: pdfFile,
+            description: "",
             estimatedTime: 0,
             judgeUuid: null,
             inputs: inputs,
@@ -100,11 +119,12 @@ export const useExerciseManagement = () => {
         };
 
         await addExercise(newExercise);
-    }, [title, type, description, inputValues, outputValues, addExercise]);
+    }, [title, type, pdfFile, inputValues, outputValues, addExercise]);
 
     const handleRemoveExercise = useCallback(
         async (indexToRemove: number) => {
-            try {
+            try{
+            if (exercises && exercises[indexToRemove]) {
                 await deleteExercise(exercises[indexToRemove].id);
                 enqueueSnackbar("Exercício removido com sucesso!", {
                     variant: "success",
@@ -114,6 +134,7 @@ export const useExerciseManagement = () => {
                     },
                     autoHideDuration: 2500,
                 });
+            }
             } catch (error) {
                 console.error("Error removing exercise:", error);
                 enqueueSnackbar("Erro ao tentar remover exercício!", {
@@ -139,9 +160,9 @@ export const useExerciseManagement = () => {
 
     const saveEdit = useCallback(
         async (exercise: EditExerciseRequest) => {
-            if (!editingExercise || editingExercise.id == -1) return;
+            if (!editingExercise || editingExercise.id == -1 || updatePdfFile == null) return;
 
-            await updateExercise({
+            await updateExercise(exercise.id, {
                 id: exercise.id,
                 description: exercise.description,
                 judgeUuid: exercise.judgeUuid!,
@@ -151,11 +172,12 @@ export const useExerciseManagement = () => {
                 title: exercise.title,
                 createdAt: exercise.createdAt,
                 estimatedTime: exercise.estimatedTime,
+                pdfFile: updatePdfFile
             });
 
             toggleEditExerciseModal();
         },
-        [editingExercise, toggleEditExerciseModal, updateExercise]
+        [editingExercise, updatePdfFile, toggleEditExerciseModal, updateExercise]
     );
 
     const handleLoadExercises = useCallback(async () => {
@@ -167,38 +189,17 @@ export const useExerciseManagement = () => {
         setEditingExercise(null);
     }, [toggleEditExerciseModal]);
 
-    const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(
-        null
-    );
-
     useEffect(() => {
-        if(loadingExercises) return;
-
         if (searchTimeout) {
             clearTimeout(searchTimeout);
-            setSearchTimeout(null);
         }
-
         setSearchTimeout(
             setTimeout(() => {
                 handleLoadExercises();
             }, 1000)
         );
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [searchTerm]);
-
-    useEffect(() => {
-        if(loadingExercises) return;
-
-        if(searchTimeout) {
-            clearTimeout(searchTimeout);
-            setSearchTimeout(null);
-        }
-
-        handleLoadExercises();
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [exerciseTypeFilter]);
+    }, [searchTerm, exerciseTypeFilter]);
 
     return {
         title,
@@ -207,21 +208,21 @@ export const useExerciseManagement = () => {
         setType,
         exerciseTypeFilter,
         toggleExerciseTypeFilter,
+        pdfFile,
+        updatePdfFile,
+        handleFileChange,
         searchTerm,
         setSearchTerm,
+        exercises,
         editingExercise,
         showEditExerciseModal,
         toggleEditExerciseModal,
-        handleRemoveExercise,
         handleCreateExercise,
+        handleRemoveExercise,
         startEdit,
         saveEdit,
         cancelEdit,
-        filterOptions,
-        exercises,
         getTypeColor,
-        description,
-        setDescription,
         inputValues,
         setInputValues,
         outputValues,
@@ -231,6 +232,7 @@ export const useExerciseManagement = () => {
         nextPage,
         prevPage,
         handleLoadExercises,
+        handleUpdateFileChange,
         loadingExercises,
     };
 };

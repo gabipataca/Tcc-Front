@@ -8,23 +8,27 @@ import {
     AcceptGroupInvitationResponse,
     CreateGroupResponse,
     GetGroupsResponse,
+    GroupResponse,
     InviteUserToGroupResponse,
     UpdateGroupResponse,
 } from "@/types/Group/Responses";
 import { UpdateGroupRequest } from "../types/Group/Requests";
+import { GroupInvitation } from "@/types/Group";
 
 class GroupService {
     static async CreateGroup(
         groupName: string,
+        userRAs: string[],
         abortSignal: AbortSignal
-    ): Promise<ServerSideResponse<CreateGroupResponse>> {
+    ): Promise<ServerSideResponse<GroupResponse>> {
         const response = await apiRequest<
-            ServerSideResponse<CreateGroupResponse>,
+            ServerSideResponse<GroupResponse>,
             CreateGroupRequest
         >(`/api/group`, {
             method: "POST",
             data: {
                 name: groupName,
+                userRAs: userRAs,
             },
             signal: abortSignal,
         });
@@ -82,12 +86,47 @@ class GroupService {
         return response.data;
     }
 
+    static async GetGroupInvitations(): Promise<
+        ServerSideResponse<GroupInvitation[]>
+    > {
+        const response = await apiRequest<
+            ServerSideResponse<GroupInvitation[]>
+        >("/api/group/invite", {
+            method: "GET",
+        });
+
+        return response.data;
+    }
+
     static async AcceptGroupInvitation(groupId: number) {
         const response = await apiRequest<
             ServerSideResponse<AcceptGroupInvitationResponse>
         >(`/api/group/accept/${groupId}`, {
-            method: "POST",
+            method: "PUT",
         });
+
+        return response.data;
+    }
+
+    static async getGroupById(id: number) {
+        const response = await apiRequest<ServerSideResponse<GroupResponse>>(
+            `/api/group/${id}`,
+            {
+                method: "GET",
+            }
+        )
+
+        return response.data;
+    }
+
+
+    static async removeUserFromGroup(groupId: number, userId: string) {
+        const response = await apiRequest<ServerSideResponse<unknown>>(
+            `/api/group/${groupId}/exit/${userId}`,
+            {
+                method: "DELETE",
+            }
+        )
 
         return response.data;
     }

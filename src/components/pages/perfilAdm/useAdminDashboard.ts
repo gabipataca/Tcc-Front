@@ -9,9 +9,15 @@ import {
 } from "./mockData";
 
 export const useAdminDashboard = () => {
+    // Agora mantemos os dados no estado (para sincronizar edições/deleções)
+    const [students, setStudents] = useState<Student[]>(studentsData);
+    const [professors, setProfessors] = useState<Professor[]>(professorsData);
+    const [groups, setGroups] = useState<Group[]>(groupsData);
+
     const [selectedStudents, setSelectedStudents] = useState<number[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("all");
+
     const [deleteDialog, setDeleteDialog] = useState<{
         isOpen: boolean;
         item: any | null;
@@ -21,6 +27,7 @@ export const useAdminDashboard = () => {
         item: null,
         itemType: "",
     });
+
     const [editDialog, setEditDialog] = useState<{
         isOpen: boolean;
         item: any | null;
@@ -30,6 +37,7 @@ export const useAdminDashboard = () => {
         item: null,
         itemType: "",
     });
+
     const [accessCodeDialog, setAccessCodeDialog] = useState<{
         isOpen: boolean;
         code: string;
@@ -40,7 +48,7 @@ export const useAdminDashboard = () => {
 
     // Filtered data based on search and status
     const filteredStudents = useMemo(() => {
-        return studentsData.filter((student) => {
+        return students.filter((student) => {
             const matchesSearch =
                 student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 student.group.toLowerCase().includes(searchTerm.toLowerCase());
@@ -48,10 +56,10 @@ export const useAdminDashboard = () => {
                 statusFilter === "all" || student.status === statusFilter;
             return matchesSearch && matchesStatus;
         });
-    }, [searchTerm, statusFilter]);
+    }, [students, searchTerm, statusFilter]);
 
     const filteredProfessors = useMemo(() => {
-        return professorsData.filter(
+        return professors.filter(
             (professor) =>
                 professor.name
                     .toLowerCase()
@@ -60,10 +68,10 @@ export const useAdminDashboard = () => {
                     .toLowerCase()
                     .includes(searchTerm.toLowerCase())
         );
-    }, [searchTerm]);
+    }, [professors, searchTerm]);
 
     const filteredGroups = useMemo(() => {
-        return groupsData.filter((group) => {
+        return groups.filter((group) => {
             const matchesSearch = group.name
                 .toLowerCase()
                 .includes(searchTerm.toLowerCase());
@@ -71,7 +79,7 @@ export const useAdminDashboard = () => {
                 statusFilter === "all" || group.status === statusFilter;
             return matchesSearch && matchesStatus;
         });
-    }, [searchTerm, statusFilter]);
+    }, [groups, searchTerm, statusFilter]);
 
     // Handlers
     const handleSelectAllStudents = (checked: boolean) => {
@@ -109,19 +117,40 @@ export const useAdminDashboard = () => {
     };
 
     const handleConfirmDelete = () => {
-        // Logic to delete the item
-        console.log(
-            `Deleting ${deleteDialog.itemType} with ID:`,
-            deleteDialog.item.id
-        );
+        if (!deleteDialog.item) return;
+
+        if (deleteDialog.itemType === "student") {
+            setStudents((prev) =>
+                prev.filter((s) => s.id !== deleteDialog.item.id)
+            );
+        } else if (deleteDialog.itemType === "professor") {
+            setProfessors((prev) =>
+                prev.filter((p) => p.id !== deleteDialog.item.id)
+            );
+        } else if (deleteDialog.itemType === "group") {
+            setGroups((prev) =>
+                prev.filter((g) => g.id !== deleteDialog.item.id)
+            );
+        }
+
         closeDeleteDialog();
     };
 
     const handleConfirmEdit = (updatedItem: any) => {
-        console.log(
-            `Editing ${editDialog.itemType} with new data:`,
-            updatedItem
-        );
+        if (editDialog.itemType === "student") {
+            setStudents((prev) =>
+                prev.map((s) => (s.id === updatedItem.id ? updatedItem : s))
+            );
+        } else if (editDialog.itemType === "professor") {
+            setProfessors((prev) =>
+                prev.map((p) => (p.id === updatedItem.id ? updatedItem : p))
+            );
+        } else if (editDialog.itemType === "group") {
+            setGroups((prev) =>
+                prev.map((g) => (g.id === updatedItem.id ? updatedItem : g))
+            );
+        }
+
         closeEditDialog();
     };
 
@@ -130,6 +159,9 @@ export const useAdminDashboard = () => {
     };
 
     return {
+        students,
+        professors,
+        groups,
         selectedStudents,
         searchTerm,
         setSearchTerm,

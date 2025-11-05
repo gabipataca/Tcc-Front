@@ -1,17 +1,7 @@
-import type { ReactNode } from "react";
-import {
-    Search,
-    Users,
-    GraduationCap,
-    UserCheck,
-    Trash2,
-    Download,
-    Edit,
-} from "lucide-react";
-
 export interface Student {
     id: number;
     name: string;
+    ra: number;
     group: string;
     email: string;
     status: "active" | "inactive";
@@ -38,42 +28,38 @@ export const studentsData: Student[] = [
     {
         id: 123,
         name: "João Silva",
+        ra: 2101483,
         group: "Bit Busters",
         email: "joao@email.com",
         status: "active",
-        joinDate: "2024-01-15",
+        joinDate: "14/01/2024",
     },
     {
         id: 456,
         name: "Maria Souza",
+        ra: 2005321,
         group: "Bug Hunters",
         email: "maria@email.com",
         status: "active",
-        joinDate: "2024-01-20",
+        joinDate: "19/01/2024",
     },
     {
         id: 789,
         name: "Carlos Lima",
+        ra: 2203198,
         group: "Error 404",
         email: "carlos@email.com",
         status: "inactive",
-        joinDate: "2024-02-01",
+        joinDate: "31/01/2024",
     },
     {
         id: 101,
         name: "Ana Costa",
+        ra: 1908874,
         group: "Code Warriors",
         email: "ana@email.com",
         status: "active",
-        joinDate: "2024-02-10",
-    },
-    {
-        id: 112,
-        name: "Pedro Santos",
-        group: "Bit Busters",
-        email: "pedro@email.com",
-        status: "active",
-        joinDate: "2024-02-15",
+        joinDate: "09/02/2024",
     },
 ];
 
@@ -107,27 +93,20 @@ export const groupsData: Group[] = [
         name: "Bit Busters",
         members: 5,
         status: "active",
-        lastCompetition: "2024-03-15",
+        lastCompetition: "15/03/2024",
     },
     {
         id: 2,
         name: "Bug Hunters",
         members: 4,
         status: "active",
-        lastCompetition: "2024-03-10",
+        lastCompetition: "10/03/2024",
     },
     {
         id: 3,
         name: "Error 404",
         members: 3,
         status: "inactive",
-        lastCompetition: "2024-02-28",
-    },
-    {
-        id: 4,
-        name: "Code Warriors",
-        members: 6,
-        status: "active",
-        lastCompetition: "2024-03-20",
+        lastCompetition: "28/02/2024",
     },
 ];

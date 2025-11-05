@@ -1,3 +1,6 @@
+"use client";
+
+import { FC } from "react";
 import {
     Dialog,
     DialogContent,
@@ -9,49 +12,59 @@ import {
 import { ButtonAdm } from "@/components/_ui/ButtonAdm";
 import { Trash2 } from "lucide-react";
 import useDeleteDialog from "./hooks/useDeleteDialog";
-import { DeleteDialogProps } from "./types";
+import Loading from "@/components/_ui/Loading";
+import Button from "@/components/_ui/Button";
 
-const DeleteDialog = <T,>({
+// Definindo as propriedades que o componente receberá
+interface DeleteDialogProps {
+    isOpen: boolean;
+    onClose: () => void;
+    onConfirm: () => void;
+    itemName: string;
+    itemType: string;
+}
+
+const DeleteDialog: FC<DeleteDialogProps> = ({
     isOpen,
     onClose,
     onConfirm,
-    dialogMessage,
-    item,
+    itemName,
     itemType,
-}: DeleteDialogProps<T>) => {
-    const { handleClose, handleDelete, handleOpen, open, error, loading } =
-        useDeleteDialog({
-            onDelete: onConfirm,
-            onClose: onClose,
-        });
+}) => {
+    const { loading, handleClose, handleDelete } = useDeleteDialog({
+        onDelete: onConfirm,
+        onClose,
+        toggleDialog: onClose,
+    });
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
+            {loading && <Loading variant="overlay" size="lg" />}
             <DialogContent className="bg-white border-[#e9edee]">
                 <DialogHeader>
                     <DialogTitle className="text-2xl text-[#3f3c40]">
                         Confirmar Exclusão
                     </DialogTitle>
                     <DialogDescription className="text-xl text-[#4F85A6]">
-                        {dialogMessage}
-                        Tem certeza que deseja excluir {itemType} &quot;
-                        {item?.name}&quot;? Esta ação não pode ser desfeita.
+                        Tem certeza que deseja excluir o {itemType} &quot;{itemName}&quot;? Esta ação não pode ser desfeita.
                     </DialogDescription>
                 </DialogHeader>
-                <DialogFooter>
-                    <ButtonAdm
-                        onClick={onClose}
-                        className="border-[#e9edee] text-[#3f3c40] hover:bg-[#e9edee]"
+                <DialogFooter className="mt-4">
+                    <Button
+                        onClick={handleClose}
+                        variant="outline"
+                        rounded
                     >
                         Cancelar
-                    </ButtonAdm>
-                    <ButtonAdm
-                        onClick={() => onConfirm()}
-                        className="bg-red-500 hover:bg-red-600 text-white"
+                    </Button>
+                    <Button
+                        onClick={handleDelete}
+                        variant="destructive"
+                        rounded
                     >
                         <Trash2 className="w-4 h-4 mr-2" />
                         Excluir
-                    </ButtonAdm>
+                    </Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

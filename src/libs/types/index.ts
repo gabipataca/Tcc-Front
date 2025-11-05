@@ -1,4 +1,4 @@
-
+import type { RawAxiosRequestHeaders, ResponseType } from "axios";
 
 /**
  * Represents the options for making an API request.
@@ -25,7 +25,7 @@ export interface ApiRequestOptions<T> {
     /**
      * Optional headers to include in the API request.
      */
-    headers?: Record<string, string>;
+    headers?: RawAxiosRequestHeaders;
 
     /**
      * Optional query parameters to include in the API request.
@@ -37,5 +37,13 @@ export interface ApiRequestOptions<T> {
      */
     data?: T;
 
+    /**
+     * Optional AbortSignal to cancel the request if needed.
+     */
     signal?: AbortSignal;
+
+    /**
+     * Optional response type for the API request.
+     */
+    responseType?: ResponseType;
 }

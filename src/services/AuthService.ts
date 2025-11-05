@@ -33,35 +33,26 @@ class AuthService {
      * @returns The object of response of the user registration if the registration is successful.
      */
     static async registerUser(payload: RegisterUserRequest) {
-        const response = await fetch("/api/auth/register", {
-            method: "POST",
-            body: JSON.stringify(payload),
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-            next: { revalidate: false },
-        });
+        const response = await apiRequest<ServerSideResponse<RegisterUserResponse>>(
+            "/api/auth/register",
+            {
+                method: "POST",
+                data: payload,
+            }
+        );
 
-        const data =
-            (await response.json()) as ServerSideResponse<RegisterUserResponse>;
-        return data;
+        return response.data;
     }
 
     static async loginUser(payload: LoginUserRequest) {
-        const response = await fetch("/api/auth/login", {
+        const response = await apiRequest<
+            ServerSideResponse<LoginUserResponse>
+        >("/api/auth/login", {
             method: "POST",
-            body: JSON.stringify(payload),
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-            next: { revalidate: false },
+            data: payload,
         });
-        const data =
-            (await response.json()) as ServerSideResponse<LoginUserResponse>;
 
-        return data;
+        return response.data;
     }
 
     static async logoutUser() {

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ApiRequestOptions } from "./types";
+import type { ApiRequestOptions } from "./types";
 
 /**
  * Base URL for the API. This should be set in your environment variables.
@@ -10,9 +10,6 @@ const API_URL = process.env.PRIVATE_API_URL || "";
 const apiClient = axios.create({
     baseURL: API_URL,
     withCredentials: true, // Ensures cookies are sent with requests
-    headers: {
-        "Content-Type": "application/json",
-    },
     validateStatus: () => true, // Accept all HTTP statuses
 });
 
@@ -23,6 +20,7 @@ const apiClient = axios.create({
  * @param options The request options.
  * @param options.method The HTTP method to use (default: "GET").
  * @param options.data The request body (if applicable).
+ * @param options.headers The headers to send with the request (if applicable).
  * @param options.cookies The cookies to send with the request (if applicable).
  * @param options.params The URL query parameters (if applicable).
  *
@@ -46,6 +44,15 @@ export async function apiRequest<T, X = unknown>(
             : undefined;
     }
 
+    const headers = {
+        ...options.headers,
+        ...(cookieHeader ? { Cookie: cookieHeader } : {}),
+    };
+
+    if (!("Content-Type" in headers) || headers["Content-Type"] === undefined) {
+        headers["Content-Type"] = "application/json";
+    }
+
     return await apiClient.request<T>({
         url: url,
         method: method,
@@ -55,9 +62,10 @@ export async function apiRequest<T, X = unknown>(
         fetchOptions: {
             referrerPolicy: "origin-when-cross-origin",
             credentials: "include",
+            next: { revalidate: false },
         },
-        ...(cookies ? { headers: { Cookie: cookieHeader } } : {}),
-
+        headers: headers,
         signal: options.signal,
+        responseType: options.responseType,
     });
 }

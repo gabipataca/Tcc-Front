@@ -1,4 +1,10 @@
+"use client";
+
+import type React from "react";
+
 import { useState, useMemo, useCallback } from "react";
+import { useCompetition } from "@/contexts/CompetitionContext";
+import { CreateCompetitionRequest } from "@/types/Competition/Requests";
 
 interface CompetitionFormData {
     name: string;
@@ -19,19 +25,33 @@ export const useCompetitionForm = () => {
     const [endRegistration, setEndRegistration] = useState("");
     const [status, setStatus] = useState("Fechado");
 
+    const { createCompetition } = useCompetition();
+
     const handleSubmit = useCallback(
-        (e: React.FormEvent) => {
+        async (e: React.FormEvent) => {
             e.preventDefault();
-            const dataCompetition: CompetitionFormData = {
-                name,
-                description,
-                maxMembers: Number(maxMembers),
-                initialDate,
-                initialRegistration,
-                endRegistration,
-                status,
-            };
-            alert("Maratona criada com sucesso!");
+
+            try {
+                const dataCompetition: CreateCompetitionRequest = {
+                    name,
+                    description,
+                    maxMembers: Number(maxMembers),
+                    startTime: initialDate,
+                    startInscriptions: initialRegistration,
+                    endInscriptions: endRegistration,
+                    duration: "00:00:00",
+                    stopRanking: null,
+                    submissionPenalty: "00:20:00",
+                    maxExercises: null,
+                    maxSubmissionSize: 20,
+                    exerciseIds: [],
+                    blockSubmissions: null,
+                };
+
+                await createCompetition(dataCompetition);
+            } catch (error) {
+                console.log(error);
+            }
         },
         [
             name,
@@ -40,7 +60,7 @@ export const useCompetitionForm = () => {
             initialDate,
             initialRegistration,
             endRegistration,
-            status,
+            createCompetition,
         ]
     );
 

@@ -1,18 +1,22 @@
-import Button from "@/components/_ui/Button";
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from "@/components/_ui/Card";
-import { User } from "@/types/User";
+import React, { useState } from "react";
 import { Calendar, Edit, Hash, Mail, UserCheck, Users } from "lucide-react";
+import { ButtonAdm } from "@/components/_ui/ButtonAdm";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/_ui/Card";
+import { useUser } from "@/contexts/UserContext";
+import { User } from "@/types/User";
+import EditStudentInfoModal from "./components/EditStudentInfoModal";
 
-const StudentInfoSection: React.FC<{ info?: User }> = ({ info }) => (
+// --- Student Information Section Component ---
+const StudentInfoSection: React.FC<{
+    info?: User;
+    onEditClick: () => void;
+}> = ({ info, onEditClick }) => (
     <Card className="shadow-lg hover:shadow-xl transition-all duration-300 border-0 bg-gradient-to-br from-white to-slate-50">
         <CardHeader className="pb-4 bg-gradient-to-r from-[#4F85A6]/5 to-[#3C6B88]/5 rounded-t-lg">
             <CardTitle className="text-2xl text-[#4F85A6] flex items-center gap-3">
-                <UserCheck className="w-10 h-10 bg-[#4F85A6]/10 rounded-full flex items-center justify-center" />
+                <div className="w-10 h-10 bg-[#4F85A6]/10 rounded-full flex items-center justify-center">
+                    <UserCheck className="h-5 w-5 text-[#4F85A6]" />
+                </div>
                 Informações do Aluno
             </CardTitle>
         </CardHeader>
@@ -23,10 +27,10 @@ const StudentInfoSection: React.FC<{ info?: User }> = ({ info }) => (
                         <Users className="h-4 w-4 text-blue-600" />
                     </div>
                     <div>
-                        <span className="font-medium text-slate-600 text-2xl">
+                        <span className="font-medium text-slate-600 text-xl">
                             Nome Completo
                         </span>
-                        <p className="text-slate-900 font-semibold text-xl">
+                        <p className="text-slate-900 font-semibold text-lg">
                             {info?.name}
                         </p>
                     </div>
@@ -37,10 +41,10 @@ const StudentInfoSection: React.FC<{ info?: User }> = ({ info }) => (
                         <Calendar className="h-4 w-4 text-purple-600" />
                     </div>
                     <div>
-                        <span className="font-medium text-slate-600 text-2xl">
-                            Data de Nascimento
+                        <span className="font-medium text-slate-600 text-xl">
+                            Data de Ingresso
                         </span>
-                        <p className="text-slate-900 font-semibold text-xl">
+                        <p className="text-slate-900 font-semibold text-lg">
                             {info?.joinYear}
                         </p>
                     </div>
@@ -51,10 +55,10 @@ const StudentInfoSection: React.FC<{ info?: User }> = ({ info }) => (
                         <Mail className="h-4 w-4 text-green-600" />
                     </div>
                     <div>
-                        <span className="font-medium text-slate-600 text-2xl">
+                        <span className="font-medium text-slate-600 text-xl">
                             E-mail Institucional
                         </span>
-                        <p className="text-slate-900 font-semibold  text-xl">
+                        <p className="text-slate-900 font-semibold text-lg">
                             {info?.email}
                         </p>
                     </div>
@@ -66,10 +70,10 @@ const StudentInfoSection: React.FC<{ info?: User }> = ({ info }) => (
                     </div>
 
                     <div>
-                        <span className="font-medium text-slate-600 text-2xl">
+                        <span className="font-medium text-slate-600 text-xl">
                             Registro Acadêmico
                         </span>
-                        <p className="text-slate-900 font-semibold text-xl">
+                        <p className="text-slate-900 font-semibold text-lg">
                             {info?.ra}
                         </p>
                     </div>
@@ -77,18 +81,39 @@ const StudentInfoSection: React.FC<{ info?: User }> = ({ info }) => (
             </div>
 
             <div className="pt-4 flex justify-end">
-                <Button
-                    type="button"
-                    style="outline"
-                    size="sm"
-                    className=" text-xl text-[#4F85A6] border-[#4F85A6]/20 hover:bg-[#4F85A6]/5 hover:border-[#4F85A6]/40 transition-all duration-200"
+                <ButtonAdm
+                    onClick={onEditClick}
+                    className=" text-md bg-[#4F85A6] hover:bg-[#126396] text-white"
                 >
                     <Edit className=" h-4 w-4 mr-2" />
                     Editar Informações
-                </Button>
+                </ButtonAdm>
             </div>
         </CardContent>
     </Card>
 );
 
-export default StudentInfoSection;
+// --- Componente Principal que Gerencia o Estado ---
+const StudentProfile = () => {
+    const { user } = useUser();
+
+    const [isEditModalOpen, setEditModalOpen] = useState(false);
+
+    return (
+        <>
+            <StudentInfoSection
+                info={user!}
+                onEditClick={() => setEditModalOpen(true)}
+            />
+
+            {isEditModalOpen && user && (
+                <EditStudentInfoModal
+                    onClose={() => setEditModalOpen(false)}
+                    currentUser={user}
+                />
+            )}
+        </>
+    );
+};
+
+export default StudentProfile;

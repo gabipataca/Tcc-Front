@@ -59,6 +59,7 @@ export async function POST(req: NextRequest) {
 
     const data = res.data;
 
+    console.log(data);
     cookie.set("CompetitionAuthToken", data.token);
 
     return NextResponse.json(

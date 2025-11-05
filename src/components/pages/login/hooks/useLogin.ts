@@ -6,6 +6,7 @@ import {
 import { ServerSideResponse } from "@/types/Global";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import z from "zod";
 
@@ -26,6 +27,9 @@ const useLogin = () => {
     const { setUser } = useUser();
 
     const router = useRouter();
+    
+    const [formError, setFormError] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     const {
         handleSubmit,
@@ -46,9 +50,38 @@ const useLogin = () => {
         let res: ServerSideResponse<LoginUserResponse> | null = null;
 
         try {
+            setFormError(null);
+            setIsLoading(true);
             res = await AuthService.loginUser(data);
 
-            const body = res!.data!;
+            if(res.status != 200) {
+                if(res.data?.errors) {
+                    const errors = res.data.errors;
+
+                    for (let i = 0; i < errors.length; i++) {
+                        if(errors[i].target == "form") {
+                            setFormError(errors[i].error);
+                            continue;
+                        }
+
+                        setError(errors[i].target as "ra" | "password", {
+                            type: "onBlur",
+                            message: errors[i].error,
+                        });
+                        setValue(errors[i].target as "ra" | "password", "");
+                    }
+                }
+
+                setIsLoading(false);
+                return;
+            }
+
+            if(!res.data) {
+                console.log(res);
+                return;
+            }
+
+            const body = res.data!;
 
             setUser({
                 id: body.user.id,
@@ -59,11 +92,20 @@ const useLogin = () => {
                 role: body.user.role,
                 groupId: body.user.groupId,
                 token: body.token,
+                department: body.user.department,
+                group: (body.user.group == null) ? null : {
+                    id: body.user.group.id,
+                    name: body.user.group.name,
+                    leaderId: body.user.group.leaderId,
+                    users: body.user.group.users,
+                    groupInvitations: body.user.groupInvitations
+                },
+                groupInvitations: body.user.groupInvitations
             });
 
             setTimeout(() => {
-                router.push("/profile");
-            }, 500);
+                router.push("/Profile");
+            }, 300);
         } catch (err) {
             console.error(err);
 
@@ -73,13 +115,20 @@ const useLogin = () => {
                 const errors = body.errors!;
 
                 for (let i = 0; i < errors.length; i++) {
+                    if(errors[i].target == "form") {
+                            setFormError(errors[i].error);
+                            continue;
+                    }
+
                     setError(errors[i].target as "ra" | "password", {
                         type: "onBlur",
-                        message: errors[i].message,
+                        message: errors[i].error,
                     });
                     setValue(errors[i].target as "ra" | "password", "");
                 }
             }
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -87,6 +136,8 @@ const useLogin = () => {
         control,
         handleSubmit,
         onSubmit,
+        formError,
+        isLoading,
     };
 };
 

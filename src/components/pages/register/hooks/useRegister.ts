@@ -7,10 +7,10 @@ import { RegisterUserRequest } from "@/types/Auth/Requests";
 import { RegisterUserResponse } from "@/types/Auth/Responses";
 import { ServerSideResponse } from "@/types/Global";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import z from "zod";
-import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation";
 
 const schema = z
     .object({
@@ -88,6 +88,9 @@ const useRegister = () => {
         resolver: zodResolver(schema),
     });
 
+    const [isLoading, setIsLoading] = useState(false);
+    const [formError, setFormError] = useState<string | null>(null);
+
     const router = useRouter();
 
     const roleOptions: DropdownOption[] = [
@@ -112,6 +115,28 @@ const useRegister = () => {
             try {
                 res = await AuthService.registerUser(data);
 
+                if (res.status != 200) {
+                    if (res.data?.errors) {
+                        const errors = res.data.errors;
+
+                        for (let i = 0; i < errors.length; i++) {
+                            if (errors[i].target == "form") {
+                                setFormError(errors[i].error);
+                                continue;
+                            }
+
+                            setError(errors[i].target as "ra" | "password", {
+                                type: "onBlur",
+                                message: errors[i].error,
+                            });
+                            setValue(errors[i].target as "ra" | "password", "");
+                        }
+                    }
+
+                    setIsLoading(false);
+                    return;
+                }
+
                 const resData = res.data!;
 
                 if (res.status == 200) {
@@ -124,11 +149,12 @@ const useRegister = () => {
                         groupId: resData.user.groupId,
                         joinYear: resData.user.joinYear,
                         token: resData.token,
+                        department: resData.user.department,
                     });
 
                     setTimeout(() => {
-                        router.push("/profile");
-                    }, 600);
+                        router.push("/Profile");
+                    }, 100);
                 }
             } catch (err) {
                 console.error(err);
@@ -141,14 +167,16 @@ const useRegister = () => {
                     for (let i = 0; i < errors.length; i++) {
                         setError(errors[i].target as "ra" | "password", {
                             type: "onBlur",
-                            message: errors[i].message,
+                            message: errors[i].error,
                         });
                         setValue(errors[i].target as "ra" | "password", "");
                     }
                 }
+            } finally {
+                setIsLoading(false);
             }
         },
-        [isValid, setError, setUser, setValue]
+        [isValid, router, setError, setUser, setValue]
     );
 
     const formData = watch();
@@ -160,6 +188,8 @@ const useRegister = () => {
         register,
         formData,
         roleOptions,
+        isLoading,
+        formError,
     };
 };
 

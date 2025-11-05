@@ -1,3 +1,8 @@
+import { Group, GroupInvitation } from "../Group";
+
+export type UserRole = "Admin" | "Teacher" | "Student";
+
+
 /**
  * Represents a user in the system.
  */
@@ -28,9 +33,19 @@ export interface User {
     email: string;
 
     /**
+     * The department the user belongs to.
+     */
+    department: string | null;
+
+    /**
      * The group ID associated with the user.
      */
     groupId?: number;
+
+    /**
+     * The group object associated with the user.
+     */
+    group?: Group | null;
 
     /**
      * The authentication token associated with the user.
@@ -40,15 +55,23 @@ export interface User {
     /**
      * The role assigned to the user (Admin, Teacher, or Student).
      */
-    role: "Admin" | "Teacher" | "Student";
+    role: UserRole;
+
+    /**
+     * List of group invitations sent by the user.
+     */
+    groupInvitations: GroupInvitation[];
 }
 
 
 export interface GenericUserInfo {
     id: string;
+    ra: string;
     email: string;
+    department: string | null;
     name: string;
     joinYear: number;
     createdAt: string;
     lastLoggedAt: string;
+    group: Group | null;
 }

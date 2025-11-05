@@ -10,7 +10,7 @@ const schema = z.object({
     id: z.number().min(1),
     title: z.string().min(2).max(100),
     exerciseType: z.custom<ExerciseType>(),
-    description: z.string().min(10).max(1000, "Descrição muito longa"),
+    description: z.string().optional(),
     inputs: z
         .string()
         .min(1, "O exercício deve ter pelo menos um input")
@@ -23,9 +23,10 @@ const schema = z.object({
 
 const useEditExerciseModal = (
     data: Exercise,
+    pdfFile: File | null,
     saveEdit: (exercise: EditExerciseRequest) => Promise<void>,
     cancelEdit: () => void,
-    onClose: () => void,
+    onClose: () => void
 ) => {
     const [exerciseState, setExerciseState] = useState<EditExerciseRequest>({
         id: data.id,
@@ -33,21 +34,22 @@ const useEditExerciseModal = (
         exerciseTypeId: data.exerciseTypeId,
         createdAt: data.createdAt,
         description: data.description,
-        estimatedTime: data.estimatedTime,
+        estimatedTime: 0,
         judgeUuid: data.judgeUuid ?? "",
         inputs: data.inputs.map((x, idx) => ({
             id: x.id,
             exerciseId: x.exerciseId,
             input: x.input,
-            orderId: idx
+            orderId: idx,
         })),
         outputs: data.outputs.map((x, idx) => ({
             id: x.id,
             exerciseId: x.exerciseId,
             output: x.output,
             exerciseInputId: x.exerciseInputId,
-            orderId: idx
+            orderId: idx,
         })),
+        pdfFile: new File([], "")
     });
 
     const {
@@ -65,8 +67,8 @@ const useEditExerciseModal = (
             title: data.title,
             exerciseType: data.exerciseTypeId,
             description: data.description,
-            inputs: data.inputs.map(x => x.input).join("\n"),
-            outputs: data.outputs.map(x => x.output).join("\n"),
+            inputs: data.inputs.map((x) => x.input).join("\n"),
+            outputs: data.outputs.map((x) => x.output).join("\n"),
         },
         mode: "onBlur",
         resolver: zodResolver(schema),
@@ -74,104 +76,128 @@ const useEditExerciseModal = (
 
     const formValues = watch();
 
-    const handleOnTitleChange = useCallback((title: string) => {
-        setExerciseState((prev) => ({
-            ...prev,
-            title: title
-        }));
-        setValue("title", title);
-    }, [setValue]);
+    const handleOnTitleChange = useCallback(
+        (title: string) => {
+            setExerciseState((prev) => ({
+                ...prev,
+                title: title,
+            }));
+            setValue("title", title);
+        },
+        [setValue]
+    );
 
-    const handleOnDescriptionChange = useCallback((description: string) => {
-        setExerciseState((prev) => ({
-            ...prev,
-            description: description
-        }));
-        setValue("description", description);
-    }, [setValue]);
+    const handleOnDescriptionChange = useCallback(
+        (description: string) => {
+            setExerciseState((prev) => ({
+                ...prev,
+                description: description,
+            }));
+            setValue("description", description);
+        },
+        [setValue]
+    );
 
-    const handleOnExerciseTypeChange = useCallback((exerciseType: ExerciseType) => {
-        setExerciseState((prev) => ({
-            ...prev,
-            exerciseTypeId: exerciseType
-        }));
-        setValue("exerciseType", exerciseType);
-    }, [setValue]);
+    const handleOnExerciseTypeChange = useCallback(
+        (exerciseType: ExerciseType) => {
+            setExerciseState((prev) => ({
+                ...prev,
+                exerciseTypeId: exerciseType,
+            }));
+            setValue("exerciseType", exerciseType);
+        },
+        [setValue]
+    );
 
-    
+    const handleOnInputChange = useCallback(
+        (input: string, index: number) => {
+            const inputs = [...exerciseState.inputs];
+            const isNewInput = index >= inputs.length;
 
-    const handleOnInputChange = useCallback((input: string, index: number) => {
-        const inputs = [...exerciseState.inputs];
-        const isNewInput = index >= inputs.length;
+            if (isNewInput) {
+                inputs.push({
+                    id: null,
+                    exerciseId: exerciseState.id,
+                    input: input,
+                    orderId: index,
+                });
 
-        if(isNewInput) {
-            inputs.push({
-                id: null,
-                exerciseId: exerciseState.id,
+                setExerciseState((prev) => ({
+                    ...prev,
+                    inputs: inputs,
+                }));
+                setValue("inputs", inputs.map((x) => x.input).join("\n"));
+                return;
+            }
+
+            inputs[index] = {
+                ...inputs[index],
                 input: input,
-                orderId: index
-            });
+            };
 
             setExerciseState((prev) => ({
                 ...prev,
-                inputs: inputs
+                inputs: inputs,
             }));
-            setValue("inputs", inputs.map(x => x.input).join("\n"));
-            return;
-        }
+            setValue("inputs", inputs.map((x) => x.input).join("\n"));
+        },
+        [exerciseState.id, exerciseState.inputs, setValue]
+    );
 
-        inputs[index] = {
-            ...inputs[index],
-            input: input
-        };
+    const handleOnOutputChange = useCallback(
+        (output: string, index: number) => {
+            const outputs = [...exerciseState.outputs];
+            const isNewOutput = index >= outputs.length;
 
-        setExerciseState((prev) => ({
-            ...prev,
-            inputs: inputs
-        }));
-        setValue("inputs", inputs.map(x => x.input).join("\n"));
-    }, [exerciseState.id, exerciseState.inputs, setValue]);
+            if (isNewOutput) {
+                outputs.push({
+                    id: null,
+                    exerciseInputId: null,
+                    exerciseId: exerciseState.id,
+                    output: output,
+                    orderId: index,
+                });
 
-    const handleOnOutputChange = useCallback((output: string, index: number) => {
-        const outputs = [...exerciseState.outputs];
-        const isNewOutput = index >= outputs.length;
+                setExerciseState((prev) => ({
+                    ...prev,
+                    outputs: outputs,
+                }));
+                setValue("outputs", outputs.map((x) => x.output).join("\n"));
+                return;
+            }
 
-        if(isNewOutput) {
-            outputs.push({
-                id: null,
-                exerciseInputId: null,
-                exerciseId: exerciseState.id,
+            outputs[index] = {
+                ...outputs[index],
                 output: output,
-                orderId: index
-            });
+            };
 
             setExerciseState((prev) => ({
                 ...prev,
-                outputs: outputs
+                outputs: outputs,
             }));
-            setValue("outputs", outputs.map(x => x.output).join("\n"));
-            return;
-        }
+            setValue("outputs", outputs.map((x) => x.output).join("\n"));
+        },
+        [exerciseState.id, exerciseState.outputs, setValue]
+    );
 
-        outputs[index] = {
-            ...outputs[index],
-            output: output
-        };
+    const handleValidConfirm = useCallback(
+        async (data: EditExerciseRequest) => {
+            if(pdfFile == null) {
+                return;
+            }
 
-        setExerciseState((prev) => ({
-            ...prev,
-            outputs: outputs
-        }));
-        setValue("outputs", outputs.map(x => x.output).join("\n"));
-    }, [exerciseState.id, exerciseState.outputs, setValue]);
+            await saveEdit({
+                ...exerciseState,
+                pdfFile: pdfFile
+            });
+        },
+        [exerciseState, pdfFile, saveEdit]
+    );
 
-    const handleValidConfirm = useCallback(async (data: EditExerciseRequest) => {
-        await saveEdit(exerciseState);
-    }, [exerciseState, saveEdit]);
-
-    const handleInvalidConfirm: SubmitErrorHandler<EditExerciseRequestFormValues> = useCallback(async (errors) => {
-        console.log(errors);
-    }, []);
+    const handleInvalidConfirm: SubmitErrorHandler<EditExerciseRequestFormValues> =
+        useCallback(async (errors) => {
+            console.log(errors);
+        }, []);
 
     return {
         editExerciseControl,

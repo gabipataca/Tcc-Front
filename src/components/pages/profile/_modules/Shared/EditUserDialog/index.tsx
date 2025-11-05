@@ -12,6 +12,8 @@ import { Edit } from "lucide-react";
 import useEditUserDialog from "./hooks/useEditUserDialog";
 import { FC } from "react";
 import { EditUserDialogProps } from "./types";
+import { Controller } from "react-hook-form";
+import Button from "@/components/_ui/Button";
 
 const EditUserDialog: FC<EditUserDialogProps> = ({
     onClose,
@@ -20,8 +22,13 @@ const EditUserDialog: FC<EditUserDialogProps> = ({
     isOpen,
     user,
 }) => {
-    const { error, handleClose, handleConfirm, loading } = useEditUserDialog({
-        description: "",
+    const {
+        control,
+        error,
+        handleClose,
+        handleConfirm,
+        loading,
+    } = useEditUserDialog({
         onClose,
         toggleDialog,
         onConfirm,
@@ -36,99 +43,75 @@ const EditUserDialog: FC<EditUserDialogProps> = ({
                         Editar {user.name}
                     </DialogTitle>
                     <DialogDescription className="text-xl text-[#4F85A6]">
-                        Altere os dados de {item?.name}.
+                        Altere os dados de {user.name}.
                     </DialogDescription>
                 </DialogHeader>
                 <div className="py-4 space-y-4">
-                    <label className="text-lg font-medium text-[#3f3c40] block mb-2">
-                        Nome
-                    </label>
-                    <Input
+                    <Controller
+                        control={control}
                         name="name"
-                        value={formData?.name ?? ""}
-                        onChange={handleChange}
-                        placeholder="Nome"
-                        className="border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-base"
-                    />
-                    {"email" in (formData ?? {}) && (
-                        <>
-                            <label className="text-lg font-medium text-[#3f3c40] block mb-2">
-                                E-mail
-                            </label>
+                        render={({ field }) => (
                             <Input
-                                name="email"
+                                {...field}
+                                label="Nome"
+                                type="text"
+                                placeholder="Nome"
+                                className="border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-base"
+                            />
+                        )}
+                    />
+
+                    <Controller
+                        control={control}
+                        name="email"
+                        render={({ field }) => (
+                            <Input
+                                {...field}
+                                label="E-mail"
                                 type="email"
-                                value={
-                                    (formData as Student | Professor)?.email ??
-                                    ""
-                                }
-                                onChange={handleChange}
                                 placeholder="E-mail"
                                 className="border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-base"
                             />
-                        </>
-                    )}
-                    {"group" in (formData ?? {}) && (
-                        <>
-                            <label className="text-lg font-medium text-[#3f3c40] block mb-2">
-                                Grupo
-                            </label>
+                        )}
+                    />
+                    <Controller
+                        control={control}
+                        name="group"
+                        render={({ field }) => (
                             <Input
-                                name="group"
-                                value={
-                                    "group" in (formData ?? {})
-                                        ? (formData as any).group ?? ""
-                                        : ""
-                                }
-                                onChange={handleChange}
-                                placeholder="Grupo"
+                                {...field}
+                                placeholder="ID do Grupo"
+                                type="number"
+                                min={1}
+                                label="ID do Grupo"
                                 className="border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-base"
                             />
-                        </>
-                    )}
-                    {"status" in (formData ?? {}) && (
-                        <>
-                            <label className="text-lg font-medium text-[#3f3c40] block mb-2">
-                                Status
-                            </label>
-                            <Select
-                                value={
-                                    (formData as Student | Professor | Group)
-                                        ?.status ?? ""
-                                }
-                                onValueChange={(value) =>
-                                    handleSelectChange("status", value)
-                                }
-                            >
-                                <SelectTrigger className="w-full border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-base">
-                                    <SelectValue placeholder="Status" />
-                                </SelectTrigger>
-                                <SelectContent className="bg-white border-[#e9edee] text-base">
-                                    <SelectItem value="active">
-                                        Ativo
-                                    </SelectItem>
-                                    <SelectItem value="inactive">
-                                        Inativo
-                                    </SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </>
-                    )}
+                        )}
+                    />
                 </div>
                 <DialogFooter>
-                    <ButtonAdm
-                        onClick={onClose}
+                    <Button
+                        type="button"
+                        variant="outline"
+                        rounded
+                        disabled={loading}
+                        onClick={handleClose}
                         className="border-[#e9edee] text-[#3f3c40] hover:bg-[#e9edee]"
                     >
                         Cancelar
-                    </ButtonAdm>
-                    <ButtonAdm
-                        onClick={handleSave}
+                    </Button>
+                    <Button
+                        type="button"
+                        variant="success"
+                        rounded
+                        disabled={loading}
+                        loading={loading}
+                        onClick={handleConfirm}
                         className="bg-[#4F85A6] hover:bg-[#3f3c40] text-white"
                     >
                         <Edit className="w-4 h-4 mr-2" />
                         Salvar
-                    </ButtonAdm>
+                    </Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

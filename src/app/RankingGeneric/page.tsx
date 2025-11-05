@@ -3,9 +3,9 @@
 import React from 'react';
 import Balao from '@/components/_ui/Balao';
 import Table from '@/components/_ui/Table';
-import TableHeader from '@/components/_ui/Table/components/TableHeader';
+import TableHead from '@/components/_ui/Table/components/TableHeader';
 import TableBody from '@/components/_ui/Table/components/TableBody';
-import TableHeaderItem from '@/components/_ui/Table/components/TableHeaderItem';
+import TableCell from '@/components/_ui/Table/components/TableHeaderItem';
 import TableRow from '@/components/_ui/Table/components/TableRow';
 import TableCell from '@/components/_ui/Table/components/TableCell';
 import { TableContainer as TableContainerMui } from '@mui/material';
@@ -108,13 +108,13 @@ const CreateRanking: React.FC = () => {
   return (
     <TableContainerMui component={TableContainer}>
       <Table>
-        <TableHeader>
+        <TableHead>
           <TableRow>
             {tableHeaderColumns.map((column, idx) => (
-              <TableHeaderItem key={`${column}-${idx}`} item={{ content: column, space: 1 }} />
+              <TableCell key={`${column}-${idx}`} item={{ content: column, space: 1 }} />
             ))}
           </TableRow>
-        </TableHeader>
+        </TableHead>
 
         <TableBody>
           {data.map((team, idx) => (

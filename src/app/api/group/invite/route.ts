@@ -3,6 +3,7 @@ import { apiRequest } from "@/libs/apiClient";
 import { InviteUserToGroupRequest } from "@/types/Group/Requests";
 import { ServerSideResponse } from "@/types/Global";
 import { InviteUserToGroupResponse } from "@/types/Group/Responses";
+import { GroupInvitation } from "@/types/Group";
 
 export async function POST(req: NextRequest) {
     const body = (await req.json()) as InviteUserToGroupRequest;
@@ -11,7 +12,7 @@ export async function POST(req: NextRequest) {
         res = await apiRequest<
             ServerSideResponse<InviteUserToGroupResponse>,
             InviteUserToGroupRequest
-        >("/Group/Invite", {
+        >("/Group/invite", {
             method: "POST",
             data: body,
             cookies: req.cookies.toString(),
@@ -24,3 +25,25 @@ export async function POST(req: NextRequest) {
     }
     return NextResponse.json(res.data, { status: res.status });
 }
+
+export const GET = async (req: NextRequest) => {
+    let res;
+    try {
+        res = await apiRequest<GroupInvitation[]>("/Group/invite", {
+            method: "GET",
+            cookies: req.cookies.toString(),
+        });
+    } catch (exc) {
+        return NextResponse.json(
+            { message: "Erro ao buscar convites para o grupo.", status: 500 },
+            { status: 500 }
+        );
+    }
+    return NextResponse.json(
+        {
+            data: res.data,
+            status: res.status,
+        } satisfies ServerSideResponse<GroupInvitation[]>,
+        { status: res.status }
+    );
+};

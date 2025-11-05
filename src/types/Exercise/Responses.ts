@@ -12,6 +12,4 @@ export interface ExerciseSubmissionResponse {
 }
 
 
-export interface GetExercisesResponse extends PagedResult<Exercise> {
-
-}
+export type GetExercisesResponse = PagedResult<Exercise>;

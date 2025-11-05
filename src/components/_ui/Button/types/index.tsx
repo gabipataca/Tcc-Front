@@ -26,7 +26,7 @@ export interface ButtonProps {
     /**
      * The type of the button, either "button" or "link".
      */
-    type?: "button" | "link";
+    type?: HTMLButtonElement["type"] | "link";
 
     /**
      * The href attribute for the link, if the button type is "link".
@@ -34,15 +34,18 @@ export interface ButtonProps {
     linkHref?: string;
 
     /**
-     * The style of the button, either "primary" or "secondary".
+     * The variant of the button, either "primary" or "secondary".
      */
-    style?: "primary" | "secondary" | "success" | "light-success" | "success-outline" | "destructive" | "outline" | "ghost";
+    variant?: "primary" | "secondary" | "success" | "light-success" | "success-outline" | "destructive" | "outline" | "ghost";
 
     /**
      * Whether the button should have rounded corners.
      */
     rounded?: boolean;
 
+    /**
+     * The size of the button.
+     */
     size?: "default" | "sm" | "lg" | "icon";
 
     /**
@@ -50,6 +53,14 @@ export interface ButtonProps {
      */
     fullWidth?: boolean;
 
+    /**
+     * Whether the button is disabled.
+     */
     disabled?: boolean;
+
+    /**
+     * Whether to show a loading indicator inside the button.
+     */
+    loading?: boolean;
     
 }

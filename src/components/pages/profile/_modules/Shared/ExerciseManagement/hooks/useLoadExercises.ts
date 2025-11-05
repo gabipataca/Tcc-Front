@@ -1,3 +1,5 @@
+"use client";
+
 import { fromBase64 } from "@/libs/utils";
 import ExerciseService from "@/services/ExerciseService";
 import { Exercise, ExerciseType } from "@/types/Exercise";
@@ -6,16 +8,15 @@ import {
     EditExerciseRequest,
 } from "@/types/Exercise/Requests";
 import { useSnackbar } from "notistack";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const useLoadExercises = () => {
-    const [loadingExercises, setLoadingExercises] = useState<boolean>(false);
+    const [loadingExercises, setLoadingExercises] = useState<boolean>(true);
     const [exercises, setExercises] = useState<Exercise[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [totalPages, setTotalPages] = useState<number>(1);
-    const [exerciseTypeFilter, setExerciseTypeFilter] = useState<ExerciseType | null>(
-        null
-    );
+    const [exerciseTypeFilter, setExerciseTypeFilter] =
+        useState<ExerciseType | null>(null);
     const [controllerSignal, setControllerSignal] =
         useState<AbortController | null>(null);
 
@@ -33,13 +34,17 @@ const useLoadExercises = () => {
         }
     }, [currentPage]);
 
+    const resetPagination = useCallback(() => {
+        setCurrentPage(1);
+    }, []);
+
     const toggleExerciseTypeFilter = useCallback(
         (type: ExerciseType | null) => {
             setExerciseTypeFilter(type);
         },
         []
     );
-    
+
     const toggleLoadingExercises = useCallback(() => {
         setLoadingExercises((prev) => !prev);
     }, []);
@@ -48,7 +53,22 @@ const useLoadExercises = () => {
         async (exercise: CreateExerciseRequest) => {
             try {
                 setLoadingExercises(true);
-                const response = await ExerciseService.createExercise(exercise);
+                const payload = new FormData();
+                payload.append("title", exercise.title);
+                payload.append(
+                    "exerciseTypeId",
+                    exercise.exerciseTypeId.toString()
+                );
+                payload.append("description", exercise.description);
+                payload.append("pdfFile", exercise.pdfFile);
+                payload.append("inputs", JSON.stringify(exercise.inputs));
+                payload.append("outputs", JSON.stringify(exercise.outputs));
+                payload.append(
+                    "estimatedTime",
+                    exercise.estimatedTime.toString()
+                );
+
+                const response = await ExerciseService.createExercise(payload);
 
                 if (response.status !== 201) {
                     enqueueSnackbar("Erro ao tentar criar exercício.", {
@@ -130,45 +150,78 @@ const useLoadExercises = () => {
         [controllerSignal, currentPage, enqueueSnackbar]
     );
 
-    const deleteExercise = useCallback(async (id: number) => {
-        try {
-            await ExerciseService.deleteExercise(id);
-            setExercises((prev) => prev.filter((ex) => ex.id !== id));
-        } catch (error) {
-            console.error("Error deleting exercise:", error);
-        }
-    }, []);
+    const deleteExercise = useCallback(
+        async (id: number) => {
+            try {
+                await ExerciseService.deleteExercise(id);
+                setExercises((prev) => prev.filter((ex) => ex.id !== id));
+            } catch (error) {
+                console.error("Error deleting exercise:", error);
+            }
+        },
+        [setExercises]
+    );
 
     const updateExercise = useCallback(
-        async (exercise: EditExerciseRequest) => {
+        async (id: number, exerciseData: EditExerciseRequest) => {
             try {
-                const data = await ExerciseService.updateExercise(exercise);
-                const exercisesCopy = exercises.filter((ex) => ex.id !== data.id);
-                exercisesCopy.push(data);
-                exercisesCopy.sort((a, b) => (a.id! < b.id! ? -1 : 1));
-                setExercises([...exercisesCopy]);
+                const payload = new FormData();
+                payload.append("id", `${exerciseData.id}`);
+                payload.append("title", exerciseData.title);
+                payload.append(
+                    "exerciseTypeId",
+                    exerciseData.exerciseTypeId.toString()
+                );
+                payload.append("description", exerciseData.description);
+                payload.append(
+                    "estimatedTime",
+                    exerciseData.estimatedTime.toString()
+                );
+                payload.append("judgeUuid", exerciseData.judgeUuid);
+                payload.append("inputs", JSON.stringify(exerciseData.inputs));
+                payload.append("outputs", JSON.stringify(exerciseData.outputs));
+
+                if (exerciseData.pdfFile) {
+                    payload.append("pdfFile", exerciseData.pdfFile);
+                }
+
+                const response = await ExerciseService.updateExercise(payload);
+
+                if (response.status !== 200) {
+                    throw new Error("Falha ao atualizar o exercício");
+                }
+
+                const updatedExercise = response.data!;
+
+                setExercises((prevExercises) =>
+                    prevExercises.map((ex) =>
+                        ex.id === updatedExercise.id ? updatedExercise : ex
+                    )
+                );
+
                 enqueueSnackbar("Exercício atualizado com sucesso!", {
                     variant: "success",
-                    anchorOrigin: {
-                        vertical: "bottom",
-                        horizontal: "right",
-                    },
+                    anchorOrigin: { vertical: "bottom", horizontal: "right" },
                     autoHideDuration: 2500,
                 });
             } catch (error) {
                 console.error("Error updating exercise:", error);
                 enqueueSnackbar("Erro ao tentar atualizar exercício!", {
                     variant: "error",
-                    anchorOrigin: {
-                        vertical: "bottom",
-                        horizontal: "right",
-                    },
+                    anchorOrigin: { vertical: "bottom", horizontal: "right" },
                     autoHideDuration: 2500,
                 });
             }
         },
-        [enqueueSnackbar, exercises]
+        [enqueueSnackbar]
     );
+    useEffect(() => {
+        return () => {
+            if (controllerSignal) {
+                controllerSignal.abort();
+            }
+        };
+    }, []);
 
     return {
         exercises,
@@ -186,6 +239,7 @@ const useLoadExercises = () => {
         exerciseTypeFilter,
         loadingExercises,
         toggleLoadingExercises,
+        resetPagination,
     };
 };
 

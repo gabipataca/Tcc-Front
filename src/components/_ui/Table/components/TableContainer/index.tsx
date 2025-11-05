@@ -4,14 +4,20 @@ import React from "react"
 import { StyledTableContainer } from "./styles"
 
 
-const TableContainer: React.FC<{ children: React.ReactNode }> = ({ children, ...props }) => {
 
+import type { ForwardedRef } from "react";
+import { TableContainerProps } from "@mui/material";
 
-    return(
-        <StyledTableContainer {...props}>
-            {children}
-        </StyledTableContainer>
-    )
-}
+const TableContainer = React.forwardRef<HTMLDivElement, TableContainerProps>(
+    ({ children, ...props }, ref: ForwardedRef<HTMLDivElement>) => {
+        return (
+            <StyledTableContainer ref={ref} {...props}>
+                {children}
+            </StyledTableContainer>
+        );
+    }
+);
+
+TableContainer.displayName = "TableContainer";
 
 export default TableContainer;

@@ -5,6 +5,13 @@ import { User } from "@/types/User";
 
 export const useStudentDashboardData = () => {
     const { user } = useUser();
+    const [activeMenu, setActiveMenu] = useState<"dashboard" | "inscription">(
+        "dashboard"
+    );
+
+    const toggleMenu = (menu: "dashboard" | "inscription") => {
+        setActiveMenu(menu);
+    };
 
     const [groupInfo, setGroupInfo] = useState<GroupInfo | null>(null);
     const [competitionHistory, setCompetitionHistory] = useState<
@@ -16,5 +23,7 @@ export const useStudentDashboardData = () => {
         groupInfo,
         competitionHistory,
         championTeams,
+        activeMenu,
+        toggleMenu,
     };
 };

@@ -49,7 +49,7 @@ const RedefinirSenha: React.FC = () => {
 				<BodyLarge centered white className="mb-6">
 					Caso já possua conta, clique abaixo para fazer login
 				</BodyLarge>
-				<Button rounded type="link" linkHref="/login" style="secondary">
+				<Button rounded type="link" linkHref="/login" variant="secondary">
 					Login
 				</Button>
 			</div>
