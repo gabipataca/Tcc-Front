@@ -1,13 +1,14 @@
 "use client"
 
 import type React from "react"
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import Balao from "@/components/_ui/Balao"
 import { Box, Modal } from "@mui/material"
 import Button from "@/components/_ui/Button"
 import { StyledRankingCellContainer } from "@/components/pages/ranking/styles"
 import AnaliseJuiz from "../Competition/analiseJugde"
 import { useRanking } from "@/contexts/CompetitionHubContext/hooks/useRanking"
+import { useCompetitionHub } from "@/contexts/CompetitionHubContext"
 
 const letras = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
 
@@ -157,6 +158,14 @@ data.sort((a, b) => {
 const RankingPage: React.FC = () => {
   const [open, setOpen] = useState(false)
   const { liveRanking } = useRanking()
+  const { requestRanking, isConnected } = useCompetitionHub()
+
+  // Request ranking when the page loads and connection is ready
+  useEffect(() => {
+    if (isConnected) {
+      requestRanking()
+    }
+  }, [isConnected, requestRanking])
 
   // Transform SignalR ranking data to component format
   const data = useMemo(() => {

@@ -54,6 +54,7 @@ export interface CreateGroupQuestionRequest {
 
 /**
  * Request to answer a question.
+ * Must match AnswerGroupQuestionRequest.cs in backend.
  */
 export interface AnswerGroupQuestionRequest {
     /**
@@ -62,14 +63,9 @@ export interface AnswerGroupQuestionRequest {
     questionId: number;
 
     /**
-     * The answer text.
+     * The answer content.
      */
-    answerText: string;
-
-    /**
-     * Whether answer is private to the asking group only.
-     */
-    isPrivate: boolean;
+    answer: string;
 }
 
 /**

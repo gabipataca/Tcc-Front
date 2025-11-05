@@ -46,7 +46,7 @@ export function questionResponseToLegacy(
       ? `Dúvida sobre Exercício ${exerciseLetter}`
       : `Pergunta Geral #${questionResponse.id}`,
     question: questionResponse.content,
-    askedBy: questionResponse.user.name,
+    askedBy: questionResponse.group?.name || questionResponse.user.name,
     askedAt: questionResponse.user.createdAt,
     status: questionResponse.answer ? "answered" : "pending",
     answeredAt: questionResponse.answer?.user.lastLoggedAt,

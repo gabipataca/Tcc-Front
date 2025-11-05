@@ -9,6 +9,9 @@ import {
     QuestionResponse,
     AnswerResponse,
     CompetitionRankingResponse,
+    GroupInCompetitionResponse,
+    LogResponse,
+    SubmissionForReviewResponse,
 } from "@/types/SignalR";
 import {
     GroupExerciseAttemptRequest,
@@ -83,6 +86,31 @@ interface CompetitionHubContextType {
      * Ping the hub for health check.
      */
     ping: () => Promise<void>;
+
+    /**
+     * Request all questions for the current competition.
+     */
+    requestQuestions: () => Promise<void>;
+
+    /**
+     * Request full ranking for the current competition.
+     */
+    requestRanking: () => Promise<void>;
+
+    /**
+     * Request logs for the current competition (Admin/Teacher only).
+     */
+    requestLogs: () => Promise<LogResponse[]>;
+
+    /**
+     * Request groups for the current competition (Admin/Teacher only).
+     */
+    requestGroups: () => Promise<GroupInCompetitionResponse[]>;
+
+    /**
+     * Request submissions for manual correction (Admin/Teacher only).
+     */
+    requestSubmissions: () => Promise<SubmissionForReviewResponse[]>;
 }
 
 const CompetitionHubContext = createContext<CompetitionHubContextType | null>(null);
@@ -291,6 +319,24 @@ export const CompetitionHubProvider: React.FC<{ children: React.ReactNode }> = (
             }
         });
 
+        // All questions for the current competition
+        webSocketConnection.on("ReceiveAllQuestions", (allQuestions: QuestionResponse[]) => {
+            console.log("📚 ReceiveAllQuestions:", allQuestions);
+            setQuestions(allQuestions);
+        });
+
+        // Full ranking with exercise attempts
+        webSocketConnection.on("ReceiveFullRanking", (fullRanking: CompetitionRankingResponse[]) => {
+            console.log("🏆 ReceiveFullRanking:", fullRanking);
+            setRanking(fullRanking.sort((a, b) => a.rankOrder - b.rankOrder));
+        });
+
+        // Competition logs (Admin/Teacher only)
+        webSocketConnection.on("ReceiveCompetitionLogs", (logs: LogResponse[]) => {
+            console.log("📋 ReceiveCompetitionLogs:", logs);
+            // Logs will be consumed by specific hooks/pages
+        });
+
         return () => {
             // Cleanup listeners
             webSocketConnection.off("OnConnectionResponse");
@@ -306,6 +352,9 @@ export const CompetitionHubProvider: React.FC<{ children: React.ReactNode }> = (
             webSocketConnection.off("ReceiveChangeJudgeSubmissionResponse");
             webSocketConnection.off("ReceiveBlockGroupSubmissionResponse");
             webSocketConnection.off("ReceiveUnblockGroupSubmissionResponse");
+            webSocketConnection.off("ReceiveAllQuestions");
+            webSocketConnection.off("ReceiveFullRanking");
+            webSocketConnection.off("ReceiveCompetitionLogs");
         };
     }, [webSocketConnection, enqueueSnackbar]);
 
@@ -464,6 +513,129 @@ export const CompetitionHubProvider: React.FC<{ children: React.ReactNode }> = (
         }
     }, [webSocketConnection]);
 
+    const requestQuestions = useCallback(async () => {
+        if (!webSocketConnection) {
+            console.warn("Cannot request questions: WebSocket not connected");
+            return;
+        }
+
+        try {
+            await webSocketConnection.invoke("GetAllCompetitionQuestions");
+            console.log("📚 Requested all competition questions");
+        } catch (error) {
+            console.error("Error requesting questions:", error);
+            enqueueSnackbar("Erro ao carregar perguntas.", {
+                variant: "error",
+                anchorOrigin: { vertical: "bottom", horizontal: "right" },
+            });
+        }
+    }, [webSocketConnection, enqueueSnackbar]);
+
+    const requestRanking = useCallback(async () => {
+        if (!webSocketConnection) {
+            console.warn("Cannot request ranking: WebSocket not connected");
+            return;
+        }
+
+        try {
+            await webSocketConnection.invoke("GetCompetitionRanking");
+            console.log("🏆 Requested competition ranking");
+        } catch (error) {
+            console.error("Error requesting ranking:", error);
+            enqueueSnackbar("Erro ao carregar ranking.", {
+                variant: "error",
+                anchorOrigin: { vertical: "bottom", horizontal: "right" },
+            });
+        }
+    }, [webSocketConnection, enqueueSnackbar]);
+
+    const requestLogs = useCallback(async () => {
+        if (!webSocketConnection) {
+            console.warn("Cannot request logs: WebSocket not connected");
+            return Promise.resolve([]);
+        }
+
+        try {
+            console.log("📋 Requesting competition logs");
+            return new Promise<LogResponse[]>((resolve) => {
+                // Set up one-time listener for the response
+                const handleLogs = (logs: LogResponse[]) => {
+                    webSocketConnection.off("ReceiveCompetitionLogs", handleLogs);
+                    resolve(logs);
+                };
+                webSocketConnection.on("ReceiveCompetitionLogs", handleLogs);
+                
+                // Invoke the request
+                webSocketConnection.invoke("GetCompetitionLogs");
+            });
+        } catch (error) {
+            console.error("Error requesting logs:", error);
+            enqueueSnackbar("Erro ao carregar logs.", {
+                variant: "error",
+                anchorOrigin: { vertical: "bottom", horizontal: "right" },
+            });
+            return [];
+        }
+    }, [webSocketConnection, enqueueSnackbar]);
+
+    const requestGroups = useCallback(async () => {
+        if (!webSocketConnection) {
+            console.warn("Cannot request groups: WebSocket not connected");
+            return Promise.resolve([]);
+        }
+
+        try {
+            console.log("👥 Requesting competition groups");
+            return new Promise<GroupInCompetitionResponse[]>((resolve) => {
+                // Set up one-time listener for the response
+                const handleGroups = (groups: GroupInCompetitionResponse[]) => {
+                    webSocketConnection.off("ReceiveCompetitionGroups", handleGroups);
+                    resolve(groups);
+                };
+                webSocketConnection.on("ReceiveCompetitionGroups", handleGroups);
+                
+                // Invoke the request
+                webSocketConnection.invoke("GetCompetitionGroups");
+            });
+        } catch (error) {
+            console.error("Error requesting groups:", error);
+            enqueueSnackbar("Erro ao carregar grupos.", {
+                variant: "error",
+                anchorOrigin: { vertical: "bottom", horizontal: "right" },
+            });
+            return [];
+        }
+    }, [webSocketConnection, enqueueSnackbar]);
+
+    const requestSubmissions = useCallback(async () => {
+        if (!webSocketConnection) {
+            console.warn("Cannot request submissions: WebSocket not connected");
+            return Promise.resolve([]);
+        }
+
+        try {
+            console.log("📝 Requesting competition submissions");
+            return new Promise<SubmissionForReviewResponse[]>((resolve) => {
+                // Set up one-time listener for the response
+                const handleSubmissions = (submissions: SubmissionForReviewResponse[]) => {
+                    webSocketConnection.off("ReceiveCompetitionSubmissions", handleSubmissions);
+                    resolve(submissions);
+                };
+                webSocketConnection.on("ReceiveCompetitionSubmissions", handleSubmissions);
+                
+                // Invoke the request
+                webSocketConnection.invoke("GetCompetitionSubmissions");
+            });
+        } catch (error) {
+            console.error("Error requesting submissions:", error);
+            enqueueSnackbar("Erro ao carregar submissões.", {
+                variant: "error",
+                anchorOrigin: { vertical: "bottom", horizontal: "right" },
+            });
+            return [];
+        }
+    }, [webSocketConnection, enqueueSnackbar]);
+
     const value: CompetitionHubContextType = {
         ongoingCompetition,
         submissions,
@@ -477,6 +649,11 @@ export const CompetitionHubProvider: React.FC<{ children: React.ReactNode }> = (
         blockGroupSubmission,
         unblockGroupSubmission,
         ping,
+        requestQuestions,
+        requestRanking,
+        requestLogs,
+        requestGroups,
+        requestSubmissions,
     };
 
     return (

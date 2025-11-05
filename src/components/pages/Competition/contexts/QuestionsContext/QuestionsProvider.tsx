@@ -43,10 +43,10 @@ export const QuestionsProvider: React.FC<QuestionsProviderProps> = ({ children }
         return undefined;
       }
 
+      // Create answer request matching backend AnswerGroupQuestionRequest
       const request: AnswerGroupQuestionRequest = {
         questionId: id,
-        answerText: answerText.trim(),
-        isPrivate: false, // Public answer by default
+        answer: answerText.trim(),
       };
 
       // Send answer via SignalR
