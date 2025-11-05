@@ -1,7 +1,7 @@
 # Tcc-Front: Academic Competition Management Dashboard
 
 ## Project Overview
-Next.js 15 + TypeScript app for managing academic programming competitions. Supports admin, teacher, and student roles with real-time updates via SignalR WebSocket. Uses App Router with hybrid SSR/CSR patterns.
+Next.js 15.1.6 + React 19 + TypeScript app for managing academic programming competitions. Supports admin, teacher, and student roles with real-time updates via SignalR WebSocket. Uses App Router with hybrid SSR/CSR patterns.
 
 ## Architecture Patterns
 
@@ -26,8 +26,14 @@ Nested in `src/app/layout.tsx` in this order:
 1. `ThemeRegistry` - MUI theme + Emotion cache
 2. `SnackbarProviderC` - Notistack notifications
 3. `UserContextProvider` - User data persisted to localStorage
-4. `WebSocketContextProvider` - SignalR connection to `/hub/competition`
-5. `CompetitionContextProvider` - Current competition state
+4. `WebSocketContextProvider` - Base SignalR connection manager
+5. `CompetitionContextProvider` - Competition templates and models state (from `/providers/CompetitionContextProvider`)
+6. `CompetitionHubProvider` - Competition hub-specific SignalR features (from `/contexts/CompetitionHubContext`)
+
+**Important Context Architecture**:
+- `CompetitionContext` is defined in `src/contexts/CompetitionContext/index.ts`
+- `CompetitionContextProvider` (the provider component) is in `src/providers/CompetitionContextProvider/`
+- `CompetitionHubProvider` wraps `WebSocketContext` and provides specialized hooks for competition features
 
 **User Context Pattern**: `useUser()` hook provides `{ user, setUser }`. User stored in localStorage on mount/update.
 
@@ -65,9 +71,11 @@ npm run dev  # Starts with --experimental-https flag
 Requires SSL certificates in `certificates/` folder for local HTTPS.
 
 ### Environment Variables
-- **PRIVATE_API_URL**: Backend API URL for server-side requests
-- **NEXT_PUBLIC_API_URL**: Backend API URL for client-side requests
-- **NEXT_PUBLIC_API_URL_CUSTOM**: WebSocket hub URL (SignalR)
+- **PRIVATE_API_URL**: Backend API URL for server-side requests (e.g., `https://localhost:7163/api`)
+- **NEXT_PUBLIC_API_URL_CUSTOM**: WebSocket hub URL base (e.g., `https://localhost:7163`) - used for SignalR hub connection
+- **NODE_TLS_REJECT_UNAUTHORIZED**: Set to `0` for local development with self-signed certificates
+
+**Note**: There is no `NEXT_PUBLIC_API_URL` defined. Client-side API calls go through Next.js API routes (BFF pattern), not directly to backend.
 
 ### Authentication Flow
 1. User logs in via `/api/auth/login` (posts to backend `/Auth/Login`)
@@ -105,6 +113,8 @@ ComponentName/
   Component.module.scss  # SCSS module (legacy pattern)
 ```
 
+**Special Component**: `NavbarWrapper` in `src/components/_ui/NavbarWrapper/` conditionally renders appropriate navbar based on current route context.
+
 ### Import Aliases
 ```typescript
 "@/*"        → "./src/*"
@@ -123,6 +133,17 @@ Three roles: `Admin`, `Teacher`, `Student`
 - JWT claim key: `http://schemas.microsoft.com/ws/2008/06/identity/claims/role`
 - Parsed in `middleware.ts` from JWT token
 - Protected routes array defines role requirements
+
+**Protected Routes Configuration:**
+```typescript
+const protectedRoutes = [
+    { path: "/admin", roles: ["Admin"] },
+    { path: "/Competition", roles: ["Admin", "Teacher", "Student"] },
+    { path: "/Profile", roles: ["Admin", "Teacher", "Student"] },
+];
+```
+
+**Note**: Middleware matcher uses lowercase `/profile/:path*` but the actual route is `/Profile` (capital P). Ensure consistency when working with Profile routes.
 
 ## Common Patterns
 
@@ -161,26 +182,37 @@ Dockerfile uses multi-stage build:
 2. Runner stage: production deps only, exposes port 3000
 
 ## External Dependencies
-- **SignalR** (@microsoft/signalr): Real-time competition updates
-- **MUI**: Primary component library
-- **Tailwind**: Utility-first CSS
+- **React 19.0.0**: Latest React version with new features
+- **Next.js 15.1.6**: App Router, Server Components, middleware
+- **SignalR** (@microsoft/signalr ^8.0.7): Real-time competition updates
+- **MUI v7**: Primary component library (@mui/material, @mui/x-data-grid)
+- **Emotion** (@emotion/react, @emotion/styled): CSS-in-JS for MUI
+- **Tailwind CSS**: Utility-first CSS framework
 - **react-hook-form**: Form state management
 - **notistack**: Snackbar notifications
 - **axios**: HTTP client (wrapped in apiClient)
+- **Yup & Zod**: Schema validation libraries
+- **jsonwebtoken**: JWT token parsing in middleware
 
 ## SignalR Competition Hub Integration
 
 ### Context Architecture
-The app uses `CompetitionHubProvider` (wraps `WebSocketContextProvider`) for real-time competition features:
+The app uses `CompetitionHubProvider` for real-time competition features. This provider is the **6th and final** context wrapper in the provider chain.
 
-**Location:** `src/contexts/CompetitionHubContext/`
+**Location:** `src/contexts/CompetitionHubContext/index.tsx` (679 lines)
 
-**Specialized hooks available:**
+**Provider Hierarchy:**
+- `WebSocketContextProvider` - Base SignalR connection (`src/contexts/WebSocketContext/`)
+- `CompetitionHubProvider` - Competition-specific hub features (wraps and extends WebSocketContext)
+
+**Specialized hooks available** (exported from `src/contexts/CompetitionHubContext/hooks/`):
 - `useSubmissions()` - Exercise submission management and stats
 - `useQuestions()` - Q&A system with real-time updates
 - `useRanking()` - Live ranking calculation from submissions
 - `useCompetitionStatus()` - Competition state, timers, connection status
 - `useAdminActions()` - Admin/Teacher actions (change verdicts, block groups)
+
+All hooks are consumed from the single `CompetitionHubContext` created in the main context file.
 
 ### Important Hub Patterns
 
