@@ -24,6 +24,7 @@ import {
 } from "@/components/_ui/Dialog"
 import FileService from "@/services/FileService"
 import { downloadBlobFile } from "@/libs/utils"
+import { useSnackbar } from "notistack"
 
 const ExerciseManagement: React.FC = () => {
   const {
@@ -56,6 +57,7 @@ const ExerciseManagement: React.FC = () => {
     loadingExercises,
   } = useExerciseManagement()
 
+  const { enqueueSnackbar } = useSnackbar()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [currentPage, setCurrentPage] = useState(1)
@@ -99,7 +101,10 @@ const ExerciseManagement: React.FC = () => {
 	  downloadBlobFile(fileId, file.blob, file.contentDisposition);
     } catch (error) {
 	  console.error("Erro ao baixar o arquivo PDF:", error);
-	  alert("Nenhum PDF disponível para este exercício")
+	  enqueueSnackbar("Nenhum PDF disponível para este exercício", {
+        variant: "error",
+        anchorOrigin: { vertical: "bottom", horizontal: "right" }
+      })
 	}
     
 
