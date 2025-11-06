@@ -29,7 +29,7 @@ const NavbarCompetition: FC = () => {
                 <div className="flex justify-between items-center h-16">
                     {/* Desktop Navigation */}
                     <nav className="hidden lg:flex items-center space-x-1">
-                        {NavbarLinks.map((link, index) => (
+                        {linksToShow.map((link, index) => (
                             <div key={link.label} className="flex items-center">
                                 <Link
                                     href={link.href}
@@ -40,7 +40,7 @@ const NavbarCompetition: FC = () => {
                                     )}
                                     {link.label}
                                 </Link>
-                                {index < NavbarLinks.length - 1 && (
+                                {index < linksToShow.length - 1 && (
                                     <span className="text-white/60 mx-1">
                                         |
                                     </span>

@@ -61,6 +61,6 @@ export const NavbarLinks: NavbarLink[] = [
         label: "Perfil do Administrador",
         href: "/Profile",
         Icon: UsersIcon,
-        roles: ["Admin", "Student"],
+        roles: ["Admin"],
     },
 ];

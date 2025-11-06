@@ -271,6 +271,11 @@ export interface ExerciseAttemptSummary {
      * Number of attempts made for this exercise.
      */
     attempts: number;
+
+    /**
+     * Indicates whether the exercise was accepted (solved correctly).
+     */
+    accepted: boolean;
 }
 
 /**
