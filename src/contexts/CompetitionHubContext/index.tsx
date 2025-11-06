@@ -11,7 +11,7 @@ import {
     CompetitionRankingResponse,
     GroupInCompetitionResponse,
     LogResponse,
-    SubmissionForReviewResponse,
+    CompetitionSubmissionData,
     UpdateCompetitionSettingsResponse,
     StopCompetitionResponse,
 } from "@/types/SignalR";
@@ -113,7 +113,7 @@ interface CompetitionHubContextType {
     /**
      * Request submissions for manual correction (Admin/Teacher only).
      */
-    requestSubmissions: () => Promise<SubmissionForReviewResponse[]>;
+    requestSubmissions: () => Promise<CompetitionSubmissionData[]>;
 
     /**
      * Update competition settings (Admin/Teacher only).
@@ -351,6 +351,13 @@ export const CompetitionHubProvider: React.FC<{ children: React.ReactNode }> = (
             // Logs will be consumed by specific hooks/pages
         });
 
+        // Competition submissions (Admin/Teacher only)
+        webSocketConnection.on("ReceiveCompetitionSubmissions", (submissions: CompetitionSubmissionData[]) => {
+            console.log("📤 ReceiveCompetitionSubmissions:", submissions);
+            // This data will be consumed directly by the Submissions page hook
+            // Not stored in context to avoid type conflicts with ExerciseSubmissionResponse
+        });
+
         return () => {
             // Cleanup listeners
             webSocketConnection.off("OnConnectionResponse");
@@ -369,6 +376,7 @@ export const CompetitionHubProvider: React.FC<{ children: React.ReactNode }> = (
             webSocketConnection.off("ReceiveAllQuestions");
             webSocketConnection.off("ReceiveFullRanking");
             webSocketConnection.off("ReceiveCompetitionLogs");
+            webSocketConnection.off("ReceiveCompetitionSubmissions");
         };
     }, [webSocketConnection, enqueueSnackbar]);
 
@@ -629,9 +637,9 @@ export const CompetitionHubProvider: React.FC<{ children: React.ReactNode }> = (
 
         try {
             console.log("📝 Requesting competition submissions");
-            return new Promise<SubmissionForReviewResponse[]>((resolve) => {
+            return new Promise<CompetitionSubmissionData[]>((resolve) => {
                 // Set up one-time listener for the response
-                const handleSubmissions = (submissions: SubmissionForReviewResponse[]) => {
+                const handleSubmissions = (submissions: CompetitionSubmissionData[]) => {
                     webSocketConnection.off("ReceiveCompetitionSubmissions", handleSubmissions);
                     resolve(submissions);
                 };

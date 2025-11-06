@@ -12,6 +12,7 @@ import {
     HubConnection,
     HubConnectionBuilder,
     HubConnectionState,
+    HttpTransportType,
 } from "@microsoft/signalr";
 import { useSnackbar } from "notistack";
 import { useUser } from "../UserContext";
@@ -68,6 +69,7 @@ export const WebSocketContextProvider = ({
                     accessTokenFactory() {
                         return user.token;
                     },
+                    transport: HttpTransportType.WebSockets// | HttpTransportType.ServerSentEvents,
                 }
             )
             .withAutomaticReconnect()

@@ -1,7 +1,7 @@
 "use client";
 
 import { FC, useState } from "react";
-import { Edit, ChevronLeft } from "lucide-react";
+import { Edit, ChevronLeft, Eye } from "lucide-react";
 import {
     Tabs,
     TabsContent,
@@ -19,16 +19,29 @@ import StudentsTable from "../../components/StudentsTable";
 import GroupsTable from "../../components/GroupsTable";
 import CreateCompetitionSubscription from "@/app/Profile/CreateSubscription/page";
 import useAdminDashboard from "./hooks/useAdminDashboard";
+import { useCompetitionStatus } from "@/contexts/CompetitionHubContext/hooks";
+import { CompetitionStatusBar } from "@/components/pages/Competition/CompetitionStatusBar";
+import { useRouter } from "next/navigation";
 
 const AdminDashboard: FC = () => {
     const [activeTab, setActiveTab] = useState("students");
     const { activeMenu, toggleMenu } = useProfileMenu();
+    const router = useRouter();
 
     const { token, showAccessCodeDialog, toggleShowAccessCodeDialog } =
         useAdminDashboard();
 
+    const { hasActiveCompetition } = useCompetitionStatus();
+
+    const handleMonitorCompetition = () => {
+        router.push("/Competition");
+    };
+
     return (
         <div className="flex-1">
+            {/* Competition Status Bar - aparece quando há competição ativa */}
+            {hasActiveCompetition && <CompetitionStatusBar />}
+            
             <div className="container mx-auto p-6 space-y-6">
                 <div className="flex items-center justify-between gap-8">
                     {activeMenu !== "Main" && (
@@ -49,6 +62,18 @@ const AdminDashboard: FC = () => {
                         </p>
                     </div>
                     <div className="flex items-center gap-4">
+                        {/* Botão Monitorar Competição - aparece apenas se houver competição ativa */}
+                        {hasActiveCompetition && (
+                            <Button
+                                onClick={handleMonitorCompetition}
+                                rounded
+                                variant="success"
+                                className="bg-green-600 hover:bg-green-700"
+                            >
+                                <Eye className="w-4 h-4 mr-2" />
+                                Monitorar Competição
+                            </Button>
+                        )}
                         <div className="text-right w-48 text-ellipsis overflow-hidden">
                             <p className="text-sm text-[#4F85A6]">
                                 Código de Acesso Atual

@@ -427,3 +427,58 @@ export interface StopCompetitionResponse {
      */
     message?: string | null;
 }
+
+/**
+ * Competition submission data for display in submissions page.
+ */
+export interface CompetitionSubmissionData {
+    /**
+     * Unique identifier for the submission.
+     */
+    id: number;
+
+    /**
+     * Identifier of the exercise.
+     */
+    exerciseId: number;
+
+    /**
+     * Name of the exercise.
+     */
+    exerciseName?: string | null;
+
+    /**
+     * Identifier of the group that made the submission.
+     */
+    groupId: number;
+
+    /**
+     * Group information.
+     */
+    group?: Group | null;
+
+    /**
+     * Date and time when the attempt was submitted.
+     */
+    submissionTime: string;
+
+    /**
+     * Programming language used for the submission.
+     */
+    language: number;
+
+    /**
+     * Indicates if the submission was accepted.
+     */
+    accepted?: boolean | null;
+
+    /**
+     * Judge response type.
+     */
+    judgeResponse: number;
+
+    /**
+     * Source code submitted.
+     */
+    code?: string | null;
+}

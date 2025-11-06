@@ -119,7 +119,6 @@ const CreateCompetition: React.FC = () => {
                             />
                           )}
                         />
-                        {errors.startDate && <p className="text-red-500 text-sm mt-1">{errors.startDate.message}</p>}
                       </div>
                       <div>
                         <label className="block text-xl font-medium text-[#3f3c40] mb-4">Hora de Início</label>

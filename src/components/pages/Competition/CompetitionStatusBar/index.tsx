@@ -231,3 +231,5 @@ export const CompetitionStatusBar: React.FC = () => {
         </div>
     );
 };
+
+export default CompetitionStatusBar;

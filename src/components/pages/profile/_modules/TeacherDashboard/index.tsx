@@ -2,7 +2,7 @@
 
 import type React from "react";
 import { FC, useState } from "react";
-import { Users, UserCheck, Package, ChevronLeft } from "lucide-react";
+import { Users, UserCheck, Package, ChevronLeft, Eye } from "lucide-react";
 import { ButtonAdm } from "@/components/_ui/ButtonAdm";
 import {
     Tabs,
@@ -16,12 +16,22 @@ import StatsCard from "../../components/StatsCard";
 import useProfileMenu from "../../hooks/useProfileMenu";
 import ExerciseManagement from "../Shared/ExerciseManagement";
 import DepartmentModal from "@/components/pages/profile/_modules/TeacherDashboard/components/DepartmentModal";
+import { useCompetitionStatus } from "@/contexts/CompetitionHubContext/hooks";
+import { CompetitionStatusBar } from "@/components/pages/Competition/CompetitionStatusBar";
+import { useRouter } from "next/navigation";
 
 const TeacherDashboard: FC = () => {
     const { activeMenu, toggleMenu } = useProfileMenu();
     const [activeTab, setActiveTab] = useState("students");
+    const router = useRouter();
 
     const [isDeptModalOpen, setIsDeptModalOpen] = useState(false);
+
+    const { hasActiveCompetition } = useCompetitionStatus();
+
+    const handleMonitorCompetition = () => {
+        router.push("/Competition");
+    };
 
     const stats = [
         {
@@ -58,6 +68,9 @@ const TeacherDashboard: FC = () => {
 
     return (
         <div className="flex-1">
+            {/* Competition Status Bar - aparece quando há competição ativa */}
+            {hasActiveCompetition && <CompetitionStatusBar />}
+            
             <div className="container mx-auto p-6 space-y-6">
                 <div className="flex items-center gap-8 justify-between">
                     {activeMenu !== "Main" && (
@@ -79,15 +92,31 @@ const TeacherDashboard: FC = () => {
                         </p>
                     </div>
 
-                    <ButtonAdm
-                        type="button"
-                        variant="default"
-                        size="default"
-                        onClick={() => setIsDeptModalOpen(true)}
-                        className="bg-[#4F85A6] hover:bg-[#3b6e8a] text-white font-semibold"
-                    >
-                        Editar Departamento
-                    </ButtonAdm>
+                    <div className="flex items-center gap-3">
+                        {/* Botão Monitorar Competição - aparece apenas se houver competição ativa */}
+                        {hasActiveCompetition && (
+                            <ButtonAdm
+                                type="button"
+                                variant="default"
+                                size="default"
+                                onClick={handleMonitorCompetition}
+                                className="bg-green-600 hover:bg-green-700 text-white font-semibold"
+                            >
+                                <Eye className="w-4 h-4 mr-2" />
+                                Monitorar Competição
+                            </ButtonAdm>
+                        )}
+
+                        <ButtonAdm
+                            type="button"
+                            variant="default"
+                            size="default"
+                            onClick={() => setIsDeptModalOpen(true)}
+                            className="bg-[#4F85A6] hover:bg-[#3b6e8a] text-white font-semibold"
+                        >
+                            Editar Departamento
+                        </ButtonAdm>
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

@@ -19,7 +19,7 @@ import BookIcon from "@mui/icons-material/Book"
 import CodeIcon from "@mui/icons-material/Code"
 import TitleIcon from "@mui/icons-material/Title"
 import CloseIcon from "@mui/icons-material/Close"
-import { SnackbarProvider, useSnackbar } from "notistack"
+import { useSnackbar } from "notistack"
 import UserQuestions from "./components/UserQuestions"
 import { useUser } from "@/contexts/UserContext"
 import { useCompetitionHub } from "@/contexts/CompetitionHubContext"
@@ -203,20 +203,22 @@ const AskQuestionsContent = ({ onClose }: { onClose: () => void }) => {
         exerciseId: exerciseId,
         content: formData.question.trim(),
         questionType: 0,
-      })
+      });
 
+      /*
       enqueueSnackbar("Pergunta enviada com sucesso!", {
         variant: "success",
         autoHideDuration: 2500,
         anchorOrigin: { vertical: "bottom", horizontal: "right" },
-      })
+      });
+      */
     } catch {
       errored = true
       enqueueSnackbar("Ocorreu um erro ao enviar a pergunta. Tente novamente.", {
         variant: "error",
         autoHideDuration: 2500,
         anchorOrigin: { vertical: "bottom", horizontal: "right" },
-      })
+      });
     } finally {
       setIsSubmitting(false)
       if (!errored) {
@@ -375,9 +377,7 @@ const QuestionsStudentScreen: FC = () => {
 
 const QuestionsStudentScreenWithProvider: FC = () => {
   return (
-    <SnackbarProvider maxSnack={3}>
       <QuestionsStudentScreen />
-    </SnackbarProvider>
   )
 }
 
