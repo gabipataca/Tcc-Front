@@ -12,6 +12,8 @@ import {
     GroupInCompetitionResponse,
     LogResponse,
     SubmissionForReviewResponse,
+    UpdateCompetitionSettingsResponse,
+    StopCompetitionResponse,
 } from "@/types/SignalR";
 import {
     GroupExerciseAttemptRequest,
@@ -20,6 +22,7 @@ import {
     RevokeGroupSubmissionRequest,
     BlockGroupSubmissionRequest,
     UnblockGroupSubmissionRequest,
+    UpdateCompetitionSettingsRequest,
 } from "@/types/SignalR/Requests";
 import { JudgeResponseEnum } from "@/types/Exercise";
 
@@ -111,6 +114,17 @@ interface CompetitionHubContextType {
      * Request submissions for manual correction (Admin/Teacher only).
      */
     requestSubmissions: () => Promise<SubmissionForReviewResponse[]>;
+
+    /**
+     * Update competition settings (Admin/Teacher only).
+     * Time values should be in seconds.
+     */
+    updateCompetitionSettings: (request: UpdateCompetitionSettingsRequest) => Promise<UpdateCompetitionSettingsResponse>;
+
+    /**
+     * Stop a competition immediately (Admin/Teacher only).
+     */
+    stopCompetition: (competitionId: number) => Promise<StopCompetitionResponse>;
 }
 
 const CompetitionHubContext = createContext<CompetitionHubContextType | null>(null);
@@ -636,6 +650,90 @@ export const CompetitionHubProvider: React.FC<{ children: React.ReactNode }> = (
         }
     }, [webSocketConnection, enqueueSnackbar]);
 
+    const updateCompetitionSettings = useCallback(async (request: UpdateCompetitionSettingsRequest) => {
+        if (!webSocketConnection) {
+            console.warn("Cannot update competition settings: WebSocket not connected");
+            return Promise.resolve({ success: false, message: "WebSocket not connected" });
+        }
+
+        try {
+            console.log("⚙️ Updating competition settings:", request);
+            return new Promise<UpdateCompetitionSettingsResponse>((resolve) => {
+                // Set up one-time listener for the response
+                const handleResponse = (response: UpdateCompetitionSettingsResponse) => {
+                    webSocketConnection.off("ReceiveUpdateCompetitionSettingsResponse", handleResponse);
+                    
+                    if (response.success) {
+                        enqueueSnackbar(response.message || "Configurações atualizadas com sucesso", {
+                            variant: "success",
+                            anchorOrigin: { vertical: "bottom", horizontal: "right" },
+                        });
+                    } else {
+                        enqueueSnackbar(response.message || "Erro ao atualizar configurações", {
+                            variant: "error",
+                            anchorOrigin: { vertical: "bottom", horizontal: "right" },
+                        });
+                    }
+                    
+                    resolve(response);
+                };
+                webSocketConnection.on("ReceiveUpdateCompetitionSettingsResponse", handleResponse);
+                
+                // Invoke the request
+                webSocketConnection.invoke("UpdateCompetitionSettings", request);
+            });
+        } catch (error) {
+            console.error("Error updating competition settings:", error);
+            enqueueSnackbar("Erro ao atualizar configurações.", {
+                variant: "error",
+                anchorOrigin: { vertical: "bottom", horizontal: "right" },
+            });
+            return { success: false, message: "Error updating settings" };
+        }
+    }, [webSocketConnection, enqueueSnackbar]);
+
+    const stopCompetition = useCallback(async (competitionId: number) => {
+        if (!webSocketConnection) {
+            console.warn("Cannot stop competition: WebSocket not connected");
+            return Promise.resolve({ success: false, message: "WebSocket not connected" });
+        }
+
+        try {
+            console.log("🛑 Stopping competition:", competitionId);
+            return new Promise<StopCompetitionResponse>((resolve) => {
+                // Set up one-time listener for the response
+                const handleResponse = (response: StopCompetitionResponse) => {
+                    webSocketConnection.off("ReceiveStopCompetitionResponse", handleResponse);
+                    
+                    if (response.success) {
+                        enqueueSnackbar(response.message || "Competição finalizada com sucesso", {
+                            variant: "success",
+                            anchorOrigin: { vertical: "bottom", horizontal: "right" },
+                        });
+                    } else {
+                        enqueueSnackbar(response.message || "Erro ao finalizar competição", {
+                            variant: "error",
+                            anchorOrigin: { vertical: "bottom", horizontal: "right" },
+                        });
+                    }
+                    
+                    resolve(response);
+                };
+                webSocketConnection.on("ReceiveStopCompetitionResponse", handleResponse);
+                
+                // Invoke the request
+                webSocketConnection.invoke("StopCompetition", competitionId);
+            });
+        } catch (error) {
+            console.error("Error stopping competition:", error);
+            enqueueSnackbar("Erro ao finalizar competição.", {
+                variant: "error",
+                anchorOrigin: { vertical: "bottom", horizontal: "right" },
+            });
+            return { success: false, message: "Error stopping competition" };
+        }
+    }, [webSocketConnection, enqueueSnackbar]);
+
     const value: CompetitionHubContextType = {
         ongoingCompetition,
         submissions,
@@ -654,6 +752,8 @@ export const CompetitionHubProvider: React.FC<{ children: React.ReactNode }> = (
         requestLogs,
         requestGroups,
         requestSubmissions,
+        updateCompetitionSettings,
+        stopCompetition,
     };
 
     return (

@@ -117,3 +117,39 @@ export interface UnblockGroupSubmissionRequest {
      */
     competitionId: number;
 }
+
+/**
+ * Request to update competition settings.
+ * All time values are in seconds (NOT TimeSpan strings).
+ */
+export interface UpdateCompetitionSettingsRequest {
+    /**
+     * Identifier of the competition to update.
+     */
+    competitionId: number;
+
+    /**
+     * Duration of the competition in seconds.
+     */
+    duration: number;
+
+    /**
+     * Time before end when submissions should stop, in seconds.
+     */
+    stopSubmissionsBeforeEnd: number;
+
+    /**
+     * Time before end when ranking should stop updating, in seconds.
+     */
+    stopRankingBeforeEnd: number;
+
+    /**
+     * Penalty per wrong submission in seconds.
+     */
+    submissionPenalty: number;
+
+    /**
+     * Maximum submission file size in KB.
+     */
+    maxSubmissionSize: number;
+}

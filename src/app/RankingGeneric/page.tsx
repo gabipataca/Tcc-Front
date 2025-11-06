@@ -7,7 +7,6 @@ import TableHead from '@/components/_ui/Table/components/TableHeader';
 import TableBody from '@/components/_ui/Table/components/TableBody';
 import TableCell from '@/components/_ui/Table/components/TableHeaderItem';
 import TableRow from '@/components/_ui/Table/components/TableRow';
-import TableCell from '@/components/_ui/Table/components/TableCell';
 import { TableContainer as TableContainerMui } from '@mui/material';
 import TableContainer from '@/components/_ui/Table/components/TableContainer';
 import { StyledRankingCellContainer } from './styles';

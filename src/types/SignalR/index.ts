@@ -397,3 +397,33 @@ export interface GroupInCompetitionResponse {
      */
     competition?: Competition | null;
 }
+
+/**
+ * Response after updating competition settings.
+ */
+export interface UpdateCompetitionSettingsResponse {
+    /**
+     * Indicates if the operation was successful.
+     */
+    success: boolean;
+
+    /**
+     * Optional message with details about the operation.
+     */
+    message?: string | null;
+}
+
+/**
+ * Response after stopping a competition.
+ */
+export interface StopCompetitionResponse {
+    /**
+     * Indicates if the operation was successful.
+     */
+    success: boolean;
+
+    /**
+     * Optional message with details about the operation.
+     */
+    message?: string | null;
+}
