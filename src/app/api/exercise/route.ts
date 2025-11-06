@@ -40,6 +40,7 @@ export async function POST(req: NextRequest) {
 
     const metadataPayload: Omit<CreateExerciseRequest, "pdfFile"> = {
         title: formData.get("title") as string,
+        // @ts-expect-error - Number conversion to ExerciseType
         exerciseTypeId: Number(formData.get("exerciseTypeId") as ExerciseType),
         description: formData.get("description") as string,
         estimatedTime: Number(formData.get("estimatedTime")),

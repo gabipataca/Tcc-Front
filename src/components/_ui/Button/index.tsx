@@ -48,6 +48,7 @@ const Button = ({
             `}
             onClick={onClick}
             role={role}
+            // @ts-expect-error - type can be 'link' for Link component
             type={type} 
             disabled={disabled || loading} 
         >

@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
                 cookies: request.cookies.toString(),
             }
         );
-    } catch (error: Error) {
+    } catch (error) {
         console.error(error);
         return new NextResponse(
             JSON.stringify({

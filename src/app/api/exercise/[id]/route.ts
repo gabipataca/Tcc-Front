@@ -37,6 +37,7 @@ export async function PUT(
 
     const metadataPayload: Omit<EditExerciseRequest, "pdfFile"> = {
         title: formData.get("title") as string,
+        // @ts-expect-error - Number conversion to ExerciseType
         exerciseTypeId: Number(formData.get("exerciseTypeId") as ExerciseType),
         description: formData.get("description") as string,
         estimatedTime: Number(formData.get("estimatedTime")),

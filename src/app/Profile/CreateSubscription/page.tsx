@@ -75,6 +75,7 @@ const CreateCompetitionSubscription: React.FC = () => {
                                             Nome da Maratona
                                         </label>
                                         <Input
+                                            name="competitionName"
                                             type="text"
                                             placeholder="Ex: XII Olimpíada de Raciocínio Lógico"
                                             value={name}
@@ -165,6 +166,7 @@ const CreateCompetitionSubscription: React.FC = () => {
                                                 Início das Inscrições
                                             </label>
                                             <Input
+                                                name="initialRegistration"
                                                 type="date"
                                                 value={initialRegistration}
                                                 onChange={(e) =>
@@ -181,6 +183,7 @@ const CreateCompetitionSubscription: React.FC = () => {
                                                 Fim das Inscrições
                                             </label>
                                             <Input
+                                                name="endRegistration"
                                                 type="date"
                                                 value={endRegistration}
                                                 onChange={(e) =>
@@ -200,6 +203,7 @@ const CreateCompetitionSubscription: React.FC = () => {
                                         </label>
                                         <div className="flex justify-center">
                                             <Input
+                                                name="initialDate"
                                                 type="date"
                                                 value={initialDate}
                                                 onChange={(e) =>

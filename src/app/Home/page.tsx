@@ -23,7 +23,6 @@ export default function HomePage() {
               size="lg"
               variant="outline"
               className="border-white text-white hover:bg-white/10 bg-transparent"
-              variant={{}}
               >
               Login
               </Button>
@@ -48,7 +47,7 @@ export default function HomePage() {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
           
-            <Button size="lg" className="bg-white text-[#4F85A6] hover:bg-white/90 font-semibold" variant={{}}>
+            <Button size="lg" className="bg-white text-[#4F85A6] hover:bg-white/90 font-semibold">
               Acessar Sistema
             </Button>
        
@@ -90,7 +89,7 @@ export default function HomePage() {
             Junte-se à nossa comunidade de programadores e participe das próximas competições.
           </p>
           <div className="flex justify-center">
-          <Button size="lg" className="bg-white text-[#4F85A6] hover:bg-white/90 font-semibold" variant={{}}>
+          <Button size="lg" className="bg-white text-[#4F85A6] hover:bg-white/90 font-semibold">
             Criar Conta Agora
           </Button>
           </div>

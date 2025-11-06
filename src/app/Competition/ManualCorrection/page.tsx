@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import NavbarRankingAdm from "@/components/_ui/NavbarRankingAdm";
+// import NavbarRankingAdm from "@/components/_ui/NavbarRankingAdm";
 import { Card, CardContent } from "@/components/_ui/Card";
 import { ButtonAdm } from "@/components/_ui/ButtonAdm";
 import { Download, Check, X, AlertCircle } from "lucide-react";

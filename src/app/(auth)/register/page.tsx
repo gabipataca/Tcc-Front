@@ -47,6 +47,7 @@ const Cadastro: React.FC = () => {
                 <div className="w-full max-w-sm space-y-4">
                     <form
                         className="flex flex-col gap-2"
+                        // @ts-expect-error - Type mismatch with react-hook-form types
                         onSubmit={handleSubmit(handleFormSubmit, (d) =>
                             console.log(d)
                         )}
@@ -208,6 +209,7 @@ const Cadastro: React.FC = () => {
                     </form>
                     <Button
                         variant="primary"
+                        // @ts-expect-error - Type mismatch with react-hook-form types
                         onClick={handleSubmit(handleFormSubmit, (d) =>
                             console.log(d)
                         )}

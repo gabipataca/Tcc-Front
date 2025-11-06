@@ -46,7 +46,7 @@ export const EditDeleteModal = ({ isOpen, onClose, onConfirm, item, itemType, mo
                     <DialogHeader>
                         <DialogTitle className="text-2xl text-[#3f3c40]">Confirmar Exclusão</DialogTitle>
                         <DialogDescription className="text-xl text-[#4F85A6]">
-                            Tem certeza que deseja excluir {itemType} "{item?.name}"? Esta ação não pode ser desfeita.
+                            Tem certeza que deseja excluir {itemType} &quot;{item?.name}&quot;? Esta ação não pode ser desfeita.
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
