@@ -102,11 +102,10 @@ const AddGroupModal = ({ onClose }: AddGroupModalProps) => {
                             Cancelar
                         </Button>
                         <Button
-                            type="button"
+                            type="submit"
                             variant="success"
                             rounded
                             disabled={isLoading}
-                            onClick={() => handleSubmit(handleSubmitForm, handleSubmitError)()}
                             loading={isLoading}
                         >
                             Criar Grupo

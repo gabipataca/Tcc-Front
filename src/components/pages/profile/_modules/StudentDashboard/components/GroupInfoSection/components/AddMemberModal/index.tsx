@@ -21,13 +21,11 @@ import { useState } from "react";
 const AddMemberModal = ({
     groupInvitations,
     onClose,
-    hasMember1,
-    hasMember2,
 }: {
     groupInvitations: GroupInvitation[];
     onClose: () => void;
-    hasMember1: boolean;
-    hasMember2: boolean;
+    hasMember1?: boolean;
+    hasMember2?: boolean;
 }) => {
     const { user, setUser } = useUser();
 
@@ -46,12 +44,31 @@ const AddMemberModal = ({
             const membersToAdd = [memberRA1, memberRA2].filter(
                 (m) => m.trim() !== ""
             );
+            
+            if (membersToAdd.length === 0) {
+                enqueueSnackbar(
+                    "Por favor, informe pelo menos um RA válido.",
+                    {
+                        variant: "warning",
+                        autoHideDuration: 3000,
+                        anchorOrigin: {
+                            vertical: "bottom",
+                            horizontal: "right",
+                        },
+                    }
+                );
+                setIsLoading(false);
+                return;
+            }
+
             if (membersToAdd.length > 0) {
-                const responses: ServerSideResponse<InviteUserToGroupResponse>[] =
-                    [];
+                const responses: ServerSideResponse<InviteUserToGroupResponse>[] = [];
+                const alreadyInvited: string[] = [];
 
                 for (const ra of membersToAdd) {
-                    if(user?.group?.groupInvitations?.some(x => x.user.ra == ra)) {
+                    // Verifica se já existe convite pendente
+                    if(groupInvitations.some(x => x.user.ra === ra)) {
+                        alreadyInvited.push(ra);
                         continue;
                     }
 
@@ -79,11 +96,29 @@ const AddMemberModal = ({
                     }
                 }
 
+                if (alreadyInvited.length > 0) {
+                    enqueueSnackbar(
+                        `O(s) seguinte(s) RA(s) já possuem convites pendentes: ${alreadyInvited.join(", ")}`,
+                        {
+                            variant: "info",
+                            autoHideDuration: 4000,
+                            anchorOrigin: {
+                                vertical: "bottom",
+                                horizontal: "right",
+                            },
+                        }
+                    );
+                }
+
                 const dataBodys: InviteUserToGroupResponse[] = [];
+                const errors: string[] = [];
 
                 for (const res of responses) {
                     if (res.status === 201) {
                         dataBodys.push(res.data!);
+                    } else if (res.status === 400) {
+                        const errorMsg = (res as any).message || "Erro ao enviar convite";
+                        errors.push(errorMsg);
                     }
                 }
 
@@ -100,8 +135,6 @@ const AddMemberModal = ({
                             };
                         }
                     );
-                    
-                    console.log(newInvitations);
 
                     setUser((prev) => ({
                         ...prev!,
@@ -113,15 +146,49 @@ const AddMemberModal = ({
                             ],
                         },
                     }));
+
+                    enqueueSnackbar(
+                        `${dataBodys.length} convite(s) enviado(s) com sucesso!`,
+                        {
+                            variant: "success",
+                            autoHideDuration: 3000,
+                            anchorOrigin: {
+                                vertical: "bottom",
+                                horizontal: "right",
+                            },
+                        }
+                    );
                 }
 
-                setIsLoading(false);
+                if (errors.length > 0) {
+                    errors.forEach(error => {
+                        enqueueSnackbar(error, {
+                            variant: "error",
+                            autoHideDuration: 3000,
+                            anchorOrigin: {
+                                vertical: "bottom",
+                                horizontal: "right",
+                            },
+                        });
+                    });
+                }
             }
 
             setIsLoading(false);
             onClose();
         } catch (error) {
             console.error("Erro ao adicionar membros:", error);
+            enqueueSnackbar(
+                "Erro inesperado ao adicionar membros. Tente novamente.",
+                {
+                    variant: "error",
+                    autoHideDuration: 3000,
+                    anchorOrigin: {
+                        vertical: "bottom",
+                        horizontal: "right",
+                    },
+                }
+            );
             setIsLoading(false);
         }
     };
@@ -147,6 +214,7 @@ const AddMemberModal = ({
                                 </Label>
                                 <Input
                                     id="newMember1"
+                                    name="newMember1"
                                     type="text"
                                     placeholder="Ex: 987654"
                                     value={memberRA1}
@@ -164,6 +232,7 @@ const AddMemberModal = ({
                                 </Label>
                                 <Input
                                     id="newMember2"
+                                    name="newMember2"
                                     type="text"
                                     placeholder="Ex: 543210"
                                     value={memberRA2}

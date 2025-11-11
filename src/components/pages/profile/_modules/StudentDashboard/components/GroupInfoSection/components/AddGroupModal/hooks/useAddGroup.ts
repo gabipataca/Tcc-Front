@@ -75,12 +75,41 @@ export const useAddGroup = (onClose: () => void) => {
                     });
 
                     onClose();
-
                     return;
+                }
+
+                if (response.status === 400) {
+                    const errorMessage = (response as any).message || "Erro ao criar o grupo. Verifique os dados informados.";
+                    enqueueSnackbar(errorMessage, {
+                        variant: "error",
+                        autoHideDuration: 3000,
+                        anchorOrigin: {
+                            vertical: "bottom",
+                            horizontal: "right",
+                        },
+                    });
+                } else {
+                    enqueueSnackbar("Erro inesperado ao criar o grupo. Tente novamente.", {
+                        variant: "error",
+                        autoHideDuration: 3000,
+                        anchorOrigin: {
+                            vertical: "bottom",
+                            horizontal: "right",
+                        },
+                    });
                 }
             } catch (error) {
                 console.error("Erro ao criar grupo:", error);
-
+                
+                enqueueSnackbar("Não foi possível criar o grupo. Tente novamente mais tarde.", {
+                    variant: "error",
+                    autoHideDuration: 3000,
+                    anchorOrigin: {
+                        vertical: "bottom",
+                        horizontal: "right",
+                    },
+                });
+            } finally {
                 setIsLoading(false);
             }
         },

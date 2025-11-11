@@ -102,6 +102,7 @@ const useCreateCompetition = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [activeCompetition, setActiveCompetition] =
         useState<Competition | null>(null);
+    const [showNoModelsModal, setShowNoModelsModal] = useState(false);
 
     const {
         addCompetitionModel,
@@ -117,6 +118,12 @@ const useCreateCompetition = () => {
     useEffect(() => {
         loadTemplateCompetitions();
     }, []);
+
+    useEffect(() => {
+        if (!isTemplateLoading && competitionModels.length === 0) {
+            setShowNoModelsModal(true);
+        }
+    }, [isTemplateLoading, competitionModels.length]);
 
     const {
         exercises,
@@ -228,6 +235,11 @@ const useCreateCompetition = () => {
         },
         [competitionModels, setValue, clearErrors]
     );
+
+    const handleNoModelsModalConfirm = useCallback(() => {
+        setShowNoModelsModal(false);
+        toggleMenu("CreateSubscription");
+    }, [toggleMenu]);
 
     const toggleExercise = useCallback(
         (exerciseId: number) => {
@@ -373,6 +385,8 @@ const useCreateCompetition = () => {
         selectCompetition,
         activeCompetition,
         resetPagination,
+        showNoModelsModal,
+        handleNoModelsModalConfirm,
     };
 };
 

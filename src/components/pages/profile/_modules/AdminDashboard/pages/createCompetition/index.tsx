@@ -13,6 +13,7 @@ import Loading from "@/components/_ui/Loading"
 import type { DropdownOption } from "@/components/_ui/Dropdown/types"
 import CustomDropdown from "@/components/_ui/Dropdown"
 import useCreateCompetition from "./hooks/useCreateCompetition"
+import NoCompetitionModelsModal from "./components/NoCompetitionModelsModal"
 
 const CreateCompetition: React.FC = () => {
   const {
@@ -41,6 +42,8 @@ const CreateCompetition: React.FC = () => {
     resetPagination,
     isLoadingExercises,
     isTemplateLoading,
+    showNoModelsModal,
+    handleNoModelsModalConfirm,
   } = useCreateCompetition()
 
   const competitionModelsOptions = useMemo(() => {
@@ -61,6 +64,10 @@ const CreateCompetition: React.FC = () => {
 
   return (
     <>
+      {showNoModelsModal && (
+        <NoCompetitionModelsModal onConfirm={handleNoModelsModalConfirm} />
+      )}
+
       <div className="flex relative">
         {isSubmitting && <Loading size="lg" variant="overlay" />}
 
@@ -313,6 +320,7 @@ const CreateCompetition: React.FC = () => {
                     <div>
                       <label className="block text-xl font-medium text-[#3f3c40] mb-4">Filtrar por Título</label>
                       <Input
+                        name="searchExercise"
                         type="text"
                         placeholder="Digite o título do exercício"
                         value={search}
