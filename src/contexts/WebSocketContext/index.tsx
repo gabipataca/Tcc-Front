@@ -16,6 +16,7 @@ import {
 } from "@microsoft/signalr";
 import { useSnackbar } from "notistack";
 import { useUser } from "../UserContext";
+import { usePathname } from "next/navigation";
 
 export const WebSocketContext = createContext<WebSocketContextProps | null>(
     null
@@ -27,6 +28,7 @@ export const WebSocketContextProvider = ({
     children: React.ReactNode;
 }) => {
     const { user } = useUser();
+    const location = usePathname();
 
     const [webSocketConnection, setWebSocketConnection] =
         useState<HubConnection | null>(null);
@@ -37,7 +39,9 @@ export const WebSocketContextProvider = ({
     const ConfigureWebSocket = useCallback(async () => {
         if (
             webSocketConnection == null ||
-            webSocketConnection.state === HubConnectionState.Connected
+            webSocketConnection.state === HubConnectionState.Connected ||
+            !user ||
+            user.token == null
         )
             return;
 
@@ -50,16 +54,18 @@ export const WebSocketContextProvider = ({
 
             await webSocketConnection.invoke("GetConnectionId");
         } catch (error) {
-            console.error("WebSocket connection failed: ", error);
-            enqueueSnackbar("Conexão WebSocket falhou", {
-                variant: "error",
-                anchorOrigin: { vertical: "bottom", horizontal: "right" },
-            });
+            if(!["/", "/login", "/register"].includes(location)) {
+                console.error("WebSocket connection failed: ", error);
+                enqueueSnackbar("Conexão WebSocket falhou", {
+                    variant: "error",
+                    anchorOrigin: { vertical: "bottom", horizontal: "right" },
+                });
+            }
         }
-    }, [enqueueSnackbar, webSocketConnection]);
+    }, [enqueueSnackbar, location, user]);
 
     useEffect(() => {
-        if (!user || webSocketConnection != null) return;
+        if (!user || user.token == null || webSocketConnection != null) return;
 
         const newConnection = new HubConnectionBuilder()
             .withUrl(
@@ -79,6 +85,7 @@ export const WebSocketContextProvider = ({
     }, [user]);
 
     useEffect(() => {
+        if(!user || user.token == null || webSocketConnection == null) return;
         ConfigureWebSocket();
 
         return () => {
@@ -90,7 +97,7 @@ export const WebSocketContextProvider = ({
                 }
             }
         };
-    }, [ConfigureWebSocket, webSocketConnection]);
+    }, [ConfigureWebSocket, user, webSocketConnection]);
 
     return (
         <WebSocketContext.Provider

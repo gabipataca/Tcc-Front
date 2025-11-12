@@ -9,7 +9,7 @@ const NavbarWrapper: FC = () => {
     const pathName = usePathname();
 
     const hideNavbar = useMemo(
-        () => pathName.includes("login") || pathName.includes("register"),
+        () => ["/login", "/register", "/forgot-password", "/"].includes(pathName),
         [pathName]
     );
 
