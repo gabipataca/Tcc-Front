@@ -10,20 +10,27 @@ export async function POST(req: NextRequest) {
     let res;
     try {
         res = await apiRequest<
-            ServerSideResponse<InviteUserToGroupResponse>,
+            InviteUserToGroupResponse,
             InviteUserToGroupRequest
         >("/Group/invite", {
             method: "POST",
             data: body,
             cookies: req.cookies.toString(),
         });
-    } catch (exc) {
+    } catch {
         return NextResponse.json(
             { message: "Erro ao enviar convite para o usuário.", status: 500 },
             { status: 500 }
         );
     }
-    return NextResponse.json(res.data, { status: res.status });
+    
+    return NextResponse.json(
+        {
+            data: res.data,
+            status: res.status,
+        } satisfies ServerSideResponse<InviteUserToGroupResponse>,
+        { status: res.status }
+    );
 }
 
 export const GET = async (req: NextRequest) => {
@@ -33,7 +40,7 @@ export const GET = async (req: NextRequest) => {
             method: "GET",
             cookies: req.cookies.toString(),
         });
-    } catch (exc) {
+    } catch {
         return NextResponse.json(
             { message: "Erro ao buscar convites para o grupo.", status: 500 },
             { status: 500 }

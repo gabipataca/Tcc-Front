@@ -1,10 +1,10 @@
 import { useState, useCallback, useEffect } from "react";
 import { useSnackbar } from "notistack";
-import { groupsData as initialGroups } from "./mockData";
 import GroupService from "@/services/GroupService";
+import { GroupResponse } from "@/types/Group/Responses";
 
-export interface Group {
-    id: string;
+export interface GroupListItem {
+    id: number;
     name: string;
     members: number;
     status: string;
@@ -13,7 +13,7 @@ export interface Group {
 
 const useLoadGroups = () => {
     const { enqueueSnackbar } = useSnackbar();
-    const [groups, setGroups] = useState<Group[]>([]);
+    const [groups, setGroups] = useState<GroupListItem[]>([]);
     const [loadingGroups, setLoadingGroups] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
@@ -42,7 +42,16 @@ const useLoadGroups = () => {
                     throw new Error("Failed to fetch groups");
                 }
 
-                setGroups(res.data!.items as Group[]);
+                // Mapeia a resposta do backend para o formato esperado pela UI
+                const mappedGroups: GroupListItem[] = res.data!.items.map((group: GroupResponse) => ({
+                    id: group.id,
+                    name: group.name,
+                    members: group.users?.length || 0,
+                    status: group.users && group.users.length > 0 ? 'active' : 'inactive',
+                    lastCompetition: new Date().toISOString(),
+                }));
+
+                setGroups(mappedGroups);
                 setTotalPages(res.data!.totalPages);
                 setTotalGroups(res.data!.totalCount);
             } catch {
@@ -60,13 +69,13 @@ const useLoadGroups = () => {
         loadGroups(searchTerm);
     }, [loadGroups, searchTerm]);
 
-    const deleteGroup = async (groupId: string) => {
+    const deleteGroup = async (groupId: number) => {
         setGroups((prev) => prev.filter((g) => g.id !== groupId));
         enqueueSnackbar("Grupo deletado com sucesso!", { variant: "success" });
     };
 
-    const updateGroup = async (group: Group) => {
-        setGroups((prev) => prev.map((g) => (g.id === group.id ? group : g)));
+    const updateGroup = async (groupId: number, name: string) => {
+        setGroups((prev) => prev.map((g) => (g.id === groupId ? { ...g, name } : g)));
         enqueueSnackbar("Grupo atualizado com sucesso!", {
             variant: "success",
         });

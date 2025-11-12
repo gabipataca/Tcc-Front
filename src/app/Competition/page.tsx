@@ -107,7 +107,9 @@ const RankingPage: React.FC = () => {
 
                 // Format: "attempts/time" (e.g., "2/64" means 2 attempts, 64 minutes)
                 // submissionPenalty is already in seconds, so convert to minutes
-                const penaltyMinutes = (((convertTimeSpanToNumber(ongoingCompetition.submissionPenalty)) / 60));
+                const penaltyMinutes = convertTimeSpanToNumber(
+                    String(ongoingCompetition.submissionPenalty)
+                ) / 60;
                 times[exerciseLetter] = `${attempt.attempts}/${Math.round(
                     attempt.attempts * penaltyMinutes
                 )}`;

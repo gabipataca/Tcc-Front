@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import useLoadGroups from "@/components/pages/profile/hooks/useLoadGroup";
+import useLoadGroups, { GroupListItem } from "@/components/pages/profile/hooks/useLoadGroup";
 import { useSnackbar } from "notistack";
-import { Group } from "@/types/Group";
+import { UpdateGroupRequest } from "@/types/Group/Requests";
+import GroupService from "@/services/GroupService";
 
 export default function useGroupsTable() {
     const { enqueueSnackbar } = useSnackbar();
@@ -20,13 +21,13 @@ export default function useGroupsTable() {
 
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("all");
-    const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
+    const [selectedGroups, setSelectedGroups] = useState<number[]>([]);
 
     // Estado do diálogo de exclusão, modelado como um objeto
     const [deleteDialog, setDeleteDialog] = useState<{
         isOpen: boolean;
-        group: Group | null;
-        action: ((id: string) => Promise<void>) | null;
+        group: GroupListItem | null;
+        action: ((id: number) => Promise<void>) | null;
     }>({
         isOpen: false,
         group: null,
@@ -36,8 +37,8 @@ export default function useGroupsTable() {
     // Estado do diálogo de edição, modelado como um objeto
     const [editDialog, setEditDialog] = useState<{
         isOpen: boolean;
-        group: Group | null;
-        action: ((group: Group) => Promise<void>) | null;
+        group: GroupListItem & { leaderId: string; users: Array<{ id: string; name: string }> } | null;
+        action: ((groupId: number, request: UpdateGroupRequest) => Promise<void>) | null;
     }>({
         isOpen: false,
         group: null,
@@ -45,28 +46,28 @@ export default function useGroupsTable() {
     });
 
     useEffect(() => {
-        loadGroups(searchTerm, statusFilter);
-    }, [currentPage, searchTerm, statusFilter, loadGroups]);
+        loadGroups(searchTerm);
+    }, [currentPage, searchTerm, loadGroups]);
 
     // Funções para fechar os diálogos e resetar seu estado
-    const toggleDeleteDialog = () => {
+    const toggleDeleteDialog = useCallback(() => {
         setDeleteDialog({
             isOpen: !deleteDialog.isOpen,
             group: null,
             action: null,
         });
-    };
+    }, [deleteDialog.isOpen]);
 
-    const toggleEditDialog = () => {
+    const toggleEditDialog = useCallback(() => {
         setEditDialog({
             isOpen: !editDialog.isOpen,
             group: null,
             action: null,
         });
-    };
+    }, [editDialog.isOpen]);
 
     const handleSelectGroup = useCallback(
-        (groupId: string, checked: boolean) => {
+        (groupId: number, checked: boolean) => {
             setSelectedGroups((prev) =>
                 checked
                     ? [...prev, groupId]
@@ -79,7 +80,7 @@ export default function useGroupsTable() {
     const handleSelectAll = useCallback(
         (checked: boolean) => {
             if (checked) {
-                const allIds = groups.map((g) => g.id.toString());
+                const allIds = groups.map((g) => g.id);
                 setSelectedGroups(allIds);
             } else {
                 setSelectedGroups([]);
@@ -98,8 +99,8 @@ export default function useGroupsTable() {
                 variant: "success",
             });
             setSelectedGroups([]);
-            await loadGroups(searchTerm, statusFilter);
-        } catch (error) {
+            await loadGroups(searchTerm);
+        } catch {
             enqueueSnackbar("Falha ao excluir grupos selecionados.", {
                 variant: "error",
             });
@@ -110,21 +111,20 @@ export default function useGroupsTable() {
         enqueueSnackbar,
         loadGroups,
         searchTerm,
-        statusFilter,
     ]);
 
     // Prepara o diálogo de exclusão sem executar a ação ainda
     const handleDeleteGroupClick = useCallback(
-        (group: Group) => {
-            const action = async (id: string) => {
+        (group: GroupListItem) => {
+            const action = async (id: number) => {
                 try {
                     await deleteGroup(id);
                     enqueueSnackbar("Grupo excluído com sucesso!", {
                         variant: "success",
                     });
                     toggleDeleteDialog();
-                    await loadGroups(searchTerm, statusFilter);
-                } catch (error) {
+                    await loadGroups(searchTerm);
+                } catch {
                     enqueueSnackbar("Falha ao excluir o grupo.", {
                         variant: "error",
                     });
@@ -132,29 +132,51 @@ export default function useGroupsTable() {
             };
             setDeleteDialog({ isOpen: true, group, action });
         },
-        [deleteGroup, enqueueSnackbar, loadGroups, searchTerm, statusFilter]
+        [deleteGroup, enqueueSnackbar, loadGroups, searchTerm, toggleDeleteDialog]
     );
 
     // Prepara o diálogo de edição sem executar a ação ainda
     const handleSelectGroupToEdit = useCallback(
-        (group: Group) => {
-            const action = async (updatedGroupData: Group) => {
-                try {
-                    await updateGroup(updatedGroupData);
-                    enqueueSnackbar("Grupo atualizado com sucesso!", {
-                        variant: "success",
-                    });
-                    toggleEditDialog();
-                    await loadGroups(searchTerm, statusFilter);
-                } catch (error) {
-                    enqueueSnackbar("Falha ao atualizar o grupo.", {
-                        variant: "error",
-                    });
+        async (group: GroupListItem) => {
+            try {
+                // Buscar detalhes completos do grupo
+                const response = await GroupService.getGroupById(group.id);
+                
+                if (response.status === 200 && response.data) {
+                    const fullGroup = {
+                        ...group,
+                        leaderId: response.data.leaderId,
+                        users: response.data.users.map(u => ({
+                            id: u.id,
+                            name: u.name
+                        }))
+                    };
+
+                    const action = async (groupId: number, request: UpdateGroupRequest) => {
+                        try {
+                            await GroupService.UpdateGroup(groupId, request);
+                            await updateGroup(groupId, request.name);
+                            enqueueSnackbar("Grupo atualizado com sucesso!", {
+                                variant: "success",
+                            });
+                            toggleEditDialog();
+                            await loadGroups(searchTerm);
+                        } catch {
+                            enqueueSnackbar("Falha ao atualizar o grupo.", {
+                                variant: "error",
+                            });
+                        }
+                    };
+                    
+                    setEditDialog({ isOpen: true, group: fullGroup, action });
                 }
-            };
-            setEditDialog({ isOpen: true, group, action });
+            } catch {
+                enqueueSnackbar("Falha ao carregar detalhes do grupo.", {
+                    variant: "error",
+                });
+            }
         },
-        [updateGroup, enqueueSnackbar, loadGroups, searchTerm, statusFilter]
+        [updateGroup, enqueueSnackbar, loadGroups, searchTerm, toggleEditDialog]
     );
 
     const allGroupsSelected =

@@ -34,13 +34,11 @@ const CreateCompetition: React.FC = () => {
     competitionModels,
     selectCompetition,
     activeCompetition,
-    pageSize,
     currentPage,
     maxPages,
     nextPage,
     prevPage,
     resetPagination,
-    isLoadingExercises,
     isTemplateLoading,
     showNoModelsModal,
     handleNoModelsModalConfirm,
@@ -102,7 +100,7 @@ const CreateCompetition: React.FC = () => {
                         options={competitionModelsOptions}
                         onChange={(val) => {
                           if (val == null) return
-                          selectCompetition(Number.parseInt(val))
+                          selectCompetition(Number.parseInt(val as string))
                         }}
                         value={activeCompetition?.id ?? null}
                         disabled={isTemplateLoading}
@@ -172,6 +170,7 @@ const CreateCompetition: React.FC = () => {
                               min={1}
                               placeholder="Ex: 90"
                               {...field}
+                              value={field.value !== undefined && field.value !== null ? String(field.value) : ""}
                               onChange={(e) => field.onChange(e.target.value)}
                               className="border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-xl h-16 px-6"
                             />
@@ -192,6 +191,7 @@ const CreateCompetition: React.FC = () => {
                               min={1}
                               placeholder="Ex: 85"
                               {...field}
+                              value={field.value !== undefined && field.value !== null ? String(field.value) : ""}
                               onChange={(e) => field.onChange(Number.parseInt(e.target.value))}
                               className="border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-xl h-16 px-6"
                             />
@@ -215,6 +215,7 @@ const CreateCompetition: React.FC = () => {
                               min={1}
                               placeholder="Ex: 80"
                               {...field}
+                              value={field.value !== undefined && field.value !== null ? String(field.value) : ""}
                               onChange={(e) => field.onChange(Number.parseInt(e.target.value))}
                               className="border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-xl h-16 px-6"
                             />
@@ -235,6 +236,7 @@ const CreateCompetition: React.FC = () => {
                               min={0}
                               placeholder="Ex: 30"
                               {...field}
+                              value={field.value !== undefined && field.value !== null ? String(field.value) : ""}
                               onChange={(e) => field.onChange(Number.parseInt(e.target.value))}
                               className="border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-xl h-16 px-6"
                             />
@@ -271,6 +273,7 @@ const CreateCompetition: React.FC = () => {
                               min={2}
                               max={15}
                               {...field}
+                              value={field.value !== undefined && field.value !== null ? String(field.value) : ""}
                               onChange={(e) => field.onChange(Number.parseInt(e.target.value))}
                               className="border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-xl h-16 px-6"
                             />
@@ -293,6 +296,7 @@ const CreateCompetition: React.FC = () => {
                               min={0}
                               placeholder="Ex: 100"
                               {...field}
+                              value={field.value !== undefined && field.value !== null ? String(field.value) : ""}
                               onChange={(e) => field.onChange(Number.parseInt(e.target.value))}
                               className="border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-xl h-16 px-6"
                             />

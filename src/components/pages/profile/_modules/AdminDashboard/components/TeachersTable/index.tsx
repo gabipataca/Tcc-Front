@@ -10,7 +10,6 @@ import {
     CardDescription,
 } from "@/components/_ui/Card";
 import { ButtonAdm } from "@/components/_ui/ButtonAdm";
-import { Badge } from "@/components/_ui/Badge";
 import Input from "@/components/_ui/Input";
 import { Checkbox } from "@/components/_ui/Checkbox";
 import { Avatar, AvatarFallback } from "@/components/_ui/Avatar";
@@ -38,7 +37,6 @@ const TeachersTable: FC = () => {
         deleteDialog,
         editDialog,
         currentPage,
-        totalPages,
         searchTerm,
         setSearchTerm,
         togglePage,
@@ -85,6 +83,8 @@ const TeachersTable: FC = () => {
                         email: editDialog.user!.email,
                         status: 1,
                         groupId: editDialog.user!.group?.id,
+                        department: editDialog.user!.department,
+                        joinYear: editDialog.user!.joinYear,
                     }}
                 />
             )}

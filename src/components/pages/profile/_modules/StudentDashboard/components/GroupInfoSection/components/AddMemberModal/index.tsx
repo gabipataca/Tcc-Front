@@ -117,7 +117,8 @@ const AddMemberModal = ({
                     if (res.status === 201) {
                         dataBodys.push(res.data!);
                     } else if (res.status === 400) {
-                        const errorMsg = (res as any).message || "Erro ao enviar convite";
+                        // @ts-expect-error: Type
+                        const errorMsg = res.data.message || res.error || "Erro ao enviar convite";
                         errors.push(errorMsg);
                     }
                 }
@@ -128,9 +129,8 @@ const AddMemberModal = ({
                             return {
                                 id: d.id,
                                 accepted: d.accepted || false,
-                                userId: d.userId,
-                                groupId: d.groupId,
-                                group: null,
+                                userId: d.user.id,
+                                group: d.group,
                                 user: d.user,
                             };
                         }
@@ -172,10 +172,29 @@ const AddMemberModal = ({
                         });
                     });
                 }
+                
+                // Se não houve nenhum sucesso e nenhum erro registrado, mas tivemos RAs já convidados
+                if (dataBodys.length === 0 && errors.length === 0 && alreadyInvited.length === 0) {
+                    enqueueSnackbar(
+                        "Nenhum convite foi enviado. Verifique os RAs informados.",
+                        {
+                            variant: "warning",
+                            autoHideDuration: 3000,
+                            anchorOrigin: {
+                                vertical: "bottom",
+                                horizontal: "right",
+                            },
+                        }
+                    );
+                }
             }
 
             setIsLoading(false);
-            onClose();
+            
+            // Aguarda um pouco antes de fechar para garantir que as mensagens sejam exibidas
+            setTimeout(() => {
+                onClose();
+            }, 100);
         } catch (error) {
             console.error("Erro ao adicionar membros:", error);
             enqueueSnackbar(

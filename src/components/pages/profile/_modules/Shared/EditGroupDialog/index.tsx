@@ -13,6 +13,7 @@ import Input from "@/components/_ui/Input";
 import Button from "@/components/_ui/Button";
 import useEditGroupDialog from "./hooks/useEditGroupDialog";
 import { UseEditGroupDialogProps } from "./hooks/types";
+import { Checkbox } from "@/components/_ui/Checkbox";
 
 const EditGroupDialog: FC<UseEditGroupDialogProps> = ({
     onClose,
@@ -21,7 +22,7 @@ const EditGroupDialog: FC<UseEditGroupDialogProps> = ({
     isOpen,
     group,
 }) => {
-    const { control, error, handleClose, handleConfirm, loading } =
+    const { control, error, handleClose, handleConfirm, loading, groupUsers } =
         useEditGroupDialog({
             onClose,
             toggleDialog,
@@ -57,26 +58,54 @@ const EditGroupDialog: FC<UseEditGroupDialogProps> = ({
                         )}
                     />
 
-                    <Controller
-                        control={control}
-                        name="userIds"
-                        render={({ field }) => (
-                            <Input
-                                {...field}
-                                label="IDs dos usuários"
-                                type="text"
-                                placeholder="Ex: 1, 2, 3"
-                                onChange={(e) => {
-                                    const value = e.target.value
-                                        .split(",")
-                                        .map((v) => v.trim())
-                                        .filter((v) => v !== "");
-                                    field.onChange(value);
-                                }}
-                                className="border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-base"
-                            />
-                        )}
-                    />
+                    <div>
+                        <label className="block text-sm font-medium text-[#3f3c40] mb-2">
+                            Membros do Grupo
+                        </label>
+                        <div className="space-y-2 max-h-40 overflow-y-auto border border-[#e9edee] rounded-md p-3">
+                            {groupUsers && groupUsers.length > 0 ? (
+                                groupUsers.map((user) => (
+                                    <Controller
+                                        key={user.id}
+                                        control={control}
+                                        name="membersToRemove"
+                                        render={({ field }) => (
+                                            <div className="flex items-center space-x-2">
+                                                <Checkbox
+                                                    checked={field.value?.includes(user.id)}
+                                                    onClick={() => {
+                                                        const currentValue = field.value || [];
+                                                        if (currentValue.includes(user.id)) {
+                                                            field.onChange(
+                                                                currentValue.filter(
+                                                                    (id) => id !== user.id
+                                                                )
+                                                            );
+                                                        } else {
+                                                            field.onChange([
+                                                                ...currentValue,
+                                                                user.id,
+                                                            ]);
+                                                        }
+                                                    }}
+                                                />
+                                                <span className="text-sm text-[#3f3c40]">
+                                                    {user.name} ({user.id})
+                                                </span>
+                                            </div>
+                                        )}
+                                    />
+                                ))
+                            ) : (
+                                <p className="text-sm text-[#3f3c40]">
+                                    Nenhum membro no grupo
+                                </p>
+                            )}
+                        </div>
+                        <p className="text-xs text-[#4F85A6] mt-1">
+                            Selecione os membros que deseja remover do grupo
+                        </p>
+                    </div>
 
                     {error && <p className="text-red-600 text-sm">{error}</p>}
                 </div>

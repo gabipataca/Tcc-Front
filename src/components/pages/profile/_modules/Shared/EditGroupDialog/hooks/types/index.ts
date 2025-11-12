@@ -4,10 +4,11 @@ export interface UseEditGroupDialogProps {
     group: {
         id: number;
         name: string;
-        userIds: string[];
+        leaderId: string;
+        users: Array<{ id: string; name: string }>;
     };
     toggleDialog: () => void;
-    onConfirm: (group: UpdateGroupRequest) => Promise<void> | void;
+    onConfirm: (groupId: number, request: UpdateGroupRequest) => Promise<void> | void;
     onClose: () => void;
     isOpen: boolean;
 }

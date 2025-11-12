@@ -1,12 +1,6 @@
 import { PagedResult } from "../Global";
-import { GenericUserInfo, User } from "../User";
+import { GenericUserInfo } from "../User";
 
-
-
-export interface CreateGroupResponse {
-    id: number;
-    name: string;
-}
 /**
  * Represents the response for creating a group.
  */
@@ -15,18 +9,26 @@ export interface CreateGroupResponse {
     id: number;
     /** The name of the group. */
     name: string;
-
+    /** The ID of the group leader. */
     leaderId: string;
-
+    /** The list of users in the group. */
     users: GenericUserInfo[];
 }
 
-export interface GroupResponse {
+/**
+ * Represents a group invitation response.
+ */
+export interface GroupInvitationResponse {
+    /** The unique identifier of the invitation. */
     id: number;
-    name: string;
-    leaderId: string;
-    users: GenericUserInfo[];
+    /** The user information. */
+    user?: GenericUserInfo;
+    /** The group information. */
+    group?: GroupResponse | null;
+    /** Indicates if the invitation was accepted. */
+    accepted: boolean;
 }
+
 /**
  * Represents the response for a group.
  */
@@ -36,15 +38,13 @@ export interface GroupResponse {
     /** The name of the group. */
     name: string;
     /** The ID of the group leader. */
-    leaderId: number;
+    leaderId: string;
     /** The list of users in the group. */
     users: GenericUserInfo[];
+    /** Optional list of group invitations. */
+    groupInvitations?: GroupInvitationResponse[];
 }
 
-export interface UpdateGroupResponse {
-    name: string;
-    userIds: string[];
-}
 /**
  * Represents the response for updating a group.
  */
@@ -60,14 +60,6 @@ export interface UpdateGroupResponse {
  */
 export type GetGroupsResponse = PagedResult<GroupResponse>
 
-
-export interface InviteUserToGroupResponse {
-    id: number;
-    accepted: boolean;
-    groupId: number;
-    userId: string;
-    group: GroupResponse;
-}
 /**
  * Represents the response for inviting a user to a group.
  */
@@ -76,23 +68,12 @@ export interface InviteUserToGroupResponse {
     id: number;
     /** Indicates if the invitation was accepted. */
     accepted: boolean;
-    /** The ID of the group. */
-    groupId: number;
-    /** The ID of the user invited. */
-    userId: string;
     /** The group information. */
     group: GroupResponse;
-
+    /** The user information. */
     user: GenericUserInfo;
 }
 
-export interface AcceptGroupInvitationResponse {
-    id: number;
-    accepted: boolean;
-    groupId: number;
-    userId: string;
-    group: GroupResponse;
-}
 /**
  * Represents the response for accepting a group invitation.
  */

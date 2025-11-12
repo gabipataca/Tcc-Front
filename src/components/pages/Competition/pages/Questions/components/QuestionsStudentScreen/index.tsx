@@ -6,7 +6,6 @@ import { FaPaperPlane } from "react-icons/fa"
 import {
   Box,
   TextField,
-  Autocomplete,
   Button as MuiButton,
   Typography,
   Paper,
@@ -15,8 +14,6 @@ import {
   DialogContent,
   IconButton,
 } from "@mui/material"
-import BookIcon from "@mui/icons-material/Book"
-import CodeIcon from "@mui/icons-material/Code"
 import TitleIcon from "@mui/icons-material/Title"
 import CloseIcon from "@mui/icons-material/Close"
 import { useSnackbar } from "notistack"
@@ -98,6 +95,7 @@ const TextareaField = ({ value, onChange }: TextareaFieldProps) => (
   </Box>
 )
 
+/* Componente MuiSelectField comentado temporariamente - não está sendo usado no momento
 interface MuiSelectFieldProps {
   label: string
   options: string[]
@@ -148,6 +146,7 @@ const MuiSelectField = ({ label, options, placeholder, icon, value, onChange }: 
     </Box>
   )
 }
+*/
 
 const AskQuestionsContent = ({ onClose }: { onClose: () => void }) => {
   const { enqueueSnackbar } = useSnackbar()
@@ -200,6 +199,7 @@ const AskQuestionsContent = ({ onClose }: { onClose: () => void }) => {
 
       await sendQuestion({
         groupId: user.group.id,
+        competitionId: ongoingCompetition.id,
         exerciseId: exerciseId,
         content: formData.question.trim(),
         questionType: 0,

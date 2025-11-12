@@ -56,7 +56,7 @@ const GroupsTable: FC = () => {
                     isOpen={deleteDialog.isOpen}
                     onClose={deleteDialog.toggleDialog!}
                     onConfirm={() =>
-                        deleteDialog.action!(deleteDialog.group.id)
+                        deleteDialog.action!(deleteDialog.group!.id)
                     }
                     itemName={deleteDialog.group.name}
                     itemType="Grupo"

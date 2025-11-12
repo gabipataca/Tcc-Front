@@ -6,9 +6,7 @@ import { UseEditGroupDialogProps } from "./types";
 
 const schema = z.object({
     name: z.string().min(1, "Nome do grupo é obrigatório"),
-    userIds: z
-        .array(z.string())
-        .nonempty("O grupo deve ter pelo menos 1 membro"),
+    membersToRemove: z.array(z.string()),
 });
 
 const useEditGroupDialog = ({
@@ -23,7 +21,7 @@ const useEditGroupDialog = ({
     const { control, watch, reset } = useForm({
         defaultValues: {
             name: group.name,
-            userIds: group.userIds,
+            membersToRemove: [] as string[],
         },
         resolver: zodResolver(schema),
     });
@@ -31,7 +29,7 @@ const useEditGroupDialog = ({
     useEffect(() => {
         reset({
             name: group.name,
-            userIds: group.userIds,
+            membersToRemove: [],
         });
     }, [group, reset]);
 
@@ -46,9 +44,9 @@ const useEditGroupDialog = ({
         setLoading(true);
         setError(null);
         try {
-            await onConfirm({
+            await onConfirm(group.id, {
                 name: editGroupFormValues.name,
-                userIds: editGroupFormValues.userIds,
+                membersToRemove: editGroupFormValues.membersToRemove,
             });
         } catch (err: any) {
             setError(err?.message || "Erro ao atualizar grupo.");
@@ -56,7 +54,7 @@ const useEditGroupDialog = ({
             setLoading(false);
             toggleDialog();
         }
-    }, [editGroupFormValues, onConfirm, toggleDialog]);
+    }, [editGroupFormValues, onConfirm, toggleDialog, group.id]);
 
     return {
         loading,
@@ -65,6 +63,7 @@ const useEditGroupDialog = ({
         editGroupFormValues,
         handleClose,
         handleConfirm,
+        groupUsers: group.users,
     };
 };
 
