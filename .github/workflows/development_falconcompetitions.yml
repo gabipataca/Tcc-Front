@@ -29,11 +29,17 @@ jobs:
           npm run build --if-present
           npm run test --if-present
 
+      # Standalone mode requires static and public files to be copied manually
+      - name: Copy static/public assets to standalone output
+        run: |
+          cp -r .next/static .next/standalone/.next/static
+          cp -r public .next/standalone/public
+
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: .
+          path: .next/standalone 
 
   deploy:
     runs-on: ubuntu-latest
@@ -62,4 +68,4 @@ jobs:
           app-name: 'FalconCompetitions'
           slot-name: 'Production'
           package: .
-          
+          clean: true
