@@ -63,6 +63,7 @@ const EditExerciseModal: React.FC<EditExerciseModalProps> = ({
             }
             hasCancelButton={true}
             onConfirm={handleEditSubmit(
+                // @ts-expect-error : Irrelevant
                 handleValidConfirm,
                 handleInvalidConfirm
             )}

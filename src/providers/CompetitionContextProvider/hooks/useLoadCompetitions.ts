@@ -124,9 +124,11 @@ export const useLoadCompetitions = () => {
                                         response.data!.blockSubmissions
                                     )
                                     : null,
-                                duration: convertTimeSpanToNumber(
-                                    response.data!.duration
-                                ),
+                                duration: response.data?.duration
+                                    ? convertTimeSpanToNumber(
+                                        response.data!.duration
+                                    )
+                                    : null,
                                 startInscriptions: response.data
                                     ?.startInscriptions
                                     ? new Date(
@@ -141,12 +143,16 @@ export const useLoadCompetitions = () => {
                                 endTime: new Date(response.data!.endTime),
                                 maxExercises: response.data!.maxExercises,
                                 maxSubmissionSize: response.data!.maxSubmissionSize,
-                                submissionPenalty: convertTimeSpanToNumber(
-                                    response.data!.submissionPenalty
-                                ),
-                                stopRanking: new Date(
-                                    response.data!.stopRanking
-                                ),
+                                submissionPenalty: response.data?.submissionPenalty
+                                    ? convertTimeSpanToNumber(
+                                        response.data!.submissionPenalty
+                                    )
+                                    : 0,
+                                stopRanking: response.data?.stopRanking
+                                    ? new Date(
+                                        response.data!.stopRanking
+                                    )
+                                    : null,
                                 status: response.data!.status,
                                 maxMembers: null,
                                 exercises: [],

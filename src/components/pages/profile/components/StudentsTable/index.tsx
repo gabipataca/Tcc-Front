@@ -48,6 +48,8 @@ const StudentsTable: FC = () => {
         handleDeleteUsers,
     } = useStudentsTable();
 
+    const currentDate = new Date();
+
     const [isBulkDeleteDialogOpen, setIsBulkDeleteDialogOpen] = useState(false);
 
     const getInitials = (name: string) => {
@@ -242,12 +244,13 @@ const StudentsTable: FC = () => {
                                                 <Badge
                                                     variant={"outline"}
                                                     className={
-                                                        user.status === "active"
+                                                        
+                                                        currentDate.getTime() - new Date(user.lastLoggedAt).getTime() < 24 * 60 * 60 * 1000
                                                             ? "bg-[#4F85A6] text-white text-base"
                                                             : "bg-[#e9edee] text-[#3f3c40] text-base"
                                                     }
                                                 >
-                                                    {user.status === "active"
+                                                    {currentDate.getTime() - new Date(user.lastLoggedAt).getTime() < 24 * 60 * 60 * 1000
                                                         ? "Ativo"
                                                         : "Inativo"}
                                                 </Badge>

@@ -45,9 +45,7 @@ const useCompetitionContext = () => {
                             ? new Date(res.data!.blockSubmissions)
                             : null,
                         duration: res.data?.duration
-                            ? new Date(
-                                  convertTimeSpanToNumber(res.data!.duration)
-                              )
+                            ? convertTimeSpanToNumber(res.data!.duration)
                             : null,
                         endInscriptions: res.data?.endInscriptions
                             ? new Date(res.data!.endInscriptions)
@@ -75,7 +73,11 @@ const useCompetitionContext = () => {
                             ? convertTimeSpanToNumber(
                                   res.data!.submissionPenalty
                               )
-                            : null,
+                            : 0,
+                        maxMembers: res.data!.maxMembers,
+                        exercises: [],
+                        groups: [],
+                        competitionRankings: [],
                     });
 
                     enqueueSnackbar(

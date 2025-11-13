@@ -14,17 +14,30 @@ const useInvitationSection = (
             setIsLoading(true);
             const response = await GroupService.AcceptGroupInvitation(groupId);
 
-
-            console.log(response);
-
-            if(response.status == 200) {
-                const data = response.data!
+            if(response.status == 200 && response.data) {
+                const data = response.data;
                 
-                setUser((prev) => ({
-                    ...prev!,
-                    groupId: data.groupId,
-                    group: data.group
-                }))
+                setUser((prev) => {
+                    if (!prev) return prev;
+                    
+                    return {
+                        ...prev,
+                        groupId: data.groupId,
+                        group: {
+                            id: data.group.id,
+                            name: data.group.name,
+                            leaderId: data.group.leaderId,
+                            users: data.group.users,
+                            groupInvitations: data.group.groupInvitations?.map(invite => ({
+                                id: invite.id,
+                                userId: invite.user?.id || "",
+                                group: invite.group || null,
+                                user: invite.user!,
+                                accepted: invite.accepted,
+                            })) || [],
+                        },
+                    };
+                });
 
                 setIsLoading(false);
                 onAccept();
@@ -35,7 +48,7 @@ const useInvitationSection = (
             setIsLoading(false);
         }
         
-    }, []);
+    }, [onAccept, setUser]);
 
     return {
         handleAcceptInvitation,

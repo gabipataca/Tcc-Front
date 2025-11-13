@@ -53,7 +53,7 @@ const InvitationSection = ({
                 <div className="flex justify-center gap-4">
                     <Button
                         variant="light-success"
-                        size="md"
+                        size="lg"
                         rounded
                         disabled={isLoading}
                         loading={isLoading}

@@ -46,7 +46,10 @@ const useEditTeacherDialog = ({
                 email: editUserFormValues.email,
                 name: editUserFormValues.name,
                 status: 1,
-                groupId: undefined
+                groupId: user.group?.id || undefined,
+                department: user.department,
+                joinYear: user.joinYear,
+                group: user.group,
             });
             enqueueSnackbar("Usuário editado com sucesso!", {
                 variant: "success",
@@ -71,7 +74,10 @@ const useEditTeacherDialog = ({
         enqueueSnackbar,
         onConfirm,
         toggleDialog,
+        user.department,
+        user.group,
         user.id,
+        user.joinYear,
     ]);
 
     return {

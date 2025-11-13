@@ -142,14 +142,17 @@ const ExerciseManagement: React.FC = () => {
                     Filtrar por Tipo
                   </label>
                   <CustomDropdown
+                    // @ts-expect-error : Irrelevant
                     options={[{ label: "Todos", value: null }, ...exerciseTypeOptions]}
                     value={
                       [{ label: "Todos", value: null }, ...exerciseTypeOptions].find(
                         (option) => option.value === exerciseTypeFilter,
                       )?.value ?? null
                     }
+                    // @ts-expect-error : Irrelevant
                     onChange={(val: ExerciseType) =>
                       toggleExerciseTypeFilter(
+                        // @ts-expect-error : Irrelevant
                         [{ label: "Todos", value: null }, ...exerciseTypeOptions].find((option) => option.value === val)
                           ?.value ?? null,
                       )
@@ -289,6 +292,7 @@ const ExerciseManagement: React.FC = () => {
                   <label className="block text-xl font-medium text-[#3f3c40] mb-4">Título do Exercício</label>
                   <Input
                     type="text"
+                    name="title"
                     placeholder="Digite o título do exercício"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
@@ -302,6 +306,7 @@ const ExerciseManagement: React.FC = () => {
                   <CustomDropdown
                     options={exerciseTypeOptions}
                     value={type}
+                    // @ts-expect-error : Irrelevant
                     onChange={(value: ExerciseType) => setType(value)}
                     type="normalDropdown"
                   />

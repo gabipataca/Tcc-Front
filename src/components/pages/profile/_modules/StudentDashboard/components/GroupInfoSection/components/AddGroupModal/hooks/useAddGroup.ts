@@ -58,12 +58,30 @@ export const useAddGroup = (onClose: () => void) => {
                     controllerSignal.signal
                 );
 
-                if (response.status === 201) {
-                    setUser((prev) => ({
-                            ...prev!,
-                            group: response.data,
-                        }
-                    ));
+                if (response.status === 201 && response.data) {
+                    const groupData = response.data;
+                    
+                    setUser((prev) => {
+                        if (!prev) return prev;
+                        
+                        return {
+                            ...prev,
+                            groupId: groupData.id,
+                            group: {
+                                id: groupData.id,
+                                name: groupData.name,
+                                users: groupData.users,
+                                leaderId: groupData.leaderId,
+                                groupInvitations: groupData.groupInvitations?.map(invite => ({
+                                    id: invite.id,
+                                    userId: invite.user?.id || "",
+                                    group: invite.group || null,
+                                    user: invite.user!,
+                                    accepted: invite.accepted,
+                                })) || [],
+                            },
+                        };
+                    });
 
                     enqueueSnackbar("Grupo criado com sucesso!", {
                         variant: "success",

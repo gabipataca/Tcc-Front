@@ -85,6 +85,7 @@ const useRegister = () => {
             accessCode: "",
         },
         mode: "onBlur",
+        // @ts-expect-error : irrelevant
         resolver: zodResolver(schema),
     });
 
@@ -137,9 +138,9 @@ const useRegister = () => {
                     return;
                 }
 
-                const resData = res.data!;
+                const resData = res.data;
 
-                if (res.status == 200) {
+                if (res.status == 200 && resData) {
                     setUser({
                         id: resData.user.id,
                         ra: resData.user.ra,
@@ -150,6 +151,26 @@ const useRegister = () => {
                         joinYear: resData.user.joinYear,
                         token: resData.token,
                         department: resData.user.department,
+                        group: resData.user.group ? {
+                            id: resData.user.group.id,
+                            name: resData.user.group.name,
+                            leaderId: resData.user.group.leaderId,
+                            users: resData.user.group.users,
+                            groupInvitations: resData.user.group.groupInvitations?.map(invite => ({
+                                id: invite.id,
+                                userId: invite.user?.id || "",
+                                group: invite.group || null,
+                                user: invite.user!,
+                                accepted: invite.accepted,
+                            })) || [],
+                        } : undefined,
+                        groupInvitations: resData.user.groupInvitations?.map(invite => ({
+                            id: invite.id,
+                            userId: invite.user?.id || "",
+                            group: invite.group || null,
+                            user: invite.user!,
+                            accepted: invite.accepted,
+                        })) || [],
                     });
 
                     setTimeout(() => {

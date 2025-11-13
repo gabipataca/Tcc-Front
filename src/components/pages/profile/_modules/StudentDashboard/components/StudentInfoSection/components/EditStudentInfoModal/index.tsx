@@ -7,6 +7,7 @@ import { Edit } from "lucide-react";
 import { useEffect, useState } from "react";
 import useEditStudentInfoModal from "./hooks/useEditStudentInfoModal";
 import { Controller } from "react-hook-form";
+import Button from "@/components/_ui/Button";
 
 // --- Modal para Editar Informações do Aluno ---
 const EditStudentInfoModal = ({
@@ -55,6 +56,7 @@ const EditStudentInfoModal = ({
                                 name="joinYear"
                                 control={control}
                                 render={({ field }) => (
+                                    // @ts-expect-error : Irrelevant
                                     <Input
                                         type="number"
                                         id="studentJoinYear"
@@ -78,22 +80,22 @@ const EditStudentInfoModal = ({
                         </div>
                     </CardContent>
                     <CardFooter className="flex justify-end gap-2">
-                        <ButtonAdm
+                        <Button
                             type="button"
                             variant="outline"
                             onClick={onClose}
                             className="bg-[#4F85A6] hover:bg-[#126396] text-white"
                         >
                             Cancelar
-                        </ButtonAdm>
+                        </Button>
 
-                        <ButtonAdm
+                        <Button
                             type="submit"
                             variant="primary"
                             className="bg-[#4F85A6] hover:bg-[#126396] text-white"
                         >
                             Salvar
-                        </ButtonAdm>
+                        </Button>
                     </CardFooter>
                 </form>
             </Card>

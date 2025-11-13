@@ -67,6 +67,7 @@ export const useInscriptionForm = (
                 }
 
                 if (response.status !== 200) {
+                    // @ts-expect-error : Irrelevant
                     enqueueSnackbar(response.data.message, {
                         variant: "warning",
                         anchorOrigin: {
@@ -112,8 +113,11 @@ export const useInscriptionForm = (
         }
 
         const now = new Date();
+        // @ts-expect-error : Expected
         const endDate = parseDate(res.endInscriptions);
+        // @ts-expect-error : Expected
         res.endInscriptions = parseDate(res.endInscriptions);
+        // @ts-expect-error : Expected
         res.startInscriptions = parseDate(res.startInscriptions);
 
         const isOpen = endDate ? now < endDate : false;

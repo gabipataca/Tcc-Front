@@ -75,7 +75,7 @@ const useEditGroup = (onClose: () => void) => {
                 }
 
                 onClose();
-            } catch (error: Error) {
+            } catch (error) {
                 console.error("Erro ao editar grupo:", error);
                 enqueueSnackbar("Não foi possível atualizar o grupo.", {
                     variant: "error",

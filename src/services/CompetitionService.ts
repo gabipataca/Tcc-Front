@@ -4,13 +4,13 @@ import type {
     CreateCompetitionRequest,
     InscribeGroupInCompetitionRequest,
     UpdateCompetitionRequest,
-    SubmitExerciseRequest, //já deixei sincronizado com oq tem no back(ta faltando coisa no back que tem no frontend), precisa ver se vai usar
+    // SubmitExerciseRequest, //já deixei sincronizado com oq tem no back(ta faltando coisa no back que tem no frontend), precisa ver se vai usar
 } from "@/types/Competition/Requests";
 import type {
     CompetitionResponse,
     InscribeGroupInCompetitionResponse,
-    CurrentCompetitionResponse, //já deixei sincronizado com oq tem no back (ta faltando coisa no back que tem no frontend), precisa ver se vai usar
-    SubmissionResponse, //já deixei sincronizado com oq tem no back(ta faltando coisa no back que tem no frontend), precisa ver se vai usar
+    // CurrentCompetitionResponse, //já deixei sincronizado com oq tem no back (ta faltando coisa no back que tem no frontend), precisa ver se vai usar
+    // SubmissionResponse, //já deixei sincronizado com oq tem no back(ta faltando coisa no back que tem no frontend), precisa ver se vai usar
 } from "@/types/Competition/Responses";
 import type { ServerSideResponse } from "@/types/Global";
 
@@ -85,35 +85,35 @@ class CompetitionService {
         return response.data;
     }
 
-    static async getCurrentCompetitionWithRanking() {
-        const response = await apiRequest<
-            ServerSideResponse<CurrentCompetitionResponse>
-        >(`/api/competition/current`, {
-            method: "GET",
-        });
+    // static async getCurrentCompetitionWithRanking() {
+    //     const response = await apiRequest<
+    //         ServerSideResponse<CurrentCompetitionResponse>
+    //     >(`/api/competition/current`, {
+    //         method: "GET",
+    //     });
 
-        return response.data;
-    }
+    //     return response.data;
+    // }
 
-    static async submitExerciseSolution(data: SubmitExerciseRequest) {
-        const formData = new FormData();
-        formData.append("competitionId", data.competitionId.toString());
-        formData.append("exerciseId", data.exerciseId.toString());
-        formData.append("languageId", data.languageId.toString());
-        formData.append("solutionFile", data.solutionFile);
+    // static async submitExerciseSolution(data: SubmitExerciseRequest) {
+    //     const formData = new FormData();
+    //     formData.append("competitionId", data.competitionId.toString());
+    //     formData.append("exerciseId", data.exerciseId.toString());
+    //     formData.append("languageId", data.languageId.toString());
+    //     formData.append("solutionFile", data.solutionFile);
 
-        const response = await apiRequest<
-            ServerSideResponse<SubmissionResponse>
-        >(`/api/competition/submit`, {
-            method: "POST",
-            data: formData,
-            headers: {
-                "Content-Type": "multipart/form-data",
-            },
-        });
+    //     const response = await apiRequest<
+    //         ServerSideResponse<SubmissionResponse>
+    //     >(`/api/competition/submit`, {
+    //         method: "POST",
+    //         data: formData,
+    //         headers: {
+    //             "Content-Type": "multipart/form-data",
+    //         },
+    //     });
 
-        return response.data;
-    }
+    //     return response.data;
+    // }
 }
 
 export default CompetitionService;

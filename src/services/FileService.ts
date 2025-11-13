@@ -68,9 +68,14 @@ class FileService {
             }
         );
 
-        const contentDisposition: string = response.headers.get(
-            "content-disposition"
-        )!;
+        const contentDispositionValue = response.headers && 
+            typeof response.headers.get === 'function' 
+            ? response.headers.get("content-disposition") 
+            : null;
+        
+        const contentDisposition: string = typeof contentDispositionValue === 'string' 
+            ? contentDispositionValue 
+            : "";
 
         return {
             blob: response.data,

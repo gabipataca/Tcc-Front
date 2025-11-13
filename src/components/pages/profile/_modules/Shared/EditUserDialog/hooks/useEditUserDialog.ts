@@ -27,8 +27,8 @@ const useEditUserDialog = ({
         defaultValues: {
             name: user.name,
             email: "email" in user ? user.email : "",
-            status: "status" in user ? user.status : "",
-            group: user.groupId,
+            status: "status" in user ? String(user.status) : "",
+            group: String(user?.groupId || ""),
         },
         resolver: zodResolver(schema),
     });

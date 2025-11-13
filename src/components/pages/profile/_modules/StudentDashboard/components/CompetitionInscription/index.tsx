@@ -156,6 +156,7 @@ const CompetitionInscription: React.FC<{
                                             ) : (
                                                 <Input
                                                     id="competition-name"
+                                                    name="competition-name"
                                                     type="text"
                                                     value={competitionName}
                                                     readOnly
@@ -294,6 +295,7 @@ const CompetitionInscription: React.FC<{
                                                 </Label>
                                                 <Input
                                                     id="group-name"
+                                                    name="group-name"
                                                     type="text"
                                                     value={groupName || ""}
                                                     className={
@@ -308,6 +310,7 @@ const CompetitionInscription: React.FC<{
                                                     Quantidade de Alunos
                                                 </Label>
                                                 <Input
+                                                    name="membersQte"
                                                     type="text"
                                                     value={`${quantityStudents} ${
                                                         quantityStudents === 1
@@ -350,6 +353,7 @@ const CompetitionInscription: React.FC<{
                                                                 <div className="relative">
                                                                     <Input
                                                                         id={`member-${index}`}
+                                                                        name={`member-${index}`}
                                                                         type="text"
                                                                         value={
                                                                             member
