@@ -11,8 +11,8 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TableRow,
   TablePagination,
+  TableRow,
 } from "@mui/material"
 import { useQuestions } from "@/components/pages/Competition/contexts/QuestionsContext"
 import TeacherQuestionRow from "@/components/pages/Competition/pages/Questions/components/QuestionsTeacherScreen/components/TeacherQuestionRow"
@@ -41,7 +41,6 @@ const QuestionsTeacherScreen: React.FC = () => {
         display: "flex",
         flexDirection: "column",
         p: 3,
-        alignItems: "center",
       }}
     >
       <Typography
@@ -58,74 +57,155 @@ const QuestionsTeacherScreen: React.FC = () => {
         Caixa de Entrada de Dúvidas
       </Typography>
 
-      <Paper sx={{ width: "100%", maxWidth: "1500px" }}>
-        <TableContainer sx={{ maxHeight: "calc(100vh - 250px)", overflowY: "auto" }}>
+      <Paper
+        sx={{
+          width: "100%",
+          overflow: "hidden",
+          borderRadius: "12px",
+          boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
+        }}
+      >
+        <TableContainer
+          sx={{
+            maxHeight: "calc(100vh - 250px)",
+            overflowY: "auto",
+            "&::-webkit-scrollbar": {
+              width: "10px",
+              height: "10px",
+            },
+            "&::-webkit-scrollbar-track": {
+              background: "#f1f5f9",
+              borderRadius: "10px",
+            },
+            "&::-webkit-scrollbar-thumb": {
+              background: "#4F85A6",
+              borderRadius: "10px",
+              "&:hover": {
+                background: "#3d6a87",
+              },
+            },
+          }}
+        >
           <Table stickyHeader aria-label="collapsible questions table" sx={{ minWidth: 1200 }}>
             <TableHead>
               <TableRow>
-                <TableCell style={{ backgroundColor: "#4F85A6" }} />
                 <TableCell
-                  style={{
+                  sx={{
+                    backgroundColor: "#4F85A6",
+                    color: "#fff",
+                    fontWeight: 600,
+                    letterSpacing: "0.3px",
+                    py: 2.5,
+                    position: "sticky",
+                    top: 0,
+                    zIndex: 100,
+                    borderBottom: "2px solid rgba(255, 255, 255, 0.15)",
+                  }}
+                />
+                <TableCell
+                  sx={{
                     width: "4%",
                     backgroundColor: "#4F85A6",
                     color: "#fff",
-                    fontSize: "20px",
+                    fontSize: "16px",
+                    fontWeight: 600,
+                    letterSpacing: "0.3px",
                     textAlign: "center",
+                    py: 2.5,
+                    position: "sticky",
+                    top: 0,
+                    zIndex: 100,
+                    borderBottom: "2px solid rgba(255, 255, 255, 0.15)",
                   }}
                 >
                   ID
                 </TableCell>
                 <TableCell
-                  style={{
+                  sx={{
                     width: "32%",
                     backgroundColor: "#4F85A6",
                     color: "#fff",
-                    fontSize: "20px",
+                    fontSize: "16px",
+                    fontWeight: 600,
+                    letterSpacing: "0.3px",
                     textAlign: "center",
+                    py: 2.5,
+                    position: "sticky",
+                    top: 0,
+                    zIndex: 100,
+                    borderBottom: "2px solid rgba(255, 255, 255, 0.15)",
                   }}
                 >
                   Título
                 </TableCell>
                 <TableCell
-                  style={{
+                  sx={{
                     width: "16%",
                     backgroundColor: "#4F85A6",
                     color: "#fff",
-                    fontSize: "20px",
+                    fontSize: "16px",
+                    fontWeight: 600,
+                    letterSpacing: "0.3px",
                     textAlign: "center",
+                    py: 2.5,
+                    position: "sticky",
+                    top: 0,
+                    zIndex: 100,
+                    borderBottom: "2px solid rgba(255, 255, 255, 0.15)",
                   }}
                 >
                   Time
                 </TableCell>
                 <TableCell
-                  style={{
+                  sx={{
                     width: "12%",
                     backgroundColor: "#4F85A6",
                     color: "#fff",
-                    fontSize: "20px",
+                    fontSize: "16px",
+                    fontWeight: 600,
+                    letterSpacing: "0.3px",
                     textAlign: "center",
+                    py: 2.5,
+                    position: "sticky",
+                    top: 0,
+                    zIndex: 100,
+                    borderBottom: "2px solid rgba(255, 255, 255, 0.15)",
                   }}
                 >
                   Linguagem
                 </TableCell>
                 <TableCell
-                  style={{
+                  sx={{
                     width: "22%",
                     backgroundColor: "#4F85A6",
                     color: "#fff",
-                    fontSize: "20px",
+                    fontSize: "16px",
+                    fontWeight: 600,
+                    letterSpacing: "0.3px",
                     textAlign: "center",
+                    py: 2.5,
+                    position: "sticky",
+                    top: 0,
+                    zIndex: 100,
+                    borderBottom: "2px solid rgba(255, 255, 255, 0.15)",
                   }}
                 >
                   Data/Hora
                 </TableCell>
                 <TableCell
-                  style={{
+                  sx={{
                     width: "14%",
                     backgroundColor: "#4F85A6",
                     color: "#fff",
-                    fontSize: "20px",
+                    fontSize: "16px",
+                    fontWeight: 600,
+                    letterSpacing: "0.3px",
                     textAlign: "center",
+                    py: 2.5,
+                    position: "sticky",
+                    top: 0,
+                    zIndex: 100,
+                    borderBottom: "2px solid rgba(255, 255, 255, 0.15)",
                   }}
                 >
                   Status
@@ -155,6 +235,23 @@ const QuestionsTeacherScreen: React.FC = () => {
           onRowsPerPageChange={handleChangeRowsPerPage}
           labelRowsPerPage="Linhas por página:"
           labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ${count}`}
+          sx={{
+            borderTop: "1px solid rgba(0, 0, 0, 0.06)",
+            "& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows": {
+              fontSize: "14px",
+              fontWeight: 500,
+            },
+            "& .MuiIconButton-root": {
+              color: "#4F85A6",
+              transition: "all 0.2s ease",
+              "&:hover": {
+                backgroundColor: "rgba(79, 133, 166, 0.1)",
+              },
+              "&.Mui-disabled": {
+                color: "rgba(79, 133, 166, 0.3)",
+              },
+            },
+          }}
         />
       </Paper>
     </Box>

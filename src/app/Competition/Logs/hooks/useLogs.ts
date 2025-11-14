@@ -1,6 +1,8 @@
+"use client";
+
 import React, { useState, useEffect, useMemo } from "react";
 import { useCompetitionHub } from "@/contexts/CompetitionHubContext";
-import { LogResponse } from "@/types/SignalR";
+import type { LogResponse } from "@/types/SignalR";
 
 export interface TeamData {
     teamName: string;
@@ -59,7 +61,7 @@ const columns: readonly Column[] = [
 
 // Helper to format action type
 const getActionDescription = (actionType: number): string => {
-    const actions: {[key: number]: string} = {
+    const actions: { [key: number]: string } = {
         0: "Login",
         1: "Logout",
         2: "Submissão de Exercício",
@@ -75,7 +77,8 @@ const useLogs = () => {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [logs, setLogs] = useState<LogResponse[]>([]);
-    const { requestLogs, isConnected, ongoingCompetition } = useCompetitionHub();
+    const { requestLogs, isConnected, ongoingCompetition } =
+        useCompetitionHub();
 
     // Load logs when connected and competition is available
     useEffect(() => {
@@ -89,42 +92,62 @@ const useLogs = () => {
     // Transform logs into TeamData format for the table
     const rows = useMemo((): TeamData[] => {
         // Group logs by groupId to aggregate information
-        const groupMap = new Map<number, {
-            groupId: number;
-            ip: string;
-            lastLogin?: string;
-            lastLogout?: string;
-            lastActionTime: string;
-            lastAction: string;
-            members: string; // We'll populate this from group data if available
-        }>();
+        const groupMap = new Map<
+            number,
+            {
+                groupId: number;
+                ip: string;
+                lastLogin?: string;
+                lastLogout?: string;
+                lastActionTime: string;
+                lastAction: string;
+                members: string; // We'll populate this from group data if available
+            }
+        >();
 
         logs.forEach((log) => {
             if (log.groupId) {
                 const existing = groupMap.get(log.groupId);
-                const actionTime = new Date(log.actionTime).toLocaleString('pt-BR');
+                const actionTime = new Date(log.actionTime).toLocaleString(
+                    "pt-BR"
+                );
                 const actionDesc = getActionDescription(log.actionType);
 
                 if (!existing) {
                     groupMap.set(log.groupId, {
                         groupId: log.groupId,
                         ip: log.ipAddress,
-                        lastLogin: log.actionType === 0 ? actionTime : undefined,
-                        lastLogout: log.actionType === 1 ? actionTime : undefined,
+                        lastLogin:
+                            log.actionType === 0 ? actionTime : undefined,
+                        lastLogout:
+                            log.actionType === 1 ? actionTime : undefined,
                         lastActionTime: actionTime,
                         lastAction: actionDesc,
                         members: "Carregando...", // Will be filled from competition data
                     });
                 } else {
                     // Update with latest information
-                    if (log.actionType === 0 && (!existing.lastLogin || new Date(log.actionTime) > new Date(existing.lastLogin))) {
+                    if (
+                        log.actionType === 0 &&
+                        (!existing.lastLogin ||
+                            new Date(log.actionTime) >
+                                new Date(existing.lastLogin))
+                    ) {
                         existing.lastLogin = actionTime;
                     }
-                    if (log.actionType === 1 && (!existing.lastLogout || new Date(log.actionTime) > new Date(existing.lastLogout))) {
+                    if (
+                        log.actionType === 1 &&
+                        (!existing.lastLogout ||
+                            new Date(log.actionTime) >
+                                new Date(existing.lastLogout))
+                    ) {
                         existing.lastLogout = actionTime;
                     }
                     // Always update to latest action
-                    if (new Date(log.actionTime) > new Date(existing.lastActionTime)) {
+                    if (
+                        new Date(log.actionTime) >
+                        new Date(existing.lastActionTime)
+                    ) {
                         existing.lastActionTime = actionTime;
                         existing.lastAction = actionDesc;
                     }
@@ -134,9 +157,12 @@ const useLogs = () => {
 
         // Convert map to array and get group names from competition data
         return Array.from(groupMap.values()).map((groupData) => {
-            const group = ongoingCompetition?.competitionRankings?.find(r => r.group.id === groupData.groupId);
+            const group = ongoingCompetition?.competitionRankings?.find(
+                (r) => r.group.id === groupData.groupId
+            );
             const groupName = group?.group.name || `Grupo ${groupData.groupId}`;
-            const members = group?.group.users?.map(u => u.name).join(", ") || "N/A";
+            const members =
+                group?.group.users?.map((u) => u.name).join(", ") || "N/A";
 
             return {
                 teamName: groupName,

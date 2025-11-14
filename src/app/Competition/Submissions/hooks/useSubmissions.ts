@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { useCompetitionHub } from "@/contexts/CompetitionHubContext";
 import type { CompetitionSubmissionData } from "@/types/SignalR";
 
 type ErrorType =
@@ -59,22 +58,17 @@ const wrongColumns: readonly Column[] = [
 ];
 
 const useSubmissions = (currentTable: "correct" | "wrong") => {
-    const { requestSubmissions, isConnected } = useCompetitionHub();
-    const [submissions, setSubmissions] = useState<CompetitionSubmissionData[]>([]);
+    const [submissions, setSubmissions] = useState<CompetitionSubmissionData[]>(
+        []
+    );
+    const [isConnected] = useState(true);
 
-    // Fetch submissions when component mounts and connection is established
+    // Mock data for demonstration
     useEffect(() => {
-        if (!isConnected) return;
+        const mockSubmissions: CompetitionSubmissionData[] = [];
+        setSubmissions(mockSubmissions);
+    }, [isConnected]);
 
-        const fetchSubmissions = async () => {
-            const data = await requestSubmissions();
-            setSubmissions(data);
-        };
-
-        fetchSubmissions();
-    }, [isConnected, requestSubmissions]);
-
-    // Map judge response enum to error type
     const getErrorType = (judgeResponse: number): ErrorType => {
         const errorMap: Record<number, ErrorType> = {
             1: "Wrong Answer",
@@ -89,22 +83,26 @@ const useSubmissions = (currentTable: "correct" | "wrong") => {
 
     const rows = useMemo(() => {
         if (currentTable === "correct") {
-            // Filter accepted submissions (judgeResponse === 0)
             return submissions
-                .filter(s => s.judgeResponse === 0 && s.accepted === true)
-                .map(s => ({
+                .filter((s) => s.judgeResponse === 0 && s.accepted === true)
+                .map((s) => ({
                     time: new Date(s.submissionTime).toLocaleString("pt-BR"),
-                    points: 100, // You might want to get actual points from ranking
-                    exerciseDescription: `${s.group?.name || "Grupo"} recebeu o Balão por acertar ${s.exerciseName || "exercício"}`,
+                    points: 100,
+                    exerciseDescription: `${
+                        s.group?.name || "Grupo"
+                    } recebeu o Balão por acertar ${
+                        s.exerciseName || "exercício"
+                    }`,
                     teamName: s.group?.name || "Grupo desconhecido",
                 }));
         } else {
-            // Filter wrong submissions (judgeResponse !== 0)
             return submissions
-                .filter(s => s.judgeResponse !== 0 || s.accepted === false)
-                .map(s => ({
+                .filter((s) => s.judgeResponse !== 0 || s.accepted === false)
+                .map((s) => ({
                     time: new Date(s.submissionTime).toLocaleString("pt-BR"),
-                    exerciseDescription: `${s.group?.name || "Grupo"} tentou ${s.exerciseName || "exercício"}`,
+                    exerciseDescription: `${s.group?.name || "Grupo"} tentou ${
+                        s.exerciseName || "exercício"
+                    }`,
                     teamName: s.group?.name || "Grupo desconhecido",
                     errorType: getErrorType(s.judgeResponse),
                 }));

@@ -15,9 +15,9 @@ interface ExerciseSubmission {
 }
 
 const useManualCorrection = () => {
-    const { requestSubmissions, isConnected, changeJudgeResponse } = useCompetitionHub();
-    const [submissions, setSubmissions] =
-        useState<ExerciseSubmission[]>([]);
+    const { requestSubmissions, isConnected, changeJudgeResponse } =
+        useCompetitionHub();
+    const [submissions, setSubmissions] = useState<ExerciseSubmission[]>([]);
     const [selectedSubmission, setSelectedSubmission] =
         useState<ExerciseSubmission | null>(null);
     const [feedback, setFeedback] = useState("");
@@ -31,46 +31,56 @@ const useManualCorrection = () => {
         const loadSubmissions = async () => {
             try {
                 const submissionsData = await requestSubmissions();
-                
+
                 // Transform SubmissionForReviewResponse[] to ExerciseSubmission[]
-                const transformedSubmissions: ExerciseSubmission[] = submissionsData.map(s => {
-                    // Map judge response to status
-                    let status: "pending" | "approved" | "rejected" = "pending";
-                    let errorType: string | null = null;
+                const transformedSubmissions: ExerciseSubmission[] =
+                    submissionsData.map((s) => {
+                        // Map judge response to status
+                        let status: "pending" | "approved" | "rejected" =
+                            "pending";
+                        let errorType: string | null = null;
 
-                    if (s.judgeResponse === 0) { // Accepted
-                        status = "approved";
-                    } else if (s.judgeResponse === 9) { // Pending
-                        status = "pending";
-                    } else {
-                        status = "rejected";
-                        // Map judge response to error type
-                        const errorTypes = [
-                            "Accepted",
-                            "Resposta Incorreta",
-                            "Tempo Limite Excedido",
-                            "Memória Excedida",
-                            "Erro de Execução",
-                            "Erro de Compilação",
-                            "Erro de Apresentação",
-                            "Limite de Saída Excedido",
-                            "Erro Interno",
-                            "Pendente"
-                        ];
-                        errorType = errorTypes[s.judgeResponse] || "Erro Desconhecido";
-                    }
+                        if (s.judgeResponse === 0) {
+                            // Accepted
+                            status = "approved";
+                        } else if (s.judgeResponse === 9) {
+                            // Pending
+                            status = "pending";
+                        } else {
+                            status = "rejected";
+                            // Map judge response to error type
+                            const errorTypes = [
+                                "Accepted",
+                                "Resposta Incorreta",
+                                "Tempo Limite Excedido",
+                                "Memória Excedida",
+                                "Erro de Execução",
+                                "Erro de Compilação",
+                                "Erro de Apresentação",
+                                "Limite de Saída Excedido",
+                                "Erro Interno",
+                                "Pendente",
+                            ];
+                            errorType =
+                                errorTypes[s.judgeResponse] ||
+                                "Erro Desconhecido";
+                        }
 
-                    return {
-                        id: s.id.toString(),
-                        groupName: s.group?.name || "Grupo Desconhecido",
-                        submissionTime: new Date(s.submissionTime).toLocaleString('pt-BR'),
-                        status,
-                        errorType,
-                        fileName: `${s.exerciseName || 'exercicio'}.${getExtension(s.language)}`,
-                        fileUrl: "#", // URL would come from backend if available
-                    };
-                });
-                
+                        return {
+                            id: s.id.toString(),
+                            groupName: s.group?.name || "Grupo Desconhecido",
+                            submissionTime: new Date(
+                                s.submissionTime
+                            ).toLocaleString("pt-BR"),
+                            status,
+                            errorType,
+                            fileName: `${
+                                s.exerciseName || "exercicio"
+                            }.${getExtension(s.language)}`,
+                            fileUrl: "#", // URL would come from backend if available
+                        };
+                    });
+
                 setSubmissions(transformedSubmissions);
             } catch (error) {
                 console.error("Error loading submissions:", error);
@@ -86,62 +96,70 @@ const useManualCorrection = () => {
         return extensions[language] || "txt";
     };
 
-    const handleApprove = useCallback(async (id: string) => {
-        try {
-            // Call SignalR to change judge response to Accepted (0)
-            await changeJudgeResponse({
-                submissionId: parseInt(id),
-                newJudgeResponse: 0 // Accepted
-            });
+    const handleApprove = useCallback(
+        async (id: string) => {
+            try {
+                // Call SignalR to change judge response to Accepted (0)
+                await changeJudgeResponse({
+                    submissionId: parseInt(id),
+                    newJudgeResponse: 0, // Accepted
+                });
 
-            // Update local state optimistically
-            setSubmissions((prev) =>
-                prev.map((sub) =>
-                    sub.id === id
-                        ? { ...sub, status: "approved", errorType: null }
-                        : sub
-                )
-            );
-        } catch (error) {
-            console.error("Error approving submission:", error);
-        }
-    }, [changeJudgeResponse]);
+                // Update local state optimistically
+                setSubmissions((prev) =>
+                    prev.map((sub) =>
+                        sub.id === id
+                            ? { ...sub, status: "approved", errorType: null }
+                            : sub
+                    )
+                );
+            } catch (error) {
+                console.error("Error approving submission:", error);
+            }
+        },
+        [changeJudgeResponse]
+    );
 
-    const handleReject = useCallback(async (id: string, errorType: string) => {
-        try {
-            // Map error type back to judge response
-            const errorTypes = [
-                "Accepted",
-                "Resposta Incorreta",
-                "Tempo Limite Excedido",
-                "Memória Excedida",
-                "Erro de Execução",
-                "Erro de Compilação",
-                "Erro de Apresentação",
-                "Limite de Saída Excedido",
-                "Erro Interno",
-                "Pendente"
-            ];
-            const judgeResponse = errorTypes.indexOf(errorType);
+    const handleReject = useCallback(
+        async (id: string, errorType: string) => {
+            try {
+                // Map error type back to judge response
+                const errorTypes = [
+                    "Accepted",
+                    "Resposta Incorreta",
+                    "Tempo Limite Excedido",
+                    "Memória Excedida",
+                    "Erro de Execução",
+                    "Erro de Compilação",
+                    "Erro de Apresentação",
+                    "Limite de Saída Excedido",
+                    "Erro Interno",
+                    "Pendente",
+                ];
+                const judgeResponse = errorTypes.indexOf(errorType);
 
-            // Call SignalR to change judge response
-            await changeJudgeResponse({
-                submissionId: parseInt(id),
-                newJudgeResponse: judgeResponse >= 0 ? judgeResponse : 1 // Default to WrongAnswer
-            });
+                // Call SignalR to change judge response
+                await changeJudgeResponse({
+                    submissionId: parseInt(id),
+                    newJudgeResponse: judgeResponse >= 0 ? judgeResponse : 1, // Default to WrongAnswer
+                });
 
-            // Update local state optimistically
-            setSubmissions((prev) =>
-                prev.map((sub) =>
-                    sub.id === id ? { ...sub, status: "rejected", errorType } : sub
-                )
-            );
-            setSelectedSubmission(null);
-            setFeedback("");
-        } catch (error) {
-            console.error("Error rejecting submission:", error);
-        }
-    }, [changeJudgeResponse]);
+                // Update local state optimistically
+                setSubmissions((prev) =>
+                    prev.map((sub) =>
+                        sub.id === id
+                            ? { ...sub, status: "rejected", errorType }
+                            : sub
+                    )
+                );
+                setSelectedSubmission(null);
+                setFeedback("");
+            } catch (error) {
+                console.error("Error rejecting submission:", error);
+            }
+        },
+        [changeJudgeResponse]
+    );
 
     const handleDownload = useCallback((fileUrl: string, fileName: string) => {
         console.log(`Baixando arquivo: ${fileName} de ${fileUrl}`);

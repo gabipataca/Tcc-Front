@@ -25,7 +25,13 @@ const columns: readonly Column[] = [
 ];
 
 const useManageTeams = () => {
-    const { requestGroups, isConnected, blockGroupSubmission, unblockGroupSubmission, ongoingCompetition } = useCompetitionHub();
+    const {
+        requestGroups,
+        isConnected,
+        blockGroupSubmission,
+        unblockGroupSubmission,
+        ongoingCompetition,
+    } = useCompetitionHub();
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [teams, setTeams] = React.useState<Team[]>([]);
@@ -37,17 +43,22 @@ const useManageTeams = () => {
         const loadTeams = async () => {
             try {
                 const groupsData = await requestGroups();
-                
+
                 // Transform GroupInCompetitionResponse[] to Team[]
                 const transformedTeams: Team[] = groupsData
-                    .filter(g => g.group) // Only include groups with valid group data
-                    .map(groupInCompetition => ({
+                    .filter((g) => g.group) // Only include groups with valid group data
+                    .map((groupInCompetition) => ({
                         id: groupInCompetition.groupId,
                         teamName: groupInCompetition.group?.name || "Sem nome",
-                        members: groupInCompetition.group?.users?.map(u => u.name).join(", ") || "Sem membros",
-                        status: groupInCompetition.blocked ? "blocked" : "active"
+                        members:
+                            groupInCompetition.group?.users
+                                ?.map((u) => u.name)
+                                .join(", ") || "Sem membros",
+                        status: groupInCompetition.blocked
+                            ? "blocked"
+                            : "active",
                     }));
-                
+
                 setTeams(transformedTeams);
             } catch (error) {
                 console.error("Error loading teams:", error);
@@ -70,7 +81,7 @@ const useManageTeams = () => {
 
     const handleToggleStatus = async (id: number) => {
         try {
-            const team = teams.find(t => t.id === id);
+            const team = teams.find((t) => t.id === id);
             if (!team || !ongoingCompetition) return;
 
             // Call SignalR method based on current status
@@ -78,12 +89,12 @@ const useManageTeams = () => {
                 await blockGroupSubmission({
                     groupId: id,
                     competitionId: ongoingCompetition.id,
-                    reason: "Bloqueado pelo administrador"
+                    reason: "Bloqueado pelo administrador",
                 });
             } else {
                 await unblockGroupSubmission({
                     groupId: id,
-                    competitionId: ongoingCompetition.id
+                    competitionId: ongoingCompetition.id,
                 });
             }
 
@@ -94,7 +105,9 @@ const useManageTeams = () => {
                         ? {
                               ...team,
                               status:
-                                  team.status === "active" ? "blocked" : "active",
+                                  team.status === "active"
+                                      ? "blocked"
+                                      : "active",
                           }
                         : team
                 )

@@ -49,10 +49,12 @@ const AdminTeamPage: React.FC = () => {
                 variant="h5"
                 component="div"
                 sx={{
-                    mb: 2,
+                    mb: 3,
                     textAlign: "center",
                     color: "#4F85A6",
-                    fontWeight: "bold",
+                    fontWeight: 700,
+                    fontSize: "1.75rem",
+                    letterSpacing: "-0.5px",
                 }}
             >
                 {title}
@@ -60,17 +62,13 @@ const AdminTeamPage: React.FC = () => {
 
             <div
                 style={{
-                    marginBottom: "24px",
+                    marginBottom: "-2px",
                     display: "flex",
                     width: "100%",
-                    justifyContent: "flex-start",
-                    gap: "16px",
-                    margin: "0 auto 24px",
-                    maxWidth: "fit-content",
-                    padding: "8px",
-                    borderRadius: "16px",
-                    backgroundColor: "#e0e0e0",
-                    boxShadow: "inset 0px 1px 3px rgba(0, 0, 0, 0.1)",
+                    justifyContent: "center",
+                    gap: "8px",
+                    borderBottom: "2px solid rgba(79, 133, 166, 0.2)",
+                    paddingBottom: "0",
                 }}
             >
                 <Button
@@ -82,18 +80,21 @@ const AdminTeamPage: React.FC = () => {
                                 ? "#4F85A6"
                                 : "transparent",
                         color: currentTable === "correct" ? "#fff" : "#4F85A6",
-                        fontWeight: "bold",
-                        borderRadius: 3,
+                        fontWeight: 600,
+                        borderRadius: "8px 8px 0 0",
                         px: 3,
                         py: 1.2,
-                        transition: "all 0.3s ease-in-out",
+                        transition: "all 0.2s ease",
+                        fontSize: "14px",
+                        textTransform: "none",
+                        boxShadow: "none",
+                        border: currentTable === "correct" ? "none" : "1px solid rgba(79, 133, 166, 0.2)",
                         "&:hover": {
                             bgcolor:
                                 currentTable === "correct"
-                                    ? "#3B6A82"
-                                    : "rgba(79, 133, 166, 0.1)",
-                            color:
-                                currentTable === "correct" ? "#fff" : "#3B6A82",
+                                    ? "#3d6a87"
+                                    : "rgba(79, 133, 166, 0.08)",
+                            boxShadow: "none",
                         },
                     }}
                 >
@@ -108,18 +109,21 @@ const AdminTeamPage: React.FC = () => {
                                 ? "#4F85A6"
                                 : "transparent",
                         color: currentTable === "wrong" ? "#fff" : "#4F85A6",
-                        fontWeight: "bold",
-                        borderRadius: 3,
+                        fontWeight: 600,
+                        borderRadius: "8px 8px 0 0",
                         px: 3,
                         py: 1.2,
-                        transition: "all 0.3s ease-in-out",
+                        transition: "all 0.2s ease",
+                        fontSize: "14px",
+                        textTransform: "none",
+                        boxShadow: "none",
+                        border: currentTable === "wrong" ? "none" : "1px solid rgba(79, 133, 166, 0.2)",
                         "&:hover": {
                             bgcolor:
                                 currentTable === "wrong"
-                                    ? "#3B6A82"
-                                    : "rgba(79, 133, 166, 0.1)",
-                            color:
-                                currentTable === "wrong" ? "#fff" : "#3B6A82",
+                                    ? "#3d6a87"
+                                    : "rgba(79, 133, 166, 0.08)",
+                            boxShadow: "none",
                         },
                     }}
                 >
@@ -127,8 +131,34 @@ const AdminTeamPage: React.FC = () => {
                 </Button>
             </div>
 
-            <Paper sx={{ width: "90%", mx: "auto" }}>
-                <TableContainer sx={{ maxHeight: 600 }}>
+            <Paper
+                sx={{
+                    width: "100%",
+                    overflow: "hidden",
+                    borderRadius: "12px",
+                    boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
+                }}
+            >
+                <TableContainer
+                    sx={{
+                        maxHeight: "calc(100vh - 250px)",
+                        "&::-webkit-scrollbar": {
+                            width: "10px",
+                            height: "10px",
+                        },
+                        "&::-webkit-scrollbar-track": {
+                            background: "#f1f5f9",
+                            borderRadius: "10px",
+                        },
+                        "&::-webkit-scrollbar-thumb": {
+                            background: "#4F85A6",
+                            borderRadius: "10px",
+                            "&:hover": {
+                                background: "#3d6a87",
+                            },
+                        },
+                    }}
+                >
                     <Table stickyHeader aria-label="sticky table">
                         <TableHead>
                             <TableRow>
@@ -138,9 +168,18 @@ const AdminTeamPage: React.FC = () => {
                                         align={column.align}
                                         style={{
                                             minWidth: column.minWidth,
+                                        }}
+                                        sx={{
                                             backgroundColor: "#4F85A6",
                                             color: "#fff",
-                                            fontSize: "18px",
+                                            fontSize: "16px",
+                                            fontWeight: 600,
+                                            letterSpacing: "0.3px",
+                                            py: 2.5,
+                                            position: "sticky",
+                                            top: 0,
+                                            zIndex: 100,
+                                            borderBottom: "2px solid rgba(255, 255, 255, 0.15)",
                                         }}
                                     >
                                         {column.label}
@@ -160,6 +199,16 @@ const AdminTeamPage: React.FC = () => {
                                         role="checkbox"
                                         tabIndex={-1}
                                         key={index}
+                                        sx={{
+                                            transition: "all 0.2s ease",
+                                            "&:hover": {
+                                                backgroundColor: "rgba(79, 133, 166, 0.08)",
+                                                cursor: "pointer",
+                                            },
+                                            "&:last-child td": {
+                                                borderBottom: "none",
+                                            },
+                                        }}
                                     >
                                         {displayedColumns.map((column) => {
                                             const value =
@@ -170,7 +219,12 @@ const AdminTeamPage: React.FC = () => {
                                                 <TableCell
                                                     key={column.id}
                                                     align={column.align}
-                                                    sx={{ fontSize: "19px" }}
+                                                    sx={{
+                                                        fontSize: "15px",
+                                                        fontWeight: 500,
+                                                        py: 2.5,
+                                                        borderBottom: "1px solid rgba(0, 0, 0, 0.06)",
+                                                    }}
                                                 >
                                                     {column.format &&
                                                     typeof value === "number"
@@ -199,6 +253,23 @@ const AdminTeamPage: React.FC = () => {
                             count !== -1 ? count : `mais de ${to}`
                         }`
                     }
+                    sx={{
+                        borderTop: "1px solid rgba(0, 0, 0, 0.06)",
+                        "& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows": {
+                            fontSize: "14px",
+                            fontWeight: 500,
+                        },
+                        "& .MuiIconButton-root": {
+                            color: "#4F85A6",
+                            transition: "all 0.2s ease",
+                            "&:hover": {
+                                backgroundColor: "rgba(79, 133, 166, 0.1)",
+                            },
+                            "&.Mui-disabled": {
+                                color: "rgba(79, 133, 166, 0.3)",
+                            },
+                        },
+                    }}
                 />
             </Paper>
         </>

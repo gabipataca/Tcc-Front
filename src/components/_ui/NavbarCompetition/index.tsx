@@ -2,7 +2,7 @@
 
 import { FC, useMemo, useState } from "react";
 import { FaSignOutAlt } from "react-icons/fa";
-import { Menu } from "lucide-react";
+import { Menu } from 'lucide-react';
 import Button from "../Button";
 import { Sheet, SheetContent, SheetTrigger } from "../Sheet";
 import Link from "next/link";
@@ -33,7 +33,7 @@ const NavbarCompetition: FC = () => {
                             <div key={link.label} className="flex items-center">
                                 <Link
                                     href={link.href}
-                                    className="flex items-center gap-2 px-3 py-2 text-xl font-medium hover:bg-white/10 hover:text-white transition-all duration-200 rounded-md"
+                                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-white transition-all duration-200 rounded-md"
                                 >
                                     {link.Icon && (
                                         <link.Icon className="h-4 w-4" />
