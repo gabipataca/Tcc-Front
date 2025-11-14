@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { useWebSocketContext } from "@/contexts/WebSocketContext";
 import { useSnackbar } from "notistack";
+import { HubConnectionState } from "@microsoft/signalr";
 import {
     OnConnectionResponse,
     ExerciseSubmissionResponse,
@@ -141,6 +142,11 @@ export const CompetitionHubProvider: React.FC<{ children: React.ReactNode }> = (
     const [questions, setQuestions] = useState<QuestionResponse[]>([]);
     const [ranking, setRanking] = useState<CompetitionRankingResponse[]>([]);
     const [isConnected, setIsConnected] = useState(false);
+
+    // Helper function to check if WebSocket is ready
+    const isWebSocketConnected = useCallback(() => {
+        return webSocketConnection !== null && webSocketConnection.state === HubConnectionState.Connected;
+    }, [webSocketConnection]);
 
     // ==================== Event Listeners ====================
 
@@ -526,23 +532,23 @@ export const CompetitionHubProvider: React.FC<{ children: React.ReactNode }> = (
     );
 
     const ping = useCallback(async () => {
-        if (!webSocketConnection) return;
+        if (!isWebSocketConnected()) return;
 
         try {
-            await webSocketConnection.invoke("Ping");
+            await webSocketConnection!.invoke("Ping");
         } catch (error) {
             console.error("Error pinging hub:", error);
         }
-    }, [webSocketConnection]);
+    }, [isWebSocketConnected, webSocketConnection]);
 
     const requestQuestions = useCallback(async () => {
-        if (!webSocketConnection) {
+        if (!isWebSocketConnected()) {
             console.warn("Cannot request questions: WebSocket not connected");
             return;
         }
 
         try {
-            await webSocketConnection.invoke("GetAllCompetitionQuestions");
+            await webSocketConnection!.invoke("GetAllCompetitionQuestions");
             console.log("📚 Requested all competition questions");
         } catch (error) {
             console.error("Error requesting questions:", error);
@@ -551,16 +557,16 @@ export const CompetitionHubProvider: React.FC<{ children: React.ReactNode }> = (
                 anchorOrigin: { vertical: "bottom", horizontal: "right" },
             });
         }
-    }, [webSocketConnection, enqueueSnackbar]);
+    }, [isWebSocketConnected, webSocketConnection, enqueueSnackbar]);
 
     const requestRanking = useCallback(async () => {
-        if (!webSocketConnection) {
+        if (!isWebSocketConnected()) {
             console.warn("Cannot request ranking: WebSocket not connected");
             return;
         }
 
         try {
-            await webSocketConnection.invoke("GetCompetitionRanking");
+            await webSocketConnection!.invoke("GetCompetitionRanking");
             console.log("🏆 Requested competition ranking");
         } catch (error) {
             console.error("Error requesting ranking:", error);
@@ -569,10 +575,10 @@ export const CompetitionHubProvider: React.FC<{ children: React.ReactNode }> = (
                 anchorOrigin: { vertical: "bottom", horizontal: "right" },
             });
         }
-    }, [webSocketConnection, enqueueSnackbar]);
+    }, [isWebSocketConnected, webSocketConnection, enqueueSnackbar]);
 
     const requestLogs = useCallback(async () => {
-        if (!webSocketConnection) {
+        if (!isWebSocketConnected()) {
             console.warn("Cannot request logs: WebSocket not connected");
             return Promise.resolve([]);
         }
@@ -582,13 +588,13 @@ export const CompetitionHubProvider: React.FC<{ children: React.ReactNode }> = (
             return new Promise<LogResponse[]>((resolve) => {
                 // Set up one-time listener for the response
                 const handleLogs = (logs: LogResponse[]) => {
-                    webSocketConnection.off("ReceiveCompetitionLogs", handleLogs);
+                    webSocketConnection!.off("ReceiveCompetitionLogs", handleLogs);
                     resolve(logs);
                 };
-                webSocketConnection.on("ReceiveCompetitionLogs", handleLogs);
+                webSocketConnection!.on("ReceiveCompetitionLogs", handleLogs);
                 
                 // Invoke the request
-                webSocketConnection.invoke("GetCompetitionLogs");
+                webSocketConnection!.invoke("GetCompetitionLogs");
             });
         } catch (error) {
             console.error("Error requesting logs:", error);
@@ -598,10 +604,10 @@ export const CompetitionHubProvider: React.FC<{ children: React.ReactNode }> = (
             });
             return [];
         }
-    }, [webSocketConnection, enqueueSnackbar]);
+    }, [isWebSocketConnected, webSocketConnection, enqueueSnackbar]);
 
     const requestGroups = useCallback(async () => {
-        if (!webSocketConnection) {
+        if (!isWebSocketConnected()) {
             console.warn("Cannot request groups: WebSocket not connected");
             return Promise.resolve([]);
         }
@@ -611,13 +617,13 @@ export const CompetitionHubProvider: React.FC<{ children: React.ReactNode }> = (
             return new Promise<GroupInCompetitionResponse[]>((resolve) => {
                 // Set up one-time listener for the response
                 const handleGroups = (groups: GroupInCompetitionResponse[]) => {
-                    webSocketConnection.off("ReceiveCompetitionGroups", handleGroups);
+                    webSocketConnection!.off("ReceiveCompetitionGroups", handleGroups);
                     resolve(groups);
                 };
-                webSocketConnection.on("ReceiveCompetitionGroups", handleGroups);
+                webSocketConnection!.on("ReceiveCompetitionGroups", handleGroups);
                 
                 // Invoke the request
-                webSocketConnection.invoke("GetCompetitionGroups");
+                webSocketConnection!.invoke("GetCompetitionGroups");
             });
         } catch (error) {
             console.error("Error requesting groups:", error);
@@ -627,10 +633,10 @@ export const CompetitionHubProvider: React.FC<{ children: React.ReactNode }> = (
             });
             return [];
         }
-    }, [webSocketConnection, enqueueSnackbar]);
+    }, [isWebSocketConnected, webSocketConnection, enqueueSnackbar]);
 
     const requestSubmissions = useCallback(async () => {
-        if (!webSocketConnection) {
+        if (!isWebSocketConnected()) {
             console.warn("Cannot request submissions: WebSocket not connected");
             return Promise.resolve([]);
         }
@@ -640,13 +646,13 @@ export const CompetitionHubProvider: React.FC<{ children: React.ReactNode }> = (
             return new Promise<CompetitionSubmissionData[]>((resolve) => {
                 // Set up one-time listener for the response
                 const handleSubmissions = (submissions: CompetitionSubmissionData[]) => {
-                    webSocketConnection.off("ReceiveCompetitionSubmissions", handleSubmissions);
+                    webSocketConnection!.off("ReceiveCompetitionSubmissions", handleSubmissions);
                     resolve(submissions);
                 };
-                webSocketConnection.on("ReceiveCompetitionSubmissions", handleSubmissions);
+                webSocketConnection!.on("ReceiveCompetitionSubmissions", handleSubmissions);
                 
                 // Invoke the request
-                webSocketConnection.invoke("GetCompetitionSubmissions");
+                webSocketConnection!.invoke("GetCompetitionSubmissions");
             });
         } catch (error) {
             console.error("Error requesting submissions:", error);
@@ -656,10 +662,10 @@ export const CompetitionHubProvider: React.FC<{ children: React.ReactNode }> = (
             });
             return [];
         }
-    }, [webSocketConnection, enqueueSnackbar]);
+    }, [isWebSocketConnected, webSocketConnection, enqueueSnackbar]);
 
     const updateCompetitionSettings = useCallback(async (request: UpdateCompetitionSettingsRequest) => {
-        if (!webSocketConnection) {
+        if (!isWebSocketConnected()) {
             console.warn("Cannot update competition settings: WebSocket not connected");
             return Promise.resolve({ success: false, message: "WebSocket not connected" });
         }
@@ -669,7 +675,7 @@ export const CompetitionHubProvider: React.FC<{ children: React.ReactNode }> = (
             return new Promise<UpdateCompetitionSettingsResponse>((resolve) => {
                 // Set up one-time listener for the response
                 const handleResponse = (response: UpdateCompetitionSettingsResponse) => {
-                    webSocketConnection.off("ReceiveUpdateCompetitionSettingsResponse", handleResponse);
+                    webSocketConnection!.off("ReceiveUpdateCompetitionSettingsResponse", handleResponse);
                     
                     if (response.success) {
                         enqueueSnackbar(response.message || "Configurações atualizadas com sucesso", {
@@ -685,10 +691,10 @@ export const CompetitionHubProvider: React.FC<{ children: React.ReactNode }> = (
                     
                     resolve(response);
                 };
-                webSocketConnection.on("ReceiveUpdateCompetitionSettingsResponse", handleResponse);
+                webSocketConnection!.on("ReceiveUpdateCompetitionSettingsResponse", handleResponse);
                 
                 // Invoke the request
-                webSocketConnection.invoke("UpdateCompetitionSettings", request);
+                webSocketConnection!.invoke("UpdateCompetitionSettings", request);
             });
         } catch (error) {
             console.error("Error updating competition settings:", error);
@@ -698,10 +704,10 @@ export const CompetitionHubProvider: React.FC<{ children: React.ReactNode }> = (
             });
             return { success: false, message: "Error updating settings" };
         }
-    }, [webSocketConnection, enqueueSnackbar]);
+    }, [isWebSocketConnected, webSocketConnection, enqueueSnackbar]);
 
     const stopCompetition = useCallback(async (competitionId: number) => {
-        if (!webSocketConnection) {
+        if (!isWebSocketConnected()) {
             console.warn("Cannot stop competition: WebSocket not connected");
             return Promise.resolve({ success: false, message: "WebSocket not connected" });
         }
@@ -711,7 +717,7 @@ export const CompetitionHubProvider: React.FC<{ children: React.ReactNode }> = (
             return new Promise<StopCompetitionResponse>((resolve) => {
                 // Set up one-time listener for the response
                 const handleResponse = (response: StopCompetitionResponse) => {
-                    webSocketConnection.off("ReceiveStopCompetitionResponse", handleResponse);
+                    webSocketConnection!.off("ReceiveStopCompetitionResponse", handleResponse);
                     
                     if (response.success) {
                         enqueueSnackbar(response.message || "Competição finalizada com sucesso", {
@@ -727,10 +733,10 @@ export const CompetitionHubProvider: React.FC<{ children: React.ReactNode }> = (
                     
                     resolve(response);
                 };
-                webSocketConnection.on("ReceiveStopCompetitionResponse", handleResponse);
+                webSocketConnection!.on("ReceiveStopCompetitionResponse", handleResponse);
                 
                 // Invoke the request
-                webSocketConnection.invoke("StopCompetition", competitionId);
+                webSocketConnection!.invoke("StopCompetition", competitionId);
             });
         } catch (error) {
             console.error("Error stopping competition:", error);
@@ -740,7 +746,7 @@ export const CompetitionHubProvider: React.FC<{ children: React.ReactNode }> = (
             });
             return { success: false, message: "Error stopping competition" };
         }
-    }, [webSocketConnection, enqueueSnackbar]);
+    }, [isWebSocketConnected, webSocketConnection, enqueueSnackbar]);
 
     const value: CompetitionHubContextType = {
         ongoingCompetition,

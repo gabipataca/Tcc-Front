@@ -48,8 +48,12 @@ export async function PUT(
 
     const backendPayload = new FormData();
 
-    if (formData.has("pdfFile") && formData.get("pdfFile") instanceof File) {
-        backendPayload.append("file", formData.get("pdfFile") as File);
+    // Only append file if it's a valid file with content
+    if (formData.has("pdfFile")) {
+        const file = formData.get("pdfFile");
+        if (file instanceof File && file.size > 0 && file.name) {
+            backendPayload.append("file", file);
+        }
     }
 
     backendPayload.append("metadata", JSON.stringify(metadataPayload));

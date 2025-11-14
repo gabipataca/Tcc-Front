@@ -82,7 +82,21 @@ const useLoadExercises = () => {
                     return;
                 }
                 const data = response.data!;
-                setExercises((prev) => [...prev, data]);
+                
+                // Decode Base64 inputs and outputs like we do in loadExercises
+                const decodedExercise = {
+                    ...data,
+                    inputs: data.inputs.map((input) => ({
+                        ...input,
+                        input: fromBase64(input.input),
+                    })),
+                    outputs: data.outputs.map((output) => ({
+                        ...output,
+                        output: fromBase64(output.output),
+                    })),
+                };
+                
+                setExercises((prev) => [...prev, decodedExercise]);
 
                 enqueueSnackbar("Exercício criado com sucesso!", {
                     variant: "success",
@@ -193,9 +207,22 @@ const useLoadExercises = () => {
 
                 const updatedExercise = response.data!;
 
+                // Decode Base64 inputs and outputs like we do in loadExercises
+                const decodedExercise = {
+                    ...updatedExercise,
+                    inputs: updatedExercise.inputs.map((input) => ({
+                        ...input,
+                        input: fromBase64(input.input),
+                    })),
+                    outputs: updatedExercise.outputs.map((output) => ({
+                        ...output,
+                        output: fromBase64(output.output),
+                    })),
+                };
+
                 setExercises((prevExercises) =>
                     prevExercises.map((ex) =>
-                        ex.id === updatedExercise.id ? updatedExercise : ex
+                        ex.id === decodedExercise.id ? decodedExercise : ex
                     )
                 );
 
