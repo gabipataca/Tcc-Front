@@ -1,136 +1,206 @@
-"use client"
+"use client";
 
 import { DropdownOption } from "@/components/_ui/Dropdown/types";
 import { useUser } from "@/contexts/UserContext";
-import { RegisterUserRequest, RegisterUserResponse } from "@/types/Auth";
+import AuthService from "@/services/AuthService";
+import { RegisterUserRequest } from "@/types/Auth/Requests";
+import { RegisterUserResponse } from "@/types/Auth/Responses";
+import { ServerSideResponse } from "@/types/Global";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useCallback } from "react";
-import { useForm } from "react-hook-form";
+import { useCallback, useState } from "react";
+import { useForm, SubmitHandler } from "react-hook-form";
 import z from "zod";
+import { useRouter } from "next/navigation";
 
-
-const schema = z.object({
-    username: z.string({ message: "Campo obrigatório" }),
-    ra: z.string().min(6, { message: "RA deve ter no mínimo 6 dígitos!" }).max(7, { message: "RA deve ter no máximo 7 dígitos!" }),
-    email: z.string().email("Formato de e-mail inválido!"),
-    password: z.string({ message: "Campo obrigatório" }),
-    joinYear: z.coerce.number().min(new Date().getFullYear() - 8, "Ano inválido!").max(new Date().getFullYear(), "Ano inválido!").optional(),
-    role: z.enum(["student", "teacher"]),
-    accessCode: z.string().optional()
-}).superRefine((data, ctx) => {
-    if(data.role === "teacher" && data.accessCode === "") {
-        ctx.addIssue({
-            path: ["accessCode"],
-            code: "custom",
-            message: "É necessário o código de acesso!",
-        });
-    }
-
-    const addInvalidJoinYear = () => {
-        ctx.addIssue({
-            path: ["joinYear"],
-            code: "custom",
-            message: "Ano inválido"
-        });
-    }
-
-    if(data.role === "student") {
-        if(data.joinYear === undefined) {
-            addInvalidJoinYear();
-        } else if(data.joinYear === "" || new Date().getFullYear() - data.joinYear > 8) {
-            addInvalidJoinYear();
-        } else if(data.joinYear > new Date().getFullYear()) {
-            addInvalidJoinYear();
+const schema = z
+    .object({
+        name: z.string({ message: "Campo obrigatório" }),
+        ra: z
+            .string()
+            .min(6, { message: "RA deve ter no mínimo 6 dígitos!" })
+            .max(7, { message: "RA deve ter no máximo 7 dígitos!" }),
+        email: z.string().email("Formato de e-mail inválido!"),
+        password: z.string({ message: "Campo obrigatório" }),
+        joinYear: z.coerce
+            .number()
+            .min(new Date().getFullYear() - 8, "Ano inválido!")
+            .max(new Date().getFullYear(), "Ano inválido!")
+            .nullable(),
+        role: z.enum(["Student", "Teacher"]),
+        accessCode: z.string().optional(),
+    })
+    .superRefine((data, ctx) => {
+        if (data.role === "Teacher" && data.accessCode === "") {
+            ctx.addIssue({
+                path: ["accessCode"],
+                code: "custom",
+                message: "É necessário o código de acesso!",
+            });
         }
-    }
-});
 
+        const addInvalidJoinYear = () => {
+            ctx.addIssue({
+                path: ["joinYear"],
+                code: "custom",
+                message: "Ano inválido",
+            });
+        };
 
+        if (data.role === "Student") {
+            // @ts-expect-error : extra
+            if (data.joinYear === "") {
+                addInvalidJoinYear();
+            } else if (
+                !data.joinYear ||
+                data.joinYear === 0 ||
+                new Date().getFullYear() - data.joinYear > 8
+            ) {
+                addInvalidJoinYear();
+            } else if (data.joinYear > new Date().getFullYear()) {
+                addInvalidJoinYear();
+            }
+        }
+    });
 
 const useRegister = () => {
     const { setUser } = useUser();
 
-    const { control, handleSubmit, setError, setValue, register, watch, formState: { isValid } } = useForm<RegisterUserRequest>({
+    const {
+        control,
+        handleSubmit,
+        setError,
+        setValue,
+        register,
+        watch,
+        formState: { isValid },
+    } = useForm<RegisterUserRequest>({
         defaultValues: {
-            username: "",
+            name: "",
             ra: "",
-            role: "student",
+            role: "Student",
             email: "",
+            // @ts-expect-error : irrelevant
             joinYear: "",
             password: "",
-            accessCode: ""
+            accessCode: "",
         },
-        mode: "all",
-        resolver: zodResolver(schema)
+        mode: "onBlur",
+        // @ts-expect-error : irrelevant
+        resolver: zodResolver(schema),
     });
+
+    const [isLoading, setIsLoading] = useState(false);
+    const [formError, setFormError] = useState<string | null>(null);
+
+    const router = useRouter();
 
     const roleOptions: DropdownOption[] = [
         {
             label: "Estudante",
-            value: "student"
+            value: "Student",
         },
         {
             label: "Professor",
-            value: "teacher"
-        }
+            value: "Teacher",
+        },
     ];
 
-    const handleFormSubmit = useCallback(async (data: RegisterUserRequest) => {
-        console.log(isValid)
-        if(isValid) {
-            return;
-        }
-
-        let res;
-
-        try {
-            res = await fetch("/api/auth/register", {
-                body: JSON.stringify(data),
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Accept": "application/json"
-                },
-            });
-
-            const resData = await res.json() as RegisterUserResponse;
-
-            if(res.status == 201) {
-                setUser({
-                    id: resData.user.id,
-                    ra: resData.user.ra,
-                    username: resData.user.username,
-                    email: resData.user.email,
-                    joinYear: resData.user.joinYear,
-                    token: resData.token
-                });
+    const handleFormSubmit: SubmitHandler<RegisterUserRequest> = useCallback(
+        async (data: RegisterUserRequest) => {
+            if (!isValid) {
+                return;
             }
 
-        } catch (err) {
-            console.error(err);
+            let res: ServerSideResponse<RegisterUserResponse> | null = null;
 
-            if (res!.status == 400) {
-                const body = await res!.json() as Omit<RegisterUserResponse, "user" | "token">;
+            try {
+                res = await AuthService.registerUser(data);
 
-                const errors = body.errors!;
+                if (res.status != 200) {
+                    if (res.data?.errors) {
+                        const errors = res.data.errors;
 
-                for (let i = 0; i < errors.length; i++) {
-                    setError(errors[i].target as "ra" | "password", {
-                        type: "onBlur",
-                        message: errors[i].message
-                    });
-                    setValue(errors[i].target as "ra" | "password", "");
+                        for (let i = 0; i < errors.length; i++) {
+                            if (errors[i].target == "form") {
+                                setFormError(errors[i].error);
+                                continue;
+                            }
+
+                            setError(errors[i].target as "ra" | "password", {
+                                type: "onBlur",
+                                message: errors[i].error,
+                            });
+                            setValue(errors[i].target as "ra" | "password", "");
+                        }
+                    }
+
+                    setIsLoading(false);
+                    return;
                 }
+
+                const resData = res.data;
+
+                if (res.status == 200 && resData) {
+                    setUser({
+                        id: resData.user.id,
+                        ra: resData.user.ra,
+                        name: resData.user.name,
+                        email: resData.user.email,
+                        role: resData.user.role,
+                        groupId: resData.user.groupId,
+                        joinYear: resData.user.joinYear,
+                        token: resData.token,
+                        department: resData.user.department,
+                        group: resData.user.group ? {
+                            id: resData.user.group.id,
+                            name: resData.user.group.name,
+                            leaderId: resData.user.group.leaderId,
+                            users: resData.user.group.users,
+                            groupInvitations: resData.user.group.groupInvitations?.map(invite => ({
+                                id: invite.id,
+                                userId: invite.user?.id || "",
+                                group: invite.group || null,
+                                user: invite.user!,
+                                accepted: invite.accepted,
+                            })) || [],
+                        } : undefined,
+                        groupInvitations: resData.user.groupInvitations?.map(invite => ({
+                            id: invite.id,
+                            userId: invite.user?.id || "",
+                            group: invite.group || null,
+                            user: invite.user!,
+                            accepted: invite.accepted,
+                        })) || [],
+                    });
+
+                    setTimeout(() => {
+                        router.push("/Profile");
+                    }, 100);
+                }
+            } catch (err) {
+                console.error(err);
+
+                if (res!.status == 400) {
+                    const body = res!.data!;
+
+                    const errors = body.errors!;
+
+                    for (let i = 0; i < errors.length; i++) {
+                        setError(errors[i].target as "ra" | "password", {
+                            type: "onBlur",
+                            message: errors[i].error,
+                        });
+                        setValue(errors[i].target as "ra" | "password", "");
+                    }
+                }
+            } finally {
+                setIsLoading(false);
             }
-        }
-
-
-
-    }, [isValid, setError, setUser, setValue]);
+        },
+        [isValid, router, setError, setUser, setValue]
+    );
 
     const formData = watch();
-
-
 
     return {
         control,
@@ -138,9 +208,10 @@ const useRegister = () => {
         handleFormSubmit,
         register,
         formData,
-        roleOptions
-    }
-}
-
+        roleOptions,
+        isLoading,
+        formError,
+    };
+};
 
 export default useRegister;

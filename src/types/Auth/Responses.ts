@@ -78,3 +78,7 @@ export interface LoginUserResponse {
      */
     errors?: FormError[];
 }
+
+export interface LogoutUserResponse {
+    
+}

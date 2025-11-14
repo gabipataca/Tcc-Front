@@ -29,6 +29,7 @@ const CustomDropdown: React.FC<DropdownProps> = ({
 
     const selectedValuesString = useMemo(() => {
         return options
+            // @ts-expect-error - Type mismatch between string | number
             .filter((opt) => selectedValues?.includes(opt.value))
             .map((opt) => opt.label)
             .sort()
@@ -261,14 +262,12 @@ const CustomDropdown: React.FC<DropdownProps> = ({
                                     {type === "selectDropdown" && (
                                         <div
                                             className={`${styles.check} ${
-                                                selectedValues?.includes(
-                                                    option.value
-                                                ) && styles.checked
+                                                // @ts-expect-error - Type mismatch between string | number
+                                                selectedValues?.includes(option.value) && styles.checked
                                             }`}
                                         >
-                                            {selectedValues?.includes(
-                                                option.value
-                                            ) && <MdCheck />}
+                                            {/* @ts-expect-error - Type mismatch between string | number */}
+                                            {selectedValues?.includes(option.value) && <MdCheck />}
                                         </div>
                                     )}
                                 </li>

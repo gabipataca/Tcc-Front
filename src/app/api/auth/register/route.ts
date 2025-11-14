@@ -1,4 +1,8 @@
-import { RegisterUserRequest, RegisterUserResponse } from "@/types/Auth";
+import { apiRequest } from "@/libs/apiClient";
+import { RegisterUserRequest } from "@/types/Auth/Requests";
+import { RegisterUserResponse } from "@/types/Auth/Responses";
+import { ServerSideResponse } from "@/types/Global";
+import { AxiosResponse } from "axios";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -6,13 +10,15 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
     const cookie = await cookies();
-    const token = cookie.get("token")?.value || null;
+    cookie.delete("CompetitionAuthToken");
+    const token = cookie.get("CompetitionAuthToken")?.value || null;
 
     if(token != null) {
         return NextResponse.json(
             {
-                message: "You are already logged in",
-            },
+                message: "Você já está autenticado.",
+                status: 403,
+            } satisfies ServerSideResponse<RegisterUserResponse>,
             {
                 status: 403,
                 headers: {
@@ -22,35 +28,52 @@ export async function POST(req: NextRequest) {
         );
     }
 
-    const apiUrl = process.env.API_URL as string;
     const body = await req.json() as RegisterUserRequest;
 
-    let res: Response | null = null;
+    let res: AxiosResponse<RegisterUserResponse> | null = null;
 
     try {
-        res = await fetch(`${apiUrl}/auth/register`, {
-            body: JSON.stringify(body),
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            },
+        res = await apiRequest<RegisterUserResponse, RegisterUserRequest>("/Auth/Register", {
             method: "POST",
-            next: { revalidate: false },
-            referrerPolicy: "origin-when-cross-origin"
-        });
+            data: body,
+        })
     }
     catch(exc) {
         console.error(exc);
-        console.error(await res!.json());
+        console.error(res?.data);
+        return NextResponse.json(
+            {
+                data: res?.data,
+                message: "Erro ao registrar usuário.",
+                error: "Erro desconhecido.",
+                status: 500,
+            } satisfies ServerSideResponse<RegisterUserResponse>,
+            {
+                status: 500,
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }
+        );
     }
 
-    const data = await res!.json() as RegisterUserResponse;
+    const data = res.data;
 
-    return NextResponse.json(data, {
-        headers: {
-            "Content-Type": "application/json"
+    console.log(data);
+    cookie.set("CompetitionAuthToken", data.token);
+
+    return NextResponse.json(
+        {
+            message: "Usuário registrado com sucesso.",
+            data,
+            status: res.status,
+        } satisfies ServerSideResponse<RegisterUserResponse>,
+        {
+            headers: {
+                "Content-Type": "application/json"
+            },
+            status: res.status,
         },
-        status: res!.status
-    });
-    
+    );
+
 }

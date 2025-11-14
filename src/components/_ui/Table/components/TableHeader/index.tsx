@@ -2,19 +2,23 @@
 
 import React from "react";
 import { TableHeaderProps } from "./types";
-import { StyledTableHeader } from "./styles";
+import { StyledTableHead } from "./styles";
 
 
 
-const TableHeader: React.FC<TableHeaderProps> = ({ children }) => {
 
+import type { ForwardedRef } from "react";
 
-    return(
-        <StyledTableHeader>
-            {children}
-        </StyledTableHeader>
-    )
-}
+const TableHead = React.forwardRef<HTMLTableSectionElement, TableHeaderProps>(
+    ({ children }, ref: ForwardedRef<HTMLTableSectionElement>) => {
+        return (
+            <StyledTableHead ref={ref}>
+                {children}
+            </StyledTableHead>
+        );
+    }
+);
 
+TableHead.displayName = "TableHeader";
 
-export default TableHeader;
+export default TableHead;

@@ -26,8 +26,36 @@
   --secondary-hover-text-color: #4F85A6;
   --secondary-hover-bg-color: #FFF;
   --secondary-hover-border-color: #FFF;
-  
-  
+
+
+  --success-text-color: #FFF;
+  --success-bg-color: rgb(22 163 74);
+  --success-border-color: rgb(22 163 74);
+  --success-hover-text-color: #FFF;
+  --success-hover-bg-color: rgb(21 128 61);
+  --success-hover-border-color: rgb(21 128 61);
+
+  --light-success-text-color: rgb(22 163 74);
+  --light-success-bg-color: transparent;
+  --light-success-border-color: rgb(187 247 208);
+  --light-success-hover-text-color: rgb(22 163 74);
+  --light-success-hover-bg-color: rgb(240 253 244);
+  --light-success-hover-border-color: rgb(134 239 172);
+
+  --destructive-text-color: #FFF;
+  --destructive-bg-color: rgb(239 68 68);
+  --destructive-border-color: rgb(239 68 68);
+  --destructive-hover-text-color: #FFF;
+  --destructive-hover-bg-color: rgb(220 38 38);
+  --destructive-hover-border-color: rgb(220 38 38);
+
+  --outline-text-color: #4F85A6;
+  --outline-bg-color: transparent;
+  --outline-border-color: #4F85A6;
+  --outline-hover-text-color: #FFF;
+  --outline-hover-bg-color: #3C6B88;
+  --outline-hover-border-color: #3C6B88;
+
   --link-color: #4F85A6;
 
 }
@@ -51,6 +79,7 @@ body {
   font-display: swap;
   display: flex;
   flex-direction: column;
+  padding: 0 !important;
 }
 
 

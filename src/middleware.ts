@@ -1,45 +1,81 @@
 import { NextResponse, NextRequest } from "next/server";
-import jwt from "jsonwebtoken";
 import AuthService from "./services/AuthService";
-import { UserTokenProperties } from "./types/Auth";
+import { UserTokenProperties, UserTokenPropertiesClaims } from "./types/Auth";
+import { RoleClaimKey } from "./constants/Auth";
 
 const protectedRoutes = [
     { path: "/admin", roles: ["Admin"] },
     { path: "/Competition", roles: ["Admin", "Teacher", "Student"] },
+    { path: "/Profile", roles: ["Admin", "Teacher", "Student"] },
 ];
 
-const SECRET_KEY = process.env.JWT_SECRET!;
+/**
+ * Decodes and parses a JWT token to extract user properties.
+ * @param token - The JWT token string.
+ * @returns The parsed user token properties.
+ */
+const parseJwt = (token: string): UserTokenProperties => {
+    const base64Url = token.split(".")[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const str = Buffer.from(base64, "base64").toString("utf-8");
+    const parsedToken = JSON.parse(str) as UserTokenPropertiesClaims;
 
+    return {
+        unique_name: parsedToken.unique_name,
+        id: parsedToken.id,
+        role: parsedToken[RoleClaimKey],
+        jti: parsedToken.jti,
+        exp: parsedToken.exp,
+        iss: parsedToken.iss,
+        aud: parsedToken.aud,
+    };
+};
 
+/**
+ * Middleware to protect routes based on authentication and user roles.
+ * Redirects users to login, logout, or profile pages depending on their authentication status and role.
+ * @param request - The incoming Next.js request object.
+ * @returns A NextResponse object for redirection or continuation.
+ */
 export const middleware = async (request: NextRequest) => {
-    const { basePath } = request.nextUrl;
-    const route = protectedRoutes.find(r => basePath.startsWith(r.path));
+    const { basePath, pathname } = request.nextUrl;
+    const isAuthRoute = ["register", "login"].some((path) =>
+        basePath.includes(path)
+    );
+
+    const route = protectedRoutes.find((r) => pathname.startsWith(r.path));
 
     const token = request.cookies.get("CompetitionAuthToken")?.value;
 
-    if(!token) {
+    if (!token) {
         return NextResponse.redirect(new URL("/login", request.url));
     }
 
     try {
-        const jwtPayload = jwt.verify(token, SECRET_KEY) as UserTokenProperties;
+        const jwtPayload = parseJwt(token);
 
         const isTokenValid = await AuthService.validateTokenSSR(token);
 
-        if(!route?.roles?.includes(jwtPayload.role) || !isTokenValid) {
-            return NextResponse.redirect(new URL("/login", request.url));
+        console.log("Role: ", jwtPayload.role);
+        console.log("Route: ", route);
+
+        if (!route?.roles?.includes(jwtPayload.role) || !isTokenValid) {
+            return NextResponse.redirect(new URL("/logout", request.url));
+        }
+
+        if (isAuthRoute) {
+            return NextResponse.redirect(new URL("/Profile", request.url));
         }
 
         return NextResponse.next();
     } catch (error) {
-        console.error("JWT verification failed:", error);
-        return NextResponse.redirect(new URL("/login", request.url));
+        console.error("JWT verification failed, trying to refresh token...");
+        // TODO: Implement token refresh logic here
+
+        return NextResponse.redirect(new URL("/logout", request.url));
     }
-}
+};
 
 export const config = {
-    matcher: [
-        "/admin/:path*",
-        "/Competition/:path*",
-    ]
+    matcher: ["/admin/:path*", "/Competition/:path*", "/profile/:path*"],
 };

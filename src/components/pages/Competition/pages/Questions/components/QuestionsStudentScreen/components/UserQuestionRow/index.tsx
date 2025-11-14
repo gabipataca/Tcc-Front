@@ -7,7 +7,15 @@ import { UserQuestionRowProps } from "./types";
 
 const UserQuestionRow: FC<UserQuestionRowProps> = ({ question }) => {
   const [open, setOpen] = useState(false);
-  const isAnswered = question.status === 'answered' && question.answer;
+  
+  // Determine if question is answered
+  const isAnswered = question.answer !== null && question.answer !== undefined;
+  const answerText = typeof question.answer === 'string' 
+    ? question.answer 
+    : question.answer?.content;
+  const answerAuthor = typeof question.answer === 'object' 
+    ? question.answer?.userName 
+    : undefined;
 
   return (
     <React.Fragment>
@@ -33,13 +41,13 @@ const UserQuestionRow: FC<UserQuestionRowProps> = ({ question }) => {
           {question.id}
         </TableCell>
         <TableCell sx={{ fontSize: '16px', textAlign: 'center', color: '#555' }}>
-          {question.title}
+          {question.title || `Pergunta #${question.id}`}
         </TableCell>
         <TableCell sx={{ fontSize: '16px', textAlign: 'center', color: '#555' }}>
           {question.language || 'N/A'}
         </TableCell>
         <TableCell sx={{ fontSize: '16px', textAlign: 'center', color: '#555' }}>
-          {new Date(question.askedAt).toLocaleString('pt-BR')}
+          {question.askedAt ? new Date(question.askedAt).toLocaleString('pt-BR') : 'N/A'}
         </TableCell>
         <TableCell sx={{ fontSize: '16px', textAlign: 'center' }}>
           <Box
@@ -69,21 +77,28 @@ const UserQuestionRow: FC<UserQuestionRowProps> = ({ question }) => {
                 Sua Dúvida:
               </Typography>
               <Typography variant="body1" sx={{ mb: 2, p: 2, borderRadius: 1, backgroundColor: '#fff', boxShadow: '0px 2px 5px rgba(0,0,0,0.05)', lineHeight: 1.6 }}>
-                {question.question}
+                {question.content || question.question}
               </Typography>
 
               <Typography variant="h6" sx={{ mt: 3, mb: 1, color: '#4F85A6', fontWeight: 'bold' }}>
                 <FaUser style={{ marginRight: '8px', verticalAlign: 'middle' }} />
                 Resposta do Professor/ADM:
               </Typography>
-              {isAnswered ? (
+              {isAnswered && answerText ? (
                 <>
                   <Typography variant="body1" sx={{ mb: 2, p: 2, borderRadius: 1, backgroundColor: '#e8f5e9', boxShadow: '0px 2px 5px rgba(0,0,0,0.05)', lineHeight: 1.6 }}>
-                    {question.answer}
+                    {answerText}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic', fontSize: '0.9rem' }}>
-                    Respondida em {new Date(question.answeredAt || '').toLocaleString('pt-BR')}.
-                  </Typography>
+                  {answerAuthor && (
+                    <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic', fontSize: '0.9rem', mb: 1 }}>
+                      Respondida por: {answerAuthor}
+                    </Typography>
+                  )}
+                  {question.answeredAt && (
+                    <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic', fontSize: '0.9rem' }}>
+                      Respondida em {new Date(question.answeredAt).toLocaleString('pt-BR')}.
+                    </Typography>
+                  )}
                 </>
               ) : (
                 <Typography variant="body1" sx={{ mb: 2, fontStyle: 'italic', color: '#757575', p: 2, borderRadius: 1, backgroundColor: '#fff', boxShadow: '0px 2px 5px rgba(0,0,0,0.05)' }}>

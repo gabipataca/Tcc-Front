@@ -1,0 +1,129 @@
+"use client";
+
+import { useState, useEffect, useMemo } from "react";
+import type { CompetitionSubmissionData } from "@/types/SignalR";
+
+type ErrorType =
+    | "Compilation Error"
+    | "Runtime Error"
+    | "Resources Exceeded"
+    | "Time-limit Exceeded"
+    | "Presentation Error"
+    | "Wrong Answer";
+
+interface Column {
+    id: string;
+    label: string;
+    minWidth?: number;
+    align?: "right" | "left" | "center";
+    format?: (value: number | string) => string;
+}
+
+interface CorrectTeamData {
+    time: string;
+    points: number;
+    exerciseDescription: string;
+    teamName: string;
+}
+
+interface WrongTeamData {
+    time: string;
+    exerciseDescription: string;
+    teamName: string;
+    errorType: ErrorType;
+}
+
+const correctColumns: readonly Column[] = [
+    { id: "time", label: "Tempo", minWidth: 300, align: "center" },
+    { id: "points", label: "Pontos (min)", minWidth: 300, align: "center" },
+    {
+        id: "exerciseDescription",
+        label: "Descrição",
+        minWidth: 150,
+        align: "center",
+    },
+    { id: "teamName", label: "Nome do Time", minWidth: 200, align: "center" },
+];
+
+const wrongColumns: readonly Column[] = [
+    { id: "time", label: "Tempo", minWidth: 250, align: "center" },
+    { id: "teamName", label: "Nome do Time", minWidth: 350, align: "center" },
+    {
+        id: "exerciseDescription",
+        label: "Descrição do Erro",
+        minWidth: 250,
+        align: "center",
+    },
+    { id: "errorType", label: "Tipo de Erro", minWidth: 250, align: "center" },
+];
+
+const useSubmissions = (currentTable: "correct" | "wrong") => {
+    const [submissions, setSubmissions] = useState<CompetitionSubmissionData[]>(
+        []
+    );
+    const [isConnected] = useState(true);
+
+    // Mock data for demonstration
+    useEffect(() => {
+        const mockSubmissions: CompetitionSubmissionData[] = [];
+        setSubmissions(mockSubmissions);
+    }, [isConnected]);
+
+    const getErrorType = (judgeResponse: number): ErrorType => {
+        const errorMap: Record<number, ErrorType> = {
+            1: "Wrong Answer",
+            2: "Time-limit Exceeded",
+            3: "Resources Exceeded",
+            4: "Runtime Error",
+            5: "Compilation Error",
+            6: "Presentation Error",
+        };
+        return errorMap[judgeResponse] || "Runtime Error";
+    };
+
+    const rows = useMemo(() => {
+        if (currentTable === "correct") {
+            return submissions
+                .filter((s) => s.judgeResponse === 0 && s.accepted === true)
+                .map((s) => ({
+                    time: new Date(s.submissionTime).toLocaleString("pt-BR"),
+                    points: 100,
+                    exerciseDescription: `${
+                        s.group?.name || "Grupo"
+                    } recebeu o Balão por acertar ${
+                        s.exerciseName || "exercício"
+                    }`,
+                    teamName: s.group?.name || "Grupo desconhecido",
+                }));
+        } else {
+            return submissions
+                .filter((s) => s.judgeResponse !== 0 || s.accepted === false)
+                .map((s) => ({
+                    time: new Date(s.submissionTime).toLocaleString("pt-BR"),
+                    exerciseDescription: `${s.group?.name || "Grupo"} tentou ${
+                        s.exerciseName || "exercício"
+                    }`,
+                    teamName: s.group?.name || "Grupo desconhecido",
+                    errorType: getErrorType(s.judgeResponse),
+                }));
+        }
+    }, [currentTable, submissions]);
+
+    const displayedColumns = useMemo(() => {
+        return currentTable === "correct" ? correctColumns : wrongColumns;
+    }, [currentTable]);
+
+    const title = useMemo(() => {
+        return currentTable === "correct"
+            ? "Relatório de Exercícios Corretos"
+            : "Relatório de Exercícios Errados";
+    }, [currentTable]);
+
+    return {
+        rows,
+        displayedColumns,
+        title,
+    };
+};
+
+export default useSubmissions;

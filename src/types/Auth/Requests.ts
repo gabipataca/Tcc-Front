@@ -6,7 +6,7 @@ export interface RegisterUserRequest {
     /**
      * The user's display name.
      */
-    username: string;
+    name: string;
 
     /**
      * The user's registration or identification number.
@@ -19,9 +19,9 @@ export interface RegisterUserRequest {
     email: string;
 
     /**
-     * The year the user joined, as a string.
+     * The year the user joined, as a number.
      */
-    joinYear: string;
+    joinYear: number | null;
 
     /**
      * The user's chosen password.
@@ -31,13 +31,15 @@ export interface RegisterUserRequest {
     /**
      * The user's role, either "student" or "teacher".
      */
-    role: "student" | "teacher";
+    role: "Student" | "Teacher";
 
     /**
      * The code required to access or register for the system.
      * @remarks Only required for teacher registration.
      */
-    accessCode: string;
+    accessCode?: string;
+
+    department: string | null;
 }
 
 /**

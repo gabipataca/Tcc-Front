@@ -2,19 +2,20 @@
 
 import React from "react";
 import { StyledTableRow } from "./styles";
-import { TableLineProps } from "./types";
+import { TableRowProps } from "./types";
 
+import type { ForwardedRef } from "react";
 
+const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(
+    ({ children, ...props }, ref: ForwardedRef<HTMLTableRowElement>) => {
+        return (
+            <StyledTableRow ref={ref} {...props}>
+                {children}
+            </StyledTableRow>
+        );
+    }
+);
 
-const TableLine: React.FC<TableLineProps> = ({ children }) => {
-    
+TableRow.displayName = "TableRow";
 
-    return(
-        <StyledTableRow>
-            {children}
-        </StyledTableRow>
-    )
-}
-
-
-export default TableLine;
+export default TableRow;

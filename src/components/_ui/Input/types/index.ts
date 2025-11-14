@@ -32,6 +32,13 @@ export interface InputProps {
     onBlur?: (e?: FocusEvent) => void;
 
     /**
+     * Callback function triggered when the input value changes.
+     * @param e The change event object.
+     * @returns void
+     */
+    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+
+    /**
      * Placeholder text displayed in the input when it is empty.
      */
     placeholder?: string;
@@ -39,7 +46,7 @@ export interface InputProps {
     /**
      * The type of input, e.g., "text", "number", "email", or "password".
      */
-    type: "text" | "number" | "email" | "password" | "time";
+    type: "text" | "number" | "email" | "password" | "time" | "date";
 
     /**
      * Label text for the input.
@@ -100,4 +107,9 @@ export interface InputProps {
      * ID for the input element.
      */
     id?: string;
+
+    /**
+     * Indicates whether the input is in a loading state.
+     */
+    loading?: boolean;
 }

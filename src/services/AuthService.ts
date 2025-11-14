@@ -1,48 +1,77 @@
-import { RegisterUserResponse, ValidateTokenResponse } from "@/types/Auth/Responses";
+import {
+    LoginUserResponse,
+    LogoutUserResponse,
+    RegisterUserResponse,
+    ValidateTokenResponse,
+} from "@/types/Auth/Responses";
 import { apiRequest } from "@/libs/apiClient";
-import { RegisterUserRequest } from "@/types/Auth/Requests";
-
+import { LoginUserRequest, RegisterUserRequest } from "@/types/Auth/Requests";
+import { ServerSideResponse } from "@/types/Global";
 
 class AuthService {
-  /**
-   * Validate the authentication token in the context of SSR (Server-Side Rendering).
-   *
-   * @param cookies - string containing cookies sent in the request.
-   * @returns A boolean value indicating if the token is valid.
-   */
-  static async validateTokenSSR(cookies: string): Promise<boolean> {
-    const req = await apiRequest<ValidateTokenResponse>("/Auth/validate", {
-        method: "GET",
-        cookies,
-    });
+    /**
+     * Validate the authentication token in the context of SSR (Server-Side Rendering).
+     *
+     * @param token - string containing the authentication token.
+     * @returns A boolean value indicating if the token is valid.
+     */
+    static async validateTokenSSR(token: string): Promise<boolean> {
+        const req = await apiRequest<ValidateTokenResponse>("/Auth/validate", {
+            method: "GET",
+            cookies: {
+                CompetitionAuthToken: token,
+            },
+        });
 
-    return req.data.valid;
-  }
-
-  /**
-   * Perform the registration of a new user.
-   *
-   * @param payload - Object containing the data required for the user registration.
-   * @returns The object of response of the user registration if the registration is successful.
-   */
-  static async registerUser(
-    payload: RegisterUserRequest
-  ) {
-    const response = await fetch("/api/auth/register", {
-      method: "POST",
-      body: JSON.stringify(payload),
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-      },
-    });
-
-    if(response.status === 201) {
-      const data = await response.json() as RegisterUserResponse;
-
-      return data;
+        return req.data.valid;
     }
-  }
+
+    /**
+     * Perform the registration of a new user.
+     *
+     * @param payload - Object containing the data required for the user registration.
+     * @returns The object of response of the user registration if the registration is successful.
+     */
+    static async registerUser(payload: RegisterUserRequest) {
+        const response = await apiRequest<ServerSideResponse<RegisterUserResponse>>(
+            "/api/auth/register",
+            {
+                method: "POST",
+                data: payload,
+            }
+        );
+
+        return response.data;
+    }
+
+    static async loginUser(payload: LoginUserRequest) {
+        const response = await apiRequest<
+            ServerSideResponse<LoginUserResponse>
+        >("/api/auth/login", {
+            method: "POST",
+            data: payload,
+        });
+
+        return response.data;
+    }
+
+    static async logoutUser() {
+        const req = await fetch("/api/auth/logout", {
+            method: "GET",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+            },
+            next: { revalidate: false },
+            cache: "no-cache",
+        });
+
+        const data =
+            (await req.json()) as ServerSideResponse<LogoutUserResponse>;
+
+        return data;
+    }
 }
 
 export default AuthService;

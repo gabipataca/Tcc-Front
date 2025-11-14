@@ -1,0 +1,244 @@
+"use client";
+
+import Input from "@/components/_ui/Input";
+import { useRef } from "react";
+import Modal from "@/components/_ui/Modal";
+import { Textarea } from "@/components/_ui/Textarea";
+import { Edit } from "lucide-react";
+import CustomDropdown from "@/components/_ui/Dropdown";
+import { exerciseTypeOptions } from "../../constants";
+import { Controller } from "react-hook-form";
+import { EditExerciseModalProps } from "./types";
+import useEditExerciseModal from "./hooks/useEditExerciseModal";
+import { ExerciseType } from "@/types/Exercise";
+import { ButtonAdm } from "@/components/_ui/ButtonAdm";
+import { Upload } from "lucide-react";
+
+const EditExerciseModal: React.FC<EditExerciseModalProps> = ({
+    open,
+    onClose,
+    editingExercise,
+    saveEdit,
+    cancelEdit,
+    pdfFile,
+    handleFileChange,
+}) => {
+    const {
+        editExerciseControl,
+        handleValidConfirm,
+        handleInvalidConfirm,
+        handleEditSubmit,
+        handleOnInputChange,
+        handleOnOutputChange,
+        handleOnTitleChange,
+        handleOnDescriptionChange,
+        handleOnExerciseTypeChange,
+    } = useEditExerciseModal(
+        editingExercise,
+        pdfFile,
+        saveEdit,
+        cancelEdit,
+        onClose
+    );
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    return (
+        <Modal
+            open={open}
+            onClose={onClose}
+            title={
+                <>
+                    <Edit className="h-8 w-8 text-[#4F85A6]" />
+                    Editar Exercício
+                </>
+            }
+            growFooterButtons={true}
+            description={<>Modifique as informações do exercício</>}
+            hasConfirmButton={true}
+            confirmButtonContent={
+                <>
+                    <Edit className="w-6 h-6 mr-3" />
+                    Salvar Alterações
+                </>
+            }
+            hasCancelButton={true}
+            onConfirm={handleEditSubmit(
+                // @ts-expect-error : Irrelevant
+                handleValidConfirm,
+                handleInvalidConfirm
+            )}
+            onCancel={cancelEdit}
+            bodyContent={
+                <div>
+                    <div>
+                        <label className="block text-xl font-medium text-[#3f3c40] mb-4">
+                            Título do Exercício
+                        </label>
+                        <Controller
+                            control={editExerciseControl}
+                            name="title"
+                            defaultValue={editingExercise.title || ""}
+                            render={({ field, fieldState }) => (
+                                <Input
+                                    type="text"
+                                    {...field}
+                                    className={`border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-xl h-16 px-6 ${
+                                        fieldState.error ? "border-red-500" : ""
+                                    }`}
+                                    onChange={(e) =>
+                                        handleOnTitleChange(e.target.value)
+                                    }
+                                />
+                            )}
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-xl font-medium text-[#3f3c40] mb-4">
+                            Tipo do Exercício
+                        </label>
+                        <Controller
+                            control={editExerciseControl}
+                            name="exerciseType"
+                            defaultValue={editingExercise.exerciseTypeId}
+                            render={({ field, fieldState }) => (
+                                <CustomDropdown
+                                    type="normalDropdown"
+                                    options={exerciseTypeOptions}
+                                    errored={fieldState.error != undefined}
+                                    errorMessage={
+                                        fieldState.error?.message ?? ""
+                                    }
+                                    {...field}
+                                    value={
+                                        exerciseTypeOptions.find(
+                                            (option) =>
+                                                option.value === field.value
+                                        )?.value || 1
+                                    }
+                                    onChange={(value) =>
+                                        handleOnExerciseTypeChange(
+                                            value as ExerciseType
+                                        )
+                                    }
+                                />
+                            )}
+                        />
+                    </div>
+
+                    <div className="space-y-6">
+                        <h4 className="text-xl font-medium text-[#3f3c40]">
+                            Conteúdo do Exercício
+                        </h4>
+                        <div className="space-y-3">
+                            <label className="block text-lg font-medium text-[#3f3c40]">
+                                Anexo (PDF):
+                            </label>
+
+                            <ButtonAdm
+                                variant="outline"
+                                onClick={() => fileInputRef.current?.click()}
+                                className="w-full border-[#2f6b91] text-[#4F85A6] text-lg h-16 flex items-center justify-center transition-colors hover:bg-[#3b7192] hover:text-white"
+                            >
+                                <Upload className="w-5 h-5 mr-3" />
+                                {pdfFile
+                                    ? pdfFile.name
+                                    : "Selecionar Arquivo PDF"}
+                            </ButtonAdm>
+
+                            <input
+                                type="file"
+                                accept=".pdf"
+                                ref={fileInputRef}
+                                onChange={handleFileChange}
+                                className="hidden"
+                            />
+                        </div>
+
+                        <div className="space-y-3">
+                            <label className="block text-lg font-medium text-[#3f3c40]">
+                                Valores de entrada:
+                            </label>
+                            <Controller
+                                control={editExerciseControl}
+                                name="inputs"
+                                render={({ field, fieldState }) => (
+                                    <Textarea
+                                        placeholder="Edite os valores de entrada..."
+                                        {...field}
+                                        className={`border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-lg min-h-[120px] p-4 ${
+                                            fieldState.error
+                                                ? "border-red-500"
+                                                : ""
+                                        }`}
+                                        onChange={(e) => {
+                                            const value = e.target.value;
+                                            const cursorPos =
+                                                e.target.selectionStart;
+
+                                            const beforeCursor = value.slice(
+                                                0,
+                                                cursorPos
+                                            );
+                                            const currentLine =
+                                                beforeCursor.split("\n")
+                                                    .length - 1;
+
+                                            const lines = value.split("\n");
+                                            handleOnInputChange(
+                                                lines[currentLine],
+                                                currentLine
+                                            );
+                                        }}
+                                    />
+                                )}
+                            />
+                        </div>
+
+                        <div className="space-y-3">
+                            <label className="block text-lg font-medium text-[#3f3c40]">
+                                Valores de saída:
+                            </label>
+
+                            <Controller
+                                control={editExerciseControl}
+                                name="outputs"
+                                render={({ field, fieldState }) => (
+                                    <Textarea
+                                        placeholder="Edite os valores de saída esperados..."
+                                        {...field}
+                                        className={`border-[#e9edee] focus:border-[#4F85A6] focus:ring-[#4F85A6] text-lg min-h-[120px] p-4 ${
+                                            fieldState.error
+                                                ? "border-red-500"
+                                                : ""
+                                        }`}
+                                        onChange={(e) => {
+                                            const value = e.target.value;
+                                            const cursorPos =
+                                                e.target.selectionStart;
+
+                                            const beforeCursor = value.slice(
+                                                0,
+                                                cursorPos
+                                            );
+                                            const currentLine =
+                                                beforeCursor.split("\n")
+                                                    .length - 1;
+
+                                            const lines = value.split("\n");
+                                            handleOnOutputChange(
+                                                lines[currentLine],
+                                                currentLine
+                                            );
+                                        }}
+                                    />
+                                )}
+                            />
+                        </div>
+                    </div>
+                </div>
+            }
+        />
+    );
+};
+
+export default EditExerciseModal;

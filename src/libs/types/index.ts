@@ -1,4 +1,4 @@
-
+import type { RawAxiosRequestHeaders, ResponseType } from "axios";
 
 /**
  * Represents the options for making an API request.
@@ -20,12 +20,12 @@ export interface ApiRequestOptions<T> {
      * Optional cookies to be sent with the request, formatted as a string. Only available at server-side.
      * @remarks This is useful for server-side rendering (SSR) scenarios where cookies need to be validated on the server.
      */
-    cookies?: string;
+    cookies?: Record<string, string> | string;
 
     /**
      * Optional headers to include in the API request.
      */
-    headers?: Record<string, string>;
+    headers?: RawAxiosRequestHeaders;
 
     /**
      * Optional query parameters to include in the API request.
@@ -36,4 +36,14 @@ export interface ApiRequestOptions<T> {
      * Optional request payload of generic type T.
      */
     data?: T;
+
+    /**
+     * Optional AbortSignal to cancel the request if needed.
+     */
+    signal?: AbortSignal;
+
+    /**
+     * Optional response type for the API request.
+     */
+    responseType?: ResponseType;
 }

@@ -6,15 +6,19 @@ import { TableCellProps } from "./types";
 
 
 
-const TableCell: React.FC<TableCellProps> = ({ children }) => {
-    
 
-    return(
-        <StyledTableCell>
-            {children}
-        </StyledTableCell>
-    )
-}
+import type { ForwardedRef } from "react";
 
+const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
+    ({ children }, ref: ForwardedRef<HTMLTableCellElement>) => {
+        return (
+            <StyledTableCell ref={ref}>
+                {children}
+            </StyledTableCell>
+        );
+    }
+);
+
+TableCell.displayName = "TableCell";
 
 export default TableCell;

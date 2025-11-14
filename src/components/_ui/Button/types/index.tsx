@@ -4,9 +4,7 @@ import React from "react";
  * Props for the Button component.
  */
 export interface ButtonProps {
-    /**
-     * Additional class names to apply to the button.
-     */
+    
     className?: string;
 
     /**
@@ -28,7 +26,7 @@ export interface ButtonProps {
     /**
      * The type of the button, either "button" or "link".
      */
-    type?: "button" | "link";
+    type?: HTMLButtonElement["type"] | "link";
 
     /**
      * The href attribute for the link, if the button type is "link".
@@ -36,9 +34,9 @@ export interface ButtonProps {
     linkHref?: string;
 
     /**
-     * The style of the button, either "primary" or "secondary".
+     * The variant of the button, either "primary" or "secondary".
      */
-    style?: "primary" | "secondary";
+    variant?: "primary" | "secondary" | "success" | "light-success" | "success-outline" | "destructive" | "outline" | "ghost";
 
     /**
      * Whether the button should have rounded corners.
@@ -46,13 +44,23 @@ export interface ButtonProps {
     rounded?: boolean;
 
     /**
+     * The size of the button.
+     */
+    size?: "default" | "sm" | "lg" | "icon";
+
+    /**
      * Whether the button should take up the full width of its container.
      */
     fullWidth?: boolean;
 
-    /*
-     * Whether the button is styled as a primary button.
+    /**
+     * Whether the button is disabled.
      */
+    disabled?: boolean;
 
-    primary?: boolean;
+    /**
+     * Whether to show a loading indicator inside the button.
+     */
+    loading?: boolean;
+    
 }
