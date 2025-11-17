@@ -9,12 +9,12 @@ import GroupInfoSection from "./components/GroupInfoSection";
 import CompetitionHistorySection from "./components/CompetitionHistorySection";
 import ChampionTeamsSection from "./components/ChampionsTeamsSection";
 import { useUser } from "@/contexts/UserContext";
-import { Trophy, Users, ChevronLeft } from "lucide-react";
+import { Trophy, Users, ChevronLeft } from 'lucide-react';
 import Modal from "@/components/_ui/Modal";
 import CompetitionInscription from "./components/CompetitionInscription";
 import { useWebSocketContext } from "@/contexts/WebSocketContext";
 import { useCompetitionHub } from "@/contexts/CompetitionHubContext";
-import { useRouter } from "next/navigation";
+import { useRouter } from 'next/navigation';
 
 interface ModalConfig {
     title: string;
@@ -72,21 +72,36 @@ const StudentDashboard: React.FC = () => {
     };
 
     const handleStartMarathonClick = () => {
-        if (ongoingCompetition?.isLoggedGroupInscribed) {
+        const now = new Date();
+        const startInscriptions = ongoingCompetition?.startInscriptions ? new Date(ongoingCompetition.startInscriptions) : null;
+        const endInscriptions = ongoingCompetition?.endInscriptions ? new Date(ongoingCompetition.endInscriptions) : null;
+        
+        const isInscriptionPeriodOpen = startInscriptions && endInscriptions && now >= startInscriptions && now <= endInscriptions;
+
+        if (!isInscriptionPeriodOpen) {
             showModal({
-                title: "Iniciando Maratona",
+                title: "Aviso",
                 bodyContent: (
                     <p className="text-slate-600">
-                        Boa sorte! A maratona está começando.
+                        Não há inscrições disponíveis no momento.
                     </p>
                 ),
                 hasConfirmButton: true,
-                confirmButtonContent: "Entendido",
+                confirmButtonContent: "OK",
                 onConfirm: closeModal,
             });
-            setTimeout(() => {
-                router.push(`/Competition`);
-            }, 1000);
+        } else if (ongoingCompetition?.isLoggedGroupInscribed) {
+            showModal({
+                title: "Aviso",
+                bodyContent: (
+                    <p className="text-slate-600">
+                        Você já está inscrito na maratona.
+                    </p>
+                ),
+                hasConfirmButton: true,
+                confirmButtonContent: "OK",
+                onConfirm: closeModal,
+            });
         } else {
             showModal({
                 title: "Aviso",
