@@ -72,43 +72,75 @@ const StudentDashboard: React.FC = () => {
     };
 
     const handleStartMarathonClick = () => {
-        const now = new Date();
-        const startInscriptions = ongoingCompetition?.startInscriptions ? new Date(ongoingCompetition.startInscriptions) : null;
-        const endInscriptions = ongoingCompetition?.endInscriptions ? new Date(ongoingCompetition.endInscriptions) : null;
-        
-        const isInscriptionPeriodOpen = startInscriptions && endInscriptions && now >= startInscriptions && now <= endInscriptions;
+        try {
+            const now = new Date();
+            
+            // Safely parse dates with validation
+            let startInscriptions: Date | null = null;
+            let endInscriptions: Date | null = null;
+            
+            if (ongoingCompetition?.startInscriptions) {
+                const parsedStart = new Date(ongoingCompetition.startInscriptions);
+                startInscriptions = isNaN(parsedStart.getTime()) ? null : parsedStart;
+            }
+            
+            if (ongoingCompetition?.endInscriptions) {
+                const parsedEnd = new Date(ongoingCompetition.endInscriptions);
+                endInscriptions = isNaN(parsedEnd.getTime()) ? null : parsedEnd;
+            }
+            
+            // Check if inscription period is open
+            const isInscriptionPeriodOpen = startInscriptions && 
+                                           endInscriptions && 
+                                           now >= startInscriptions && 
+                                           now <= endInscriptions;
 
-        if (!isInscriptionPeriodOpen) {
+            if (!isInscriptionPeriodOpen) {
+                showModal({
+                    title: "Aviso",
+                    bodyContent: (
+                        <p className="text-slate-600">
+                            Não há inscrições disponíveis no momento.
+                        </p>
+                    ),
+                    hasConfirmButton: true,
+                    confirmButtonContent: "OK",
+                    onConfirm: closeModal,
+                });
+            } else if (ongoingCompetition?.isLoggedGroupInscribed) {
+                showModal({
+                    title: "Aviso",
+                    bodyContent: (
+                        <p className="text-slate-600">
+                            Você já está inscrito na maratona.
+                        </p>
+                    ),
+                    hasConfirmButton: true,
+                    confirmButtonContent: "OK",
+                    onConfirm: closeModal,
+                });
+            } else {
+                showModal({
+                    title: "Aviso",
+                    bodyContent: (
+                        <p className="text-slate-600">
+                            Você precisa se inscrever na maratona antes de
+                            iniciá-la.
+                        </p>
+                    ),
+                    hasConfirmButton: true,
+                    confirmButtonContent: "OK",
+                    onConfirm: closeModal,
+                });
+            }
+        } catch (error) {
+            console.error("Error processing competition dates:", error);
             showModal({
-                title: "Aviso",
+                title: "Erro",
                 bodyContent: (
                     <p className="text-slate-600">
-                        Não há inscrições disponíveis no momento.
-                    </p>
-                ),
-                hasConfirmButton: true,
-                confirmButtonContent: "OK",
-                onConfirm: closeModal,
-            });
-        } else if (ongoingCompetition?.isLoggedGroupInscribed) {
-            showModal({
-                title: "Aviso",
-                bodyContent: (
-                    <p className="text-slate-600">
-                        Você já está inscrito na maratona.
-                    </p>
-                ),
-                hasConfirmButton: true,
-                confirmButtonContent: "OK",
-                onConfirm: closeModal,
-            });
-        } else {
-            showModal({
-                title: "Aviso",
-                bodyContent: (
-                    <p className="text-slate-600">
-                        Você precisa se inscrever na maratona antes de
-                        iniciá-la.
+                        Não foi possível verificar o período de inscrições.
+                        Por favor, tente novamente.
                     </p>
                 ),
                 hasConfirmButton: true,
