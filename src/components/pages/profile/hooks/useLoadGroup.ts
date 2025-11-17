@@ -76,9 +76,6 @@ const useLoadGroups = () => {
 
     const updateGroup = async (groupId: number, name: string) => {
         setGroups((prev) => prev.map((g) => (g.id === groupId ? { ...g, name } : g)));
-        enqueueSnackbar("Grupo atualizado com sucesso!", {
-            variant: "success",
-        });
     };
 
     const togglePage = (page: number) => setCurrentPage(page);

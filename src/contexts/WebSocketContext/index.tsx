@@ -35,42 +35,121 @@ export const WebSocketContextProvider = ({
         useState<HubConnection | null>(null);
     const [connectionId, setConnectionId] = useState<string | null>(null);
     
-    // Track if we're currently connecting to prevent duplicate connections
-    const isConnectingRef = useRef(false);
-    // Track the current user ID to detect user changes
-    const currentUserIdRef = useRef<string | null>(null);
+    // Track connection state to prevent race conditions
+    const connectionStateRef = useRef<{
+        isConnecting: boolean;
+        isConnected: boolean;
+        currentUserId: string | null;
+        connectionInstance: HubConnection | null;
+    }>({
+        isConnecting: false,
+        isConnected: false,
+        currentUserId: null,
+        connectionInstance: null,
+    });
+    
+    // Stable reference to enqueueSnackbar to avoid unnecessary effect triggers
+    const enqueueSnackbarRef = useRef(enqueueSnackbar);
+    useEffect(() => {
+        enqueueSnackbarRef.current = enqueueSnackbar;
+    }, [enqueueSnackbar]);
+    
+    // Debounce timer for user changes
+    const userChangeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
+        // Clear any pending debounce timeout
+        if (userChangeTimeoutRef.current) {
+            clearTimeout(userChangeTimeoutRef.current);
+            userChangeTimeoutRef.current = null;
+        }
+
+        // Don't attempt connection on public routes
+        const publicRoutes = ["/login", "/register", "/recover"];
+        const isPublicRoute = location === "/" || publicRoutes.some(route => location.startsWith(route));
+        
+        if (isPublicRoute) {
+            console.log("🚫 Skipping WebSocket connection on public route:", location);
+            return;
+        }
+
         // Don't create connection if no user is logged in
         if (!user || user.token == null) {
             // Clean up existing connection if user logged out
-            if (webSocketConnection != null) {
-                webSocketConnection.stop().catch((err) => {
-                    console.error("Error stopping WebSocket connection:", err);
-                });
+            const currentConnection = connectionStateRef.current.connectionInstance;
+            if (currentConnection != null) {
+                console.log("🔌 User logged out, stopping WebSocket connection");
+                
+                // Stop connection regardless of state
+                if (currentConnection.state !== HubConnectionState.Disconnected) {
+                    currentConnection.stop().catch((err) => {
+                        console.error("Error stopping WebSocket connection:", err);
+                    });
+                }
+                
                 setWebSocketConnection(null);
                 setConnectionId(null);
-                currentUserIdRef.current = null;
+                connectionStateRef.current = {
+                    isConnecting: false,
+                    isConnected: false,
+                    currentUserId: null,
+                    connectionInstance: null,
+                };
             }
             return;
         }
 
         // Check if user changed - if so, close old connection and create new one
-        const userChanged = currentUserIdRef.current !== null && currentUserIdRef.current !== user.id;
+        const userChanged = 
+            connectionStateRef.current.currentUserId !== null && 
+            connectionStateRef.current.currentUserId !== user.id;
         
-        if (userChanged && webSocketConnection != null) {
-            // User changed, close old connection
-            webSocketConnection.stop().catch((err) => {
-                console.error("Error stopping old WebSocket connection:", err);
-            });
+        if (userChanged) {
+            console.log("👤 User changed, closing old WebSocket connection");
+            const oldConnection = connectionStateRef.current.connectionInstance;
+            
+            if (oldConnection != null && oldConnection.state !== HubConnectionState.Disconnected) {
+                oldConnection.stop().catch((err) => {
+                    console.error("Error stopping old WebSocket connection:", err);
+                });
+            }
+            
             setWebSocketConnection(null);
             setConnectionId(null);
+            connectionStateRef.current = {
+                isConnecting: false,
+                isConnected: false,
+                currentUserId: null,
+                connectionInstance: null,
+            };
         }
 
-        // Only create new connection if we don't have one and we're not already connecting
-        if (webSocketConnection == null && !isConnectingRef.current) {
-            isConnectingRef.current = true;
-            currentUserIdRef.current = user.id;
+        // Prevent duplicate connections - check all non-idle states
+        const existingConnection = connectionStateRef.current.connectionInstance;
+        const isInProgress = connectionStateRef.current.isConnecting || 
+                           connectionStateRef.current.isConnected ||
+                           (existingConnection != null && 
+                            existingConnection.state !== HubConnectionState.Disconnected);
+        
+        if (isInProgress) {
+            console.log("⏸️  WebSocket connection already in progress, skipping duplicate attempt");
+            return;
+        }
+
+        // Debounce connection creation to allow UserContext to stabilize
+        userChangeTimeoutRef.current = setTimeout(() => {
+            // Validate backend URL is configured
+            const backendUrl = process.env.NEXT_PUBLIC_API_URL_CUSTOM;
+            if (!backendUrl) {
+                console.error("❌ NEXT_PUBLIC_API_URL_CUSTOM not configured");
+                return;
+            }
+            
+            console.log("🔄 Creating new WebSocket connection for user:", user.id);
+            console.log("📍 Backend URL:", backendUrl);
+            
+            connectionStateRef.current.isConnecting = true;
+            connectionStateRef.current.currentUserId = user.id;
 
             const newConnection = new HubConnectionBuilder()
                 .withUrl(
@@ -93,25 +172,33 @@ export const WebSocketContextProvider = ({
                     }
                 })
                 .build();
+            
+            // Store connection instance immediately
+            connectionStateRef.current.connectionInstance = newConnection;
 
             // Set up event handlers before starting connection
             newConnection.on("ReceiveConnectionId", (id: string) => {
+                console.log("🆔 Received connection ID:", id);
                 setConnectionId(id);
             });
 
             newConnection.onclose((error) => {
-                console.log("WebSocket connection closed", error);
+                console.log("🔌 WebSocket connection closed", error);
                 setConnectionId(null);
-                isConnectingRef.current = false;
+                connectionStateRef.current.isConnecting = false;
+                connectionStateRef.current.isConnected = false;
             });
 
             newConnection.onreconnecting((error) => {
-                console.log("WebSocket reconnecting...", error);
+                console.log("🔄 WebSocket reconnecting...", error);
                 setConnectionId(null);
+                connectionStateRef.current.isConnected = false;
             });
 
             newConnection.onreconnected((connectionId) => {
-                console.log("WebSocket reconnected", connectionId);
+                console.log("✅ WebSocket reconnected", connectionId);
+                connectionStateRef.current.isConnected = true;
+                
                 // Request new connection ID after reconnection
                 if (newConnection.state === HubConnectionState.Connected) {
                     newConnection.invoke("GetConnectionId").catch((err) => {
@@ -124,42 +211,72 @@ export const WebSocketContextProvider = ({
             newConnection
                 .start()
                 .then(() => {
-                    console.log("WebSocket connection established");
+                    console.log("✅ WebSocket connection established");
+                    connectionStateRef.current.isConnecting = false;
+                    connectionStateRef.current.isConnected = true;
+                    
+                    // Set state after successful connection
+                    setWebSocketConnection(newConnection);
+                    
                     // Request connection ID after successful connection
                     return newConnection.invoke("GetConnectionId");
                 })
                 .then(() => {
-                    console.log("Connection ID requested");
+                    console.log("🆔 Connection ID requested");
                 })
                 .catch((error) => {
-                    console.error("WebSocket connection failed:", error);
-                    isConnectingRef.current = false;
+                    // Reset state on failure
+                    connectionStateRef.current.isConnecting = false;
+                    connectionStateRef.current.isConnected = false;
+                    connectionStateRef.current.connectionInstance = null;
                     
-                    // Only show error if user is on a protected route
-                    if (!["/", "/login", "/register"].includes(location)) {
-                        enqueueSnackbar("Conexão WebSocket falhou", {
+                    // Differentiate between error types
+                    const isNetworkError = error?.message?.includes("Failed to fetch") ||
+                                          error?.message?.includes("Failed to complete negotiation");
+                    const isCancellation = error?.message?.includes("Invocation canceled") ||
+                                          error?.message?.includes("underlying connection being closed");
+                    
+                    if (isCancellation) {
+                        // Expected in React.StrictMode (development only)
+                        console.log("🔄 WebSocket connection cancelled (likely React.StrictMode cleanup)");
+                    } else if (isNetworkError) {
+                        console.warn("⚠️ WebSocket connection failed - backend may be unavailable:", error?.message);
+                    } else {
+                        console.error("❌ WebSocket connection failed:", error);
+                        
+                        // Only show user-facing error for non-network/non-cancellation issues
+                        enqueueSnackbarRef.current("Erro ao conectar ao servidor", {
                             variant: "error",
+                            autoHideDuration: 5000,
                             anchorOrigin: { vertical: "bottom", horizontal: "right" },
                         });
                     }
-                })
-                .finally(() => {
-                    isConnectingRef.current = false;
                 });
-
-            setWebSocketConnection(newConnection);
-        }
+        }, 100); // 100ms debounce to allow UserContext to stabilize
 
         // Cleanup function
         return () => {
-            if (webSocketConnection != null && webSocketConnection.state === HubConnectionState.Connected) {
-                webSocketConnection.stop().catch((err) => {
-                    console.error("Error during cleanup:", err);
-                });
+            // Clear debounce timeout on cleanup
+            if (userChangeTimeoutRef.current) {
+                clearTimeout(userChangeTimeoutRef.current);
+                userChangeTimeoutRef.current = null;
+            }
+            
+            // Stop connection if it exists and is not already disconnected
+            const currentConnection = connectionStateRef.current.connectionInstance;
+            if (currentConnection != null) {
+                const state = currentConnection.state;
+                
+                // Only attempt to stop if not already disconnected
+                if (state !== HubConnectionState.Disconnected) {
+                    console.log(`🧹 Cleanup: Stopping WebSocket (state: ${HubConnectionState[state]})`);
+                    currentConnection.stop().catch((err) => {
+                        console.error("Error during cleanup:", err);
+                    });
+                }
             }
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [user, location, enqueueSnackbar]);
+    }, [user, location]);
 
     return (
         <WebSocketContext.Provider
