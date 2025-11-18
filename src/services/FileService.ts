@@ -68,14 +68,11 @@ class FileService {
             }
         );
 
-        const contentDispositionValue = response.headers && 
-            typeof response.headers.get === 'function' 
-            ? response.headers.get("content-disposition") 
-            : null;
-        
-        const contentDisposition: string = typeof contentDispositionValue === 'string' 
-            ? contentDispositionValue 
-            : "";
+        // Axios returns headers as an object, not a Map with .get()
+        const contentDisposition: string = 
+            response.headers?.["content-disposition"] || 
+            response.headers?.["Content-Disposition"] || 
+            "";
 
         return {
             blob: response.data,
