@@ -36,50 +36,51 @@ export async function POST(req: NextRequest) {
             method: "POST",
             data: body,
         });
+
+        const data = res.data;
+
+        cookie.set({
+            name: "CompetitionAuthToken",
+            value: data.token,
+            httpOnly: true,
+            expires: new Date(new Date().getTime() + (24 * 60 * 60 * 1000)),
+            secure: true,
+            sameSite: "lax",
+        });
+
+        return NextResponse.json(
+            {
+                message: "Usuário autenticado com sucesso.",
+                data,
+                status: res.status
+            } satisfies ServerSideResponse<LoginUserResponse>,
+            {
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                status: res.status
+            }
+        );
     }
     catch(exc) {
-        console.error(exc);
-        console.error(res?.data);
+        console.error("Login error:", exc);
+
+        const statusCode = res?.status || 500;
 
         return NextResponse.json(
             {
                 ...res?.data,
-                message: "Erro ao autenticar usuário.",
-                error: "Erro desconhecido.",
-                status: 500
+                message: res?.data ? "Erro de autenticação" : "Erro ao autenticar usuário.",
+                error: "Erro no login.",
+                status: statusCode
             } satisfies ServerSideResponse<LoginUserResponse>,
             {
-                status: 500,
+                status: statusCode,
                 headers: {
                     "Content-Type": "application/json"
                 }
             }
         );
     }
-
-    const data = res.data;
-
-    cookie.set({
-        name: "CompetitionAuthToken",
-        value: data.token,
-        httpOnly: true,
-        expires: new Date(new Date().getTime() + (24 * 60 * 60 * 1000)),
-        secure: true,
-        sameSite: "lax",
-    });
-
-    return NextResponse.json(
-        {
-            message: "Usuário autenticado com sucesso.",
-            data,
-            status: res.status
-        } satisfies ServerSideResponse<LoginUserResponse>,
-        {
-            headers: {
-                "Content-Type": "application/json"
-            },
-            status: res.status
-        }
-    );
     
 }

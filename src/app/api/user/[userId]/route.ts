@@ -15,9 +15,10 @@ export async function PUT(req: NextRequest, context: { params: Promise<{ userId:
             cookies: req.cookies.toString()
         });
     } catch (exc) {
+        const statusCode = (exc as any).response?.status || 500;
         return NextResponse.json(
-            { message: "Erro ao atualizar usuário.", status: 500 },
-            { status: 500 }
+            { message: "Erro ao atualizar usuário.", status: statusCode },
+            { status: statusCode }
         );
     }
     return NextResponse.json({
@@ -36,9 +37,10 @@ export async function DELETE(req: NextRequest, context: { params: Promise<{ user
             cookies: req.cookies.toString()
         });
     } catch (exc) {
+        const statusCode = (exc as any).response?.status || 500;
         return NextResponse.json(
-            { message: "Erro ao deletar usuário.", status: 500 },
-            { status: 500 }
+            { message: "Erro ao deletar usuário.", status: statusCode },
+            { status: statusCode }
         );
     }
     return NextResponse.json(res.data, { status: res.status });

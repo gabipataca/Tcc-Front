@@ -26,9 +26,9 @@ const Login: React.FC = () => {
                     onSubmit={handleSubmit(onSubmit)}
                 >
                     {formError && (
-                        <p className="w-full max-w-sm text-red-700 mb-4 text-center">
+                        <div className="w-full max-w-sm bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4 text-sm">
                             {formError}
-                        </p>
+                        </div>
                     )}
 
                     <div className="w-full max-w-sm flex flex-col gap-2">

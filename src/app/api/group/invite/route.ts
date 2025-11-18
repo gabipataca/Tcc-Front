@@ -17,10 +17,11 @@ export async function POST(req: NextRequest) {
             data: body,
             cookies: req.cookies.toString(),
         });
-    } catch {
+    } catch (error) {
+        const statusCode = (error as any).response?.status || 500;
         return NextResponse.json(
-            { message: "Erro ao enviar convite para o usuário.", status: 500 },
-            { status: 500 }
+            { message: "Erro ao enviar convite para o usuário.", status: statusCode },
+            { status: statusCode }
         );
     }
     
@@ -40,10 +41,11 @@ export const GET = async (req: NextRequest) => {
             method: "GET",
             cookies: req.cookies.toString(),
         });
-    } catch {
+    } catch (error) {
+        const statusCode = (error as any).response?.status || 500;
         return NextResponse.json(
-            { message: "Erro ao buscar convites para o grupo.", status: 500 },
-            { status: 500 }
+            { message: "Erro ao buscar convites para o grupo.", status: statusCode },
+            { status: statusCode }
         );
     }
     return NextResponse.json(

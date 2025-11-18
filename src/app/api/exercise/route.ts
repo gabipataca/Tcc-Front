@@ -20,9 +20,10 @@ export async function GET(req: NextRequest) {
             cookies: req.cookies.toString(),
         });
     } catch (exc) {
+        const statusCode = (exc as any).response?.status || 500;
         return NextResponse.json(
-            { message: "Erro ao buscar exercícios.", status: 500 },
-            { status: 500 }
+            { message: "Erro ao buscar exercícios.", status: statusCode },
+            { status: statusCode }
         );
     }
 

@@ -36,44 +36,45 @@ export async function POST(req: NextRequest) {
         res = await apiRequest<RegisterUserResponse, RegisterUserRequest>("/Auth/Register", {
             method: "POST",
             data: body,
-        })
+        });
+
+        const data = res.data;
+
+        cookie.set("CompetitionAuthToken", data.token);
+
+        return NextResponse.json(
+            {
+                message: "Usuário registrado com sucesso.",
+                data,
+                status: res.status,
+            } satisfies ServerSideResponse<RegisterUserResponse>,
+            {
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                status: res.status,
+            },
+        );
     }
     catch(exc) {
-        console.error(exc);
-        console.error(res?.data);
+        console.error("Registration error:", exc);
+        
+        const statusCode = res?.status || 500;
+        
         return NextResponse.json(
             {
                 data: res?.data,
-                message: "Erro ao registrar usuário.",
-                error: "Erro desconhecido.",
-                status: 500,
+                message: res?.data ? "Erro de validação" : "Erro ao registrar usuário.",
+                error: "Erro no registro.",
+                status: statusCode,
             } satisfies ServerSideResponse<RegisterUserResponse>,
             {
-                status: 500,
+                status: statusCode,
                 headers: {
                     "Content-Type": "application/json"
                 }
             }
         );
     }
-
-    const data = res.data;
-
-    console.log(data);
-    cookie.set("CompetitionAuthToken", data.token);
-
-    return NextResponse.json(
-        {
-            message: "Usuário registrado com sucesso.",
-            data,
-            status: res.status,
-        } satisfies ServerSideResponse<RegisterUserResponse>,
-        {
-            headers: {
-                "Content-Type": "application/json"
-            },
-            status: res.status,
-        },
-    );
 
 }

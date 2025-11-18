@@ -52,6 +52,11 @@ const Cadastro: React.FC = () => {
                             console.log(d)
                         )}
                     >
+                        {formError && (
+                            <div className="w-full bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4 text-sm">
+                                {formError}
+                            </div>
+                        )}
                         {/* Nome */}
                         <Controller
                             name="name"
