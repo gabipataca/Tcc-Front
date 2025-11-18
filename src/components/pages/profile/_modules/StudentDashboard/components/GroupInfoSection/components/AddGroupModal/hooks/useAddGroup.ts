@@ -100,9 +100,9 @@ export const useAddGroup = (onClose: () => void) => {
                 }
 
                 // Handle errors from backend
-                if (response.status === 400 && response.data?.errors) {
+                if (response.status === 400 && (response.data as any)?.errors) {
                     mapBackendErrors({
-                        errors: response.data.errors,
+                        errors: (response.data as any).errors,
                         setError,
                         setValue,
                         setFormError,
@@ -119,7 +119,7 @@ export const useAddGroup = (onClose: () => void) => {
                 setIsLoading(false);
             }
         },
-        [controllerSignal, formValues.name, onClose, setUser, user]
+        [controllerSignal, formValues.name, onClose, setUser, user, setError, setValue]
     );
 
     const handleSubmitError: SubmitErrorHandler<AddGroupFormValues> =
