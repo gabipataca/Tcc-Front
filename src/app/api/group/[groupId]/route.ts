@@ -50,3 +50,23 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ grou
         status: res.status,
     } satisfies ServerSideResponse<UpdateGroupResponse>, { status: res.status });
 }
+
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ groupId: string }> }) {
+    const { groupId } = await params;
+    let res;
+
+    try {
+        res = await apiRequest<void>(`/Group/${groupId}`, {
+            method: "DELETE",
+            cookies: req.cookies.toString()
+        });
+    } catch (exc) {
+        const statusCode = (exc as any).response?.status || 500;
+        return NextResponse.json(
+            { message: "Erro ao deletar grupo.", status: statusCode },
+            { status: statusCode }
+        );
+    }
+
+    return NextResponse.json(res.data, { status: res.status });
+}

@@ -130,6 +130,17 @@ class GroupService {
 
         return response.data;
     }
+
+    static async deleteGroup(groupId: number): Promise<ServerSideResponse<void>> {
+        const response = await apiRequest<ServerSideResponse<void>>(
+            `/api/group/${groupId}`,
+            {
+                method: "DELETE",
+            }
+        );
+
+        return response.data;
+    }
 }
 
 export default GroupService;
