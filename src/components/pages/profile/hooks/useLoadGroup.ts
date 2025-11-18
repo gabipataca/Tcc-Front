@@ -71,7 +71,6 @@ const useLoadGroups = () => {
 
     const deleteGroup = async (groupId: number) => {
         setGroups((prev) => prev.filter((g) => g.id !== groupId));
-        enqueueSnackbar("Grupo deletado com sucesso!", { variant: "success" });
     };
 
     const updateGroup = async (groupId: number, name: string) => {
