@@ -38,14 +38,34 @@ const parseJwt = (token: string): UserTokenProperties => {
  * @returns A NextResponse object for redirection or continuation.
  */
 export const middleware = async (request: NextRequest) => {
-    const { basePath, pathname } = request.nextUrl;
+    const { pathname } = request.nextUrl;
     const isAuthRoute = ["register", "login"].some((path) =>
-        basePath.includes(path)
+        pathname.includes(path)
     );
 
-    const route = protectedRoutes.find((r) => pathname.startsWith(r.path));
-
     const token = request.cookies.get("CompetitionAuthToken")?.value;
+
+    // If on auth route and has valid token, redirect to Profile
+    if (isAuthRoute && token) {
+        try {
+            const jwtPayload = parseJwt(token);
+            const isTokenValid = await AuthService.validateTokenSSR(token);
+
+            if (isTokenValid) {
+                return NextResponse.redirect(new URL("/Profile", request.url));
+            }
+        } catch {
+            // Invalid token, allow access to login/register
+            return NextResponse.next();
+        }
+    }
+
+    // Allow access to auth routes without token
+    if (isAuthRoute) {
+        return NextResponse.next();
+    }
+
+    const route = protectedRoutes.find((r) => pathname.startsWith(r.path));
 
     if (!token) {
         return NextResponse.redirect(new URL("/login", request.url));
@@ -54,6 +74,7 @@ export const middleware = async (request: NextRequest) => {
     try {
         const jwtPayload = parseJwt(token);
 
+        // Reuse validation from auth route check
         const isTokenValid = await AuthService.validateTokenSSR(token);
 
         console.log("Role: ", jwtPayload.role);
@@ -63,12 +84,8 @@ export const middleware = async (request: NextRequest) => {
             return NextResponse.redirect(new URL("/logout", request.url));
         }
 
-        if (isAuthRoute) {
-            return NextResponse.redirect(new URL("/Profile", request.url));
-        }
-
         return NextResponse.next();
-    } catch (error) {
+    } catch {
         console.error("JWT verification failed, trying to refresh token...");
         // TODO: Implement token refresh logic here
 
@@ -77,5 +94,11 @@ export const middleware = async (request: NextRequest) => {
 };
 
 export const config = {
-    matcher: ["/admin/:path*", "/Competition/:path*", "/profile/:path*"],
+    matcher: [
+        "/admin/:path*",
+        "/Competition/:path*",
+        "/profile/:path*",
+        "/register",
+        "/login",
+    ],
 };
