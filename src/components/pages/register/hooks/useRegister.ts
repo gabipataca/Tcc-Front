@@ -23,11 +23,7 @@ const schema = z
             .string({ message: "Campo obrigatório" })
             .min(8, { message: "A senha deve ter no mínimo 8 caracteres" })
             .regex(/[0-9]/, { message: "A senha deve conter pelo menos um número" }),
-        joinYear: z.coerce
-            .number()
-            .min(new Date().getFullYear() - 8, "Ano inválido!")
-            .max(new Date().getFullYear(), "Ano inválido!")
-            .nullable(),
+        joinYear: z.coerce.number().nullable().optional(),
         role: z.enum(["Student", "Teacher"]),
         accessCode: z.string().optional(),
     })
@@ -49,16 +45,17 @@ const schema = z
         };
 
         if (data.role === "Student") {
+            const currentYear = new Date().getFullYear();
+            
             // @ts-expect-error : extra
-            if (data.joinYear === "") {
+            if (data.joinYear === "" || data.joinYear === null || data.joinYear === undefined) {
                 addInvalidJoinYear();
             } else if (
-                !data.joinYear ||
                 data.joinYear === 0 ||
-                new Date().getFullYear() - data.joinYear > 8
+                data.joinYear < currentYear - 8
             ) {
                 addInvalidJoinYear();
-            } else if (data.joinYear > new Date().getFullYear()) {
+            } else if (data.joinYear > currentYear) {
                 addInvalidJoinYear();
             }
         }
