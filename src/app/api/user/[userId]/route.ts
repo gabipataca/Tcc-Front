@@ -4,6 +4,44 @@ import { UserEditRequest } from "@/types/User/Requests";
 import { User } from "@/types/User";
 import { ServerSideResponse } from "@/types/Global";
 
+/**
+ * Handles PUT requests to update a user's information.
+ *
+ * @param req - The incoming Next.js request object containing the updated user data.
+ * @param context - Route context containing the user ID parameter.
+ * @returns A JSON response containing the updated user data.
+ *
+ * @remarks
+ * **URL Parameter:**
+ * - `userId` (string): The user's RA (academic registration number)
+ *
+ * **Request Body (UserEditRequest):**
+ * ```json
+ * {
+ *   "name": "string",           // User's display name
+ *   "email": "string",          // User's email address
+ *   "joinYear": number | null,  // Year the user joined
+ *   "department": "string" | null // User's department
+ * }
+ * ```
+ *
+ * **Success Response (200):**
+ * ```json
+ * {
+ *   "status": 200,
+ *   "data": {
+ *     "ra": "string",
+ *     "name": "string",
+ *     "email": "string",
+ *     ...updated user details...
+ *   }
+ * }
+ * ```
+ *
+ * **Error Response:**
+ * - 404: User not found
+ * - 500: Server error when updating user
+ */
 export async function PUT(req: NextRequest, context: { params: Promise<{ userId: string }> }) {
     const { userId } = await context.params;
     const body = await req.json() as UserEditRequest;
@@ -27,6 +65,31 @@ export async function PUT(req: NextRequest, context: { params: Promise<{ userId:
     } satisfies ServerSideResponse<User>, { status: res.status });
 }
 
+/**
+ * Handles DELETE requests to permanently delete a user from the system.
+ *
+ * @param req - The incoming Next.js request object.
+ * @param context - Route context containing the user ID parameter.
+ * @returns A JSON response confirming the deletion.
+ *
+ * @remarks
+ * **URL Parameter:**
+ * - `userId` (string): The user's RA (academic registration number) to delete
+ *
+ * **Request:** No request body required. User authenticated via cookies.
+ *
+ * **Success Response (200):**
+ * ```json
+ * {
+ *   "status": 200
+ * }
+ * ```
+ *
+ * **Error Response:**
+ * - 404: User not found
+ * - 403: Insufficient permissions to delete this user
+ * - 500: Server error when deleting user
+ */
 export async function DELETE(req: NextRequest, context: { params: Promise<{ userId: string }> }) {
     const { userId } = await context.params;
     let res;

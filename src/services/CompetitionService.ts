@@ -15,6 +15,11 @@ import type {
 import type { ServerSideResponse } from "@/types/Global";
 
 class CompetitionService {
+    /**
+     * Retrieves the existing competition.
+     *
+     * @returns A promise that resolves to the server response containing the competition data.
+     */
     static async getExistentCompetition() {
         const response = await apiRequest<
             ServerSideResponse<CompetitionResponse>
@@ -25,6 +30,11 @@ class CompetitionService {
         return response.data;
     }
 
+    /**
+     * Retrieves all available competition templates.
+     *
+     * @returns A promise that resolves to the server response containing an array of competition templates.
+     */
     static async getCompetitionTemplates() {
         const response = await apiRequest<ServerSideResponse<Competition[]>>(
             "/api/competition/template",
@@ -36,6 +46,11 @@ class CompetitionService {
         return response.data;
     }
 
+    /**
+     * Retrieves all competitions that are currently open for group inscription.
+     *
+     * @returns A promise that resolves to the server response containing an array of competitions open for inscription.
+     */
     static async getCompetitionsOpenForInscription() {
         const response = await apiRequest<ServerSideResponse<Competition[]>>(
             "/api/competition/open",
@@ -47,6 +62,12 @@ class CompetitionService {
         return response.data;
     }
 
+    /**
+     * Creates a new competition with the specified configuration.
+     *
+     * @param data - The competition creation request containing all necessary details such as name, description, dates, and exercise IDs.
+     * @returns A promise that resolves to the server response containing the created competition data.
+     */
     static async createCompetition(data: CreateCompetitionRequest) {
         const response = await apiRequest<
             ServerSideResponse<CompetitionResponse>,
@@ -59,6 +80,12 @@ class CompetitionService {
         return response.data;
     }
 
+    /**
+     * Updates an existing competition with new configuration data.
+     *
+     * @param data - The competition update request containing the competition ID and updated details.
+     * @returns A promise that resolves to the server response containing the updated competition data.
+     */
     static async updateCompetition(data: UpdateCompetitionRequest) {
         const response = await apiRequest<
             ServerSideResponse<CompetitionResponse>,
@@ -71,6 +98,12 @@ class CompetitionService {
         return response.data;
     }
 
+    /**
+     * Enrolls a group in a specific competition.
+     *
+     * @param data - The inscription request containing the group ID and competition ID.
+     * @returns A promise that resolves to the server response containing the inscription result.
+     */
     static async inscribeGroupInCompetition(
         data: InscribeGroupInCompetitionRequest
     ) {
