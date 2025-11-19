@@ -5,6 +5,11 @@ import type { GetUsersResponse } from "@/types/User/Responses";
 import type { GenericUserInfo, User, UserRole } from "@/types/User";
 
 class UserService {
+    /**
+     * Retrieves the current authenticated user's information on the server side.
+     *
+     * @returns A promise that resolves to the user data.
+     */
     static async getUserInfoSSR(): Promise<User> {
         const response = await apiRequest<User>(`/User`, {
             method: "GET",
@@ -13,6 +18,16 @@ class UserService {
         return response.data;
     }
 
+    /**
+     * Retrieves a paginated list of users with optional filtering by search term and role.
+     *
+     * @param page - The page number to retrieve.
+     * @param pageSize - The number of users per page.
+     * @param search - Search term to filter users by name, email, or RA.
+     * @param abortSignal - Signal to abort the request if needed.
+     * @param role - Filter users by role (Admin, Teacher, or Student).
+     * @returns A promise that resolves to the server response containing the paginated users.
+     */
     static async GetUsers(
         page: number,
         pageSize: number,
@@ -37,6 +52,15 @@ class UserService {
         return response.data;
     }
 
+    /**
+     * Retrieves a paginated list of teacher users with optional search filtering.
+     *
+     * @param page - The page number to retrieve.
+     * @param pageSize - The number of teachers per page.
+     * @param search - Search term to filter teachers by name, email, or RA.
+     * @param abortSignal - Signal to abort the request if needed.
+     * @returns A promise that resolves to the response containing the paginated teachers.
+     */
     static async GetTeacherUsers(
         page: number,
         pageSize: number,
@@ -57,6 +81,13 @@ class UserService {
         return response.data;
     }
 
+    /**
+     * Updates a user's information.
+     *
+     * @param userId - The unique identifier (RA) of the user to update.
+     * @param request - The update request containing the new user data.
+     * @returns A promise that resolves to the server response containing the updated user information.
+     */
     static async updateUser(userId: string, request: UserEditRequest) {
         const response = await apiRequest<ServerSideResponse<GenericUserInfo>>(
             `/api/user/${userId}`,
@@ -69,6 +100,12 @@ class UserService {
         return response.data;
     }
 
+    /**
+     * Deletes a user from the system.
+     *
+     * @param userId - The unique identifier (RA) of the user to delete.
+     * @returns A promise that resolves to the server response confirming the deletion.
+     */
     static async deleteUser(userId: string): Promise<ServerSideResponse<void>> {
         const response = await apiRequest<ServerSideResponse<void>>(`/api/user/${userId}`, {
             method: "DELETE",

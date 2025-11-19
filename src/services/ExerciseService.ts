@@ -4,6 +4,16 @@ import { GetExercisesResponse } from "@/types/Exercise/Responses";
 import { ServerSideResponse } from "@/types/Global";
 
 class ExerciseService {
+    /**
+     * Retrieves a paginated list of exercises with optional filtering.
+     *
+     * @param page - The page number to retrieve.
+     * @param pageSize - The number of exercises per page.
+     * @param search - Search term to filter exercises by name or description.
+     * @param exerciseType - Optional filter by exercise type.
+     * @param abortSignal - Signal to abort the request if needed.
+     * @returns A promise that resolves to the server response containing the paginated exercises.
+     */
     static async getExercises(
         page: number,
         pageSize: number,
@@ -27,6 +37,12 @@ class ExerciseService {
         return response.data;
     }
 
+    /**
+     * Creates a new exercise in the system.
+     *
+     * @param exercise - Form data containing the exercise details including test cases and files.
+     * @returns A promise that resolves to the server response containing the created exercise data.
+     */
     static async createExercise(
         exercise: FormData
     ): Promise<ServerSideResponse<Exercise>> {
@@ -44,6 +60,12 @@ class ExerciseService {
         return response.data;
     }
 
+    /**
+     * Deletes an exercise by its ID.
+     *
+     * @param id - The unique identifier of the exercise to delete.
+     * @returns A promise that resolves to the server response confirming the deletion.
+     */
     static async deleteExercise(id: number): Promise<ServerSideResponse<void>> {
         const response = await apiRequest<ServerSideResponse<void>>(
             `/api/exercise/${id}`,
@@ -55,6 +77,12 @@ class ExerciseService {
         return response.data;
     }
 
+    /**
+     * Updates an existing exercise with new data.
+     *
+     * @param exercise - Form data containing the updated exercise details. Must include the exercise ID.
+     * @returns A promise that resolves to the server response containing the updated exercise data.
+     */
     static async updateExercise(exercise: FormData): Promise<ServerSideResponse<Exercise>> {
         const exerciseId = exercise.get("id");
 
