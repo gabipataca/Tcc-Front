@@ -6,8 +6,47 @@ import { AxiosResponse } from "axios";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
-
-
+/**
+ * Handles POST requests to register a new user in the system.
+ *
+ * This endpoint creates a new user account with the provided information,
+ * generates an authentication token, and sets it as an httpOnly cookie.
+ *
+ * @param req - The incoming Next.js request object.
+ * @returns A JSON response containing the registration result and user data.
+ *
+ * @remarks
+ * **Request Body (RegisterUserRequest):**
+ * ```json
+ * {
+ *   "name": "string",           // User's display name
+ *   "ra": "string",             // User's academic registration number
+ *   "email": "string",          // User's email address
+ *   "joinYear": number | null,  // Year the user joined
+ *   "password": "string",       // User's chosen password
+ *   "role": "Student" | "Teacher", // User role
+ *   "accessCode": "string",     // Optional: Required for teacher registration
+ *   "department": "string" | null // User's department
+ * }
+ * ```
+ *
+ * **Success Response (200):**
+ * ```json
+ * {
+ *   "status": 200,
+ *   "message": "Usuário registrado com sucesso.",
+ *   "data": {
+ *     "token": "string",
+ *     "user": { ...user details... }
+ *   }
+ * }
+ * ```
+ *
+ * **Error Responses:**
+ * - 403: User is already authenticated
+ * - 400: Validation error (invalid data)
+ * - 500: Server error during registration
+ */
 export async function POST(req: NextRequest) {
     const cookie = await cookies();
     cookie.delete("CompetitionAuthToken");
