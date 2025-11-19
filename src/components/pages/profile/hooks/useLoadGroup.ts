@@ -70,13 +70,14 @@ const useLoadGroups = () => {
     }, [loadGroups, searchTerm]);
 
     const deleteGroup = async (groupId: number) => {
-        try {
-            await GroupService.deleteGroup(groupId);
-            setGroups((prev) => prev.filter((g) => g.id !== groupId));
-        } catch (error) {
-            // Não remove da lista local se a exclusão no backend falhar
-            throw error;
+        const response = await GroupService.deleteGroup(groupId);
+        
+        if (response.status !== 200) {
+            throw new Error(response.data?.message || "Falha ao excluir o grupo.");
         }
+        
+        // Remove da lista local apenas se a exclusão no backend foi bem-sucedida
+        setGroups((prev) => prev.filter((g) => g.id !== groupId));
     };
 
     const updateGroup = async (groupId: number, name: string) => {

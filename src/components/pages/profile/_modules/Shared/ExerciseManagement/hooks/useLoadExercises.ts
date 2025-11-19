@@ -166,12 +166,14 @@ const useLoadExercises = () => {
 
     const deleteExercise = useCallback(
         async (id: number) => {
-            try {
-                await ExerciseService.deleteExercise(id);
-                setExercises((prev) => prev.filter((ex) => ex.id !== id));
-            } catch (error) {
-                console.error("Error deleting exercise:", error);
+            const response = await ExerciseService.deleteExercise(id);
+            
+            if (response.status !== 200) {
+                throw new Error("Falha ao excluir o exercício.");
             }
+            
+            // Remove da lista local apenas se a exclusão no backend foi bem-sucedida
+            setExercises((prev) => prev.filter((ex) => ex.id !== id));
         },
         [setExercises]
     );

@@ -69,8 +69,8 @@ class UserService {
         return response.data;
     }
 
-    static async deleteUser(userId: string) {
-        const response = await apiRequest<void>(`/api/user/${userId}`, {
+    static async deleteUser(userId: string): Promise<ServerSideResponse<void>> {
+        const response = await apiRequest<ServerSideResponse<void>>(`/api/user/${userId}`, {
             method: "DELETE",
         });
 
