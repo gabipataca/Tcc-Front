@@ -48,7 +48,7 @@ const useLoadGroups = () => {
                     name: group.name,
                     members: group.users?.length || 0,
                     status: group.users && group.users.length > 0 ? 'active' : 'inactive',
-                    lastCompetition: new Date().toISOString(),
+                    lastCompetition: group.lastCompetitionDate || new Date().toISOString(),
                 }));
 
                 setGroups(mappedGroups);
@@ -73,6 +73,7 @@ const useLoadGroups = () => {
         const response = await GroupService.deleteGroup(groupId);
         
         if (response.status !== 200) {
+            // @ts-expect-error : Irrelevant
             throw new Error(response.data?.message || "Falha ao excluir o grupo.");
         }
         

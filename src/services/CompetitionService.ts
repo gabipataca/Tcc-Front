@@ -9,6 +9,7 @@ import type {
 import type {
     CompetitionResponse,
     InscribeGroupInCompetitionResponse,
+    ChampionTeamResponse,
     // CurrentCompetitionResponse, //já deixei sincronizado com oq tem no back (ta faltando coisa no back que tem no frontend), precisa ver se vai usar
     // SubmissionResponse, //já deixei sincronizado com oq tem no back(ta faltando coisa no back que tem no frontend), precisa ver se vai usar
 } from "@/types/Competition/Responses";
@@ -147,6 +148,22 @@ class CompetitionService {
 
     //     return response.data;
     // }
+
+    /**
+     * Retrieves all champion teams from finished competitions.
+     *
+     * @returns A promise that resolves to the server response containing the list of champion team records.
+     */
+    static async getChampionTeams(): Promise<ServerSideResponse<ChampionTeamResponse[]>> {
+        const response = await apiRequest<ServerSideResponse<ChampionTeamResponse[]>>(
+            `/api/competition/champions`,
+            {
+                method: "GET",
+            }
+        );
+
+        return response.data;
+    }
 }
 
 export default CompetitionService;

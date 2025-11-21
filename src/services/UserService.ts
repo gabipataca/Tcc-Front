@@ -1,7 +1,7 @@
 import { apiRequest } from "@/libs/apiClient";
 import type { ServerSideResponse } from "@/types/Global";
 import type { UserEditRequest } from "@/types/User/Requests";
-import type { GetUsersResponse } from "@/types/User/Responses";
+import type { GetUsersResponse, UserCompetitionHistoryResponse } from "@/types/User/Responses";
 import type { GenericUserInfo, User, UserRole } from "@/types/User";
 
 class UserService {
@@ -110,6 +110,23 @@ class UserService {
         const response = await apiRequest<ServerSideResponse<void>>(`/api/user/${userId}`, {
             method: "DELETE",
         });
+
+        return response.data;
+    }
+
+    /**
+     * Retrieves the competition history for a specific user.
+     *
+     * @param userId - The unique identifier of the user.
+     * @returns A promise that resolves to the server response containing the list of competition history records.
+     */
+    static async getUserCompetitionHistory(userId: string): Promise<ServerSideResponse<UserCompetitionHistoryResponse[]>> {
+        const response = await apiRequest<ServerSideResponse<UserCompetitionHistoryResponse[]>>(
+            `/api/user/${userId}/competition-history`,
+            {
+                method: "GET",
+            }
+        );
 
         return response.data;
     }
