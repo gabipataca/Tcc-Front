@@ -10,6 +10,7 @@ import {
 } from "@/components/_ui/Tabs";
 import Button from "@/components/_ui/Button";
 import AccessCodeDialog from "./components/AccessCodeDialog";
+import TokenDisplay from "./components/TokenDisplay";
 import StatsGrid from "@/components/_ui/StatsGrid";
 import useProfileMenu from "../../hooks/useProfileMenu";
 import ExerciseManagement from "../Shared/ExerciseManagement";
@@ -68,26 +69,18 @@ const AdminDashboard: FC = () => {
                                 onClick={handleMonitorCompetition}
                                 rounded
                                 variant="success"
-                                className="bg-green-600 hover:bg-green-700"
+                                className="bg-green-600 hover:bg-green-700 whitespace-nowrap"
                             >
                                 <Eye className="w-4 h-4 mr-2" />
                                 Monitorar Competição
                             </Button>
                         )}
-                        <div className="text-right w-48 text-ellipsis overflow-hidden">
-                            <p className="text-sm text-[#4F85A6]">
-                                Código de Acesso Atual
-                            </p>
-                            <p
-                                className="text-lg font-mono font-bold text-[#3f3c40] text-ellipsis overflow-hidden"
-                            >
-                                {token ?? "Nenhum"}
-                            </p>
-                        </div>
+                        <TokenDisplay token={token} className="min-w-0 max-w-xs" />
                         <Button
                             onClick={toggleShowAccessCodeDialog}
                             rounded
                             variant="primary"
+                            className="whitespace-nowrap"
                         >
                             <Edit className="w-4 h-4 mr-2" />
                             Alterar Código
