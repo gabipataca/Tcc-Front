@@ -131,7 +131,7 @@ const StudentDashboard: React.FC = () => {
                         bodyContent: (
                             <p className="text-slate-600">
                                 Você precisa se inscrever na maratona antes de participar.
-                                Clique em "Realizar Inscrição" para se inscrever.
+                                Clique em &quot;Realizar Inscrição&quot; para se inscrever.
                             </p>
                         ),
                         hasConfirmButton: true,
