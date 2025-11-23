@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { FC, useState } from "react";
+import { FC, useState, useMemo } from "react";
 import { Users, UserCheck, Package, ChevronLeft, Eye } from "lucide-react";
 import { ButtonAdm } from "@/components/_ui/ButtonAdm";
 import {
@@ -19,6 +19,8 @@ import DepartmentModal from "@/components/pages/profile/_modules/TeacherDashboar
 import { useCompetitionStatus } from "@/contexts/CompetitionHubContext/hooks";
 import { CompetitionStatusBar } from "@/components/pages/Competition/CompetitionStatusBar";
 import { useRouter } from "next/navigation";
+import { useStatistics } from "@/hooks/useStatistics";
+import Loading from "@/components/_ui/Loading";
 
 const TeacherDashboard: FC = () => {
     const { activeMenu, toggleMenu } = useProfileMenu();
@@ -28,16 +30,17 @@ const TeacherDashboard: FC = () => {
     const [isDeptModalOpen, setIsDeptModalOpen] = useState(false);
 
     const { hasActiveCompetition } = useCompetitionStatus();
+    const { statistics, isLoading: isLoadingStats } = useStatistics();
 
     const handleMonitorCompetition = () => {
         router.push("/Competition");
     };
 
-    const stats = [
+    const stats = useMemo(() => [
         {
             id: "exercises",
             title: "Exercícios",
-            value: 20,
+            value: statistics.totalExercises,
             description: "Exercícios disponíveis",
             icon: Package,
             action: () => toggleMenu("Exercise"),
@@ -45,7 +48,7 @@ const TeacherDashboard: FC = () => {
         {
             id: "students",
             title: "Total de Alunos",
-            value: 2,
+            value: statistics.totalStudents,
             description: "Ativos no último mês",
             icon: Users,
             action: () => {
@@ -56,7 +59,7 @@ const TeacherDashboard: FC = () => {
         {
             id: "groups",
             title: "Grupos Ativos",
-            value: 2,
+            value: statistics.totalGroups,
             description: "Ativos no último mês",
             icon: UserCheck,
             action: () => {
@@ -64,7 +67,7 @@ const TeacherDashboard: FC = () => {
                 setActiveTab("groups");
             },
         },
-    ];
+    ], [statistics, toggleMenu]);
 
     return (
         <div className="flex-1">
@@ -119,23 +122,33 @@ const TeacherDashboard: FC = () => {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {stats.map((stat) => (
-                        <div
-                            key={stat.id}
-                            onClick={stat.action}
-                            className="cursor-pointer transition-transform duration-200 hover:scale-105"
-                        >
-                            <StatsCard
-                                title={stat.title}
-                                value={stat.value}
-                                description={stat.description}
-                                icon={stat.icon}
-                                className="h-full"
-                            />
-                        </div>
-                    ))}
-                </div>
+                {isLoadingStats ? (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {[1, 2, 3].map((i) => (
+                            <div key={i} className="h-32 bg-white rounded-lg border border-[#e9edee] flex items-center justify-center">
+                                <Loading variant="spinner" size="sm" />
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {stats.map((stat) => (
+                            <div
+                                key={stat.id}
+                                onClick={stat.action}
+                                className="cursor-pointer transition-transform duration-200 hover:scale-105"
+                            >
+                                <StatsCard
+                                    title={stat.title}
+                                    value={stat.value}
+                                    description={stat.description}
+                                    icon={stat.icon}
+                                    className="h-full"
+                                />
+                            </div>
+                        ))}
+                    </div>
+                )}
 
                 {activeMenu === "Main" ? (
                     <Tabs

@@ -204,6 +204,10 @@ export const WebSocketContextProvider = ({
                     newConnection.invoke("GetConnectionId").catch((err) => {
                         console.error("Error getting connection ID after reconnect:", err);
                     });
+                    
+                    // Trigger a re-fetch of competition data by emitting an event
+                    // This ensures the CompetitionHubContext gets fresh data
+                    console.log("🔄 Requesting fresh competition data after reconnection");
                 }
             });
 

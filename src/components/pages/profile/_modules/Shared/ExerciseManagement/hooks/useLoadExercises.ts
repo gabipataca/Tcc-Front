@@ -124,7 +124,7 @@ const useLoadExercises = () => {
                 const controller = new AbortController();
                 setControllerSignal(controller);
 
-                const response = await ExerciseService.getExercises(
+                const response = await ExerciseService.getExercisesWithSignal(
                     currentPage,
                     10,
                     searchTerm,

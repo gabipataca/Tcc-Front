@@ -28,7 +28,7 @@ class UserService {
      * @param role - Filter users by role (Admin, Teacher, or Student).
      * @returns A promise that resolves to the server response containing the paginated users.
      */
-    static async GetUsers(
+    static async GetUsersWithSignal(
         page: number,
         pageSize: number,
         search: string,
@@ -125,6 +125,38 @@ class UserService {
             `/api/user/${userId}/competition-history`,
             {
                 method: "GET",
+            }
+        );
+
+        return response.data;
+    }
+
+    /**
+     * Retrieves user statistics for dashboard.
+     * Fetches users with minimal pagination to get totalCount.
+     *
+     * @param page - The page number to retrieve (default: 1).
+     * @param pageSize - The number of users per page (default: 1 for statistics).
+     * @param search - Optional search term to filter users.
+     * @param role - Optional role filter (Admin, Teacher, or Student).
+     * @returns A promise that resolves to the server response containing user statistics.
+     */
+    static async getUsers(
+        page: number = 1,
+        pageSize: number = 1,
+        search?: string,
+        role?: UserRole
+    ): Promise<ServerSideResponse<GetUsersResponse>> {
+        const response = await apiRequest<ServerSideResponse<GetUsersResponse>>(
+            `/api/user`,
+            {
+                method: "GET",
+                params: {
+                    page,
+                    pageSize,
+                    ...(search && { search }),
+                    ...(role && { role }),
+                },
             }
         );
 

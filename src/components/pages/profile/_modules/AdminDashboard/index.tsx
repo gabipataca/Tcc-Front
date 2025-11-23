@@ -23,6 +23,7 @@ import useAdminDashboard from "./hooks/useAdminDashboard";
 import { useCompetitionStatus } from "@/contexts/CompetitionHubContext/hooks";
 import { CompetitionStatusBar } from "@/components/pages/Competition/CompetitionStatusBar";
 import { useRouter } from "next/navigation";
+import { useStatistics } from "@/hooks/useStatistics";
 
 const AdminDashboard: FC = () => {
     const [activeTab, setActiveTab] = useState("students");
@@ -33,6 +34,8 @@ const AdminDashboard: FC = () => {
         useAdminDashboard();
 
     const { hasActiveCompetition } = useCompetitionStatus();
+    
+    const { statistics, isLoading: isLoadingStats } = useStatistics();
 
     const handleMonitorCompetition = () => {
         router.push("/Competition");
@@ -88,7 +91,11 @@ const AdminDashboard: FC = () => {
                     </div>
                 </div>
 
-                <StatsGrid />
+                <StatsGrid 
+                    totalExercises={statistics.totalExercises}
+                    inactiveUsers={statistics.inactiveUsers}
+                    isLoading={isLoadingStats}
+                />
 
                 {activeMenu === "Main" ? (
                     <Tabs

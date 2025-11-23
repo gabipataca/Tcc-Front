@@ -34,8 +34,10 @@ import {
     FaTrophy, 
     FaExclamationTriangle,
     FaCode,
-    FaHourglassHalf
+    FaHourglassHalf,
+    FaSyncAlt
 } from "react-icons/fa";
+import { formatDateWithoutTimezone } from "@/libs/utils";
 
 /**
  * Competition Status Bar - Shows real-time competition status, timer, and info.
@@ -52,7 +54,7 @@ export const CompetitionStatusBar: React.FC = () => {
         timeRemaining,
     } = useCompetitionStatus();
 
-    const [, setCurrentTime] = useState(new Date());
+    const [currentTime, setCurrentTime] = useState(new Date());
 
     // Update timer every second for smooth countdown
     useEffect(() => {
@@ -70,6 +72,13 @@ export const CompetitionStatusBar: React.FC = () => {
                     <div className="flex items-center justify-center gap-2 text-red-800">
                         <FaExclamationTriangle className="w-5 h-5 animate-pulse" />
                         <span className="font-medium">⚠️ Desconectado do servidor. Tentando reconectar...</span>
+                        <button
+                            onClick={() => window.location.reload()}
+                            className="ml-4 px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition-colors flex items-center gap-2"
+                        >
+                            <FaSyncAlt className="w-3 h-3" />
+                            Recarregar
+                        </button>
                     </div>
                 </div>
             </div>
@@ -221,7 +230,7 @@ export const CompetitionStatusBar: React.FC = () => {
                         <p className="text-sm text-red-800 text-center font-medium">
                             ⏰ Competição encerrada em{" "}
                             {ongoingCompetition!.endTime 
-                                ? new Date(ongoingCompetition!.endTime).toLocaleString("pt-BR")
+                                ? formatDateWithoutTimezone(ongoingCompetition!.endTime.toString())
                                 : "data desconhecida"
                             }
                         </p>

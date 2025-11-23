@@ -10,6 +10,7 @@ import AnaliseJuiz from "../Competition/analiseJugde";
 import { useRanking } from "@/contexts/CompetitionHubContext/hooks/useRanking";
 import { useCompetitionHub } from "@/contexts/CompetitionHubContext";
 import { convertTimeSpanToNumber } from "@/libs/utils";
+import { useRouter } from "next/navigation";
 
 interface GroupRankingData {
     group: string;
@@ -38,45 +39,28 @@ const colors = [
     "#80A582",
 ];
 
-const data: GroupRankingData[] = [
-    {
-        group: "Equipe 1",
-        exercisesAccepteds: ["A", "B", "C", "D", "E", "F", "G", "H", "I"],
-        times: {
-            A: "2/64",
-            B: "1/16",
-            C: "1/99",
-            D: "2/80",
-            E: "1/31",
-            F: "1/7",
-            G: "1/162",
-            H: "3/120",
-            I: "1/88",
-            J: "2/47",
-        },
-        total: "9 (740)",
-        totalCount: 9,
-        totalScore: 740,
-    },
-];
-
-data.sort((a, b) => {
-    if (a.totalCount === b.totalCount) return a.totalScore - b.totalScore;
-    return b.totalCount - a.totalCount;
-});
-
 const RankingPage: React.FC = () => {
     const [open, setOpen] = useState(false);
     const { liveRanking } = useRanking();
     const { requestRanking, ongoingCompetition, isConnected } =
         useCompetitionHub();
+    const router = useRouter();
 
     // Request ranking when the page loads and connection is ready
     useEffect(() => {
         if (isConnected) {
+            console.log("🔄 Competition page mounted, requesting ranking");
             requestRanking();
         }
     }, [isConnected, requestRanking]);
+
+    // Redirect if no competition is available
+    useEffect(() => {
+        if (isConnected && !ongoingCompetition) {
+            console.log("⚠️ No competition available, redirecting to profile");
+            router.push("/Profile");
+        }
+    }, [isConnected, ongoingCompetition, router]);
 
     // Transform SignalR ranking data to component format
     const data = useMemo(() => {
@@ -106,13 +90,18 @@ const RankingPage: React.FC = () => {
                 }
 
                 // Format: "attempts/time" (e.g., "2/64" means 2 attempts, 64 minutes)
-                // submissionPenalty is already in seconds, so convert to minutes
-                const penaltyMinutes = convertTimeSpanToNumber(
-                    String(ongoingCompetition.submissionPenalty)
-                ) / 60;
-                times[exerciseLetter] = `${attempt.attempts}/${Math.round(
-                    attempt.attempts * penaltyMinutes
-                )}`;
+                // Only count attempts for accepted exercises - penalty is applied per accepted problem
+                if (attempt.accepted) {
+                    const penaltyMinutes = convertTimeSpanToNumber(
+                        String(ongoingCompetition.submissionPenalty)
+                    ) / 60;
+                    times[exerciseLetter] = `${attempt.attempts}/${Math.round(
+                        attempt.attempts * penaltyMinutes
+                    )}`;
+                } else {
+                    // For non-accepted exercises, just show attempts without penalty calculation
+                    times[exerciseLetter] = `${attempt.attempts}/-`;
+                }
             });
 
             return {

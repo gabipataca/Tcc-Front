@@ -66,16 +66,20 @@ export const useLoadCompetitions = () => {
             const data = response.data!;
 
             data.forEach((comp) => {
-                comp.duration = 90;
-                comp.submissionPenalty = 20;
-                comp.maxExercises = 4;
-                comp.maxSubmissionSize = 20;
+                comp.duration = comp.duration 
+                    ? Math.floor(convertTimeSpanToNumber(comp.duration as unknown as string) / 60)
+                    : 90;
+                comp.submissionPenalty = comp.submissionPenalty
+                    ? Math.floor(convertTimeSpanToNumber(comp.submissionPenalty as unknown as string) / 60)
+                    : 20;
+                comp.maxExercises = comp.maxExercises ?? 4;
+                comp.maxSubmissionSize = comp.maxSubmissionSize ?? 20;
                 comp.stopRanking = null;
                 comp.blockSubmissions = null;
                 comp.startInscriptions = new Date(comp.startInscriptions!);
                 comp.endInscriptions = new Date(comp.endInscriptions!);
                 comp.startTime = new Date(comp.startTime!);
-                comp.endTime = new Date(comp.endTime!);
+                comp.endTime = comp.endTime ? new Date(comp.endTime) : null;
             });
 
             setTemplateCompetitions(data);

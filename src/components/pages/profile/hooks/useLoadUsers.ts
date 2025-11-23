@@ -58,7 +58,7 @@ const useLoadUsers = (role: UserRole) => {
                 const controller = new AbortController();
                 setControllerSignal(controller);
 
-                const response = await UserService.GetUsers(
+                const response = await UserService.GetUsersWithSignal(
                     currentPage,
                     10,
                     searchTerm,

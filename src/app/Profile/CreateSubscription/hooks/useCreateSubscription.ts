@@ -67,17 +67,9 @@ export const useCompetitionForm = () => {
             if (hasDateErrors) return;
 
             try {
-                const startTimeISO = new Date(
-                    `${initialDate}T${initialDateTime}:00`
-                ).toISOString();
-
-                const startInscriptionsISO = new Date(
-                    `${initialRegistration}T${initialRegistrationTime}:00`
-                ).toISOString();
-
-                const endInscriptionsISO = new Date(
-                    `${endRegistration}T${endRegistrationTime}:00`
-                ).toISOString();
+                const startTimeISO = `${initialDate}T${initialDateTime}:00.000Z`;
+                const startInscriptionsISO = `${initialRegistration}T${initialRegistrationTime}:00.000Z`;
+                const endInscriptionsISO = `${endRegistration}T${endRegistrationTime}:00.000Z`;
 
                 const dataCompetition: CreateCompetitionRequest = {
                     name,

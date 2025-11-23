@@ -162,6 +162,31 @@ export const CompetitionHubProvider: React.FC<{ children: React.ReactNode }> = (
             setIsConnected(true);
         });
 
+        // Listen for competition updates (when competition starts, ends, or settings change)
+        webSocketConnection.on("ReceiveCompetitionUpdate", (data: OnConnectionResponse) => {
+            console.log("🔄 ReceiveCompetitionUpdate:", data);
+            setOngoingCompetition(data);
+            if (data) {
+                setRanking(data.competitionRankings || []);
+            }
+        });
+
+        // Listen for competition ended event
+        webSocketConnection.on("ReceiveCompetitionEnded", () => {
+            console.log("🏁 ReceiveCompetitionEnded");
+            setOngoingCompetition(null);
+            setRanking([]);
+            setQuestions([]);
+            setSubmissions([]);
+            setIsConnected(false);
+            
+            enqueueSnackbar("A competição foi encerrada", {
+                variant: "info",
+                autoHideDuration: 5000,
+                anchorOrigin: { vertical: "bottom", horizontal: "right" },
+            });
+        });
+
         // Pong response for health check
         webSocketConnection.on("Pong", (response: { message: string }) => {
             console.log("🏓 Pong:", response.message);
@@ -367,6 +392,8 @@ export const CompetitionHubProvider: React.FC<{ children: React.ReactNode }> = (
         return () => {
             // Cleanup listeners
             webSocketConnection.off("OnConnectionResponse");
+            webSocketConnection.off("ReceiveCompetitionUpdate");
+            webSocketConnection.off("ReceiveCompetitionEnded");
             webSocketConnection.off("Pong");
             webSocketConnection.off("ReceiveExerciseAttemptError");
             webSocketConnection.off("ReceiveExerciseAttemptResponse");
@@ -724,6 +751,11 @@ export const CompetitionHubProvider: React.FC<{ children: React.ReactNode }> = (
                             variant: "success",
                             anchorOrigin: { vertical: "bottom", horizontal: "right" },
                         });
+                        // Clear competition state when stopped
+                        setOngoingCompetition(null);
+                        setRanking([]);
+                        setQuestions([]);
+                        setSubmissions([]);
                     } else {
                         enqueueSnackbar(response.message || "Erro ao finalizar competição", {
                             variant: "error",

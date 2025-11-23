@@ -202,9 +202,18 @@ const useCreateCompetition = () => {
                 shouldValidate: false,
                 shouldDirty: false,
             });
+            
+            // Extrair data e hora do objeto Date (já convertido em loadTemplateCompetitions)
+            // Obter componentes da data local sem conversão UTC
+            const year = competition.startTime.getFullYear();
+            const month = String(competition.startTime.getMonth() + 1).padStart(2, '0');
+            const day = String(competition.startTime.getDate()).padStart(2, '0');
+            const hours = String(competition.startTime.getHours()).padStart(2, '0');
+            const minutes = String(competition.startTime.getMinutes()).padStart(2, '0');
+            
             setValue(
                 "startDate",
-                competition.startTime.toISOString().split("T")[0],
+                `${year}-${month}-${day}`, // "2025-11-26"
                 {
                     shouldValidate: false,
                     shouldDirty: false,
@@ -212,10 +221,7 @@ const useCreateCompetition = () => {
             );
             setValue(
                 "startTime",
-                competition.startTime
-                    .toISOString()
-                    .split("T")[1]
-                    .substring(0, 5),
+                `${hours}:${minutes}`, // "14:00"
                 {
                     shouldValidate: false,
                     shouldDirty: false,
@@ -279,9 +285,8 @@ const useCreateCompetition = () => {
                     id: activeCompetition.id,
                     name: activeCompetition.name,
                     description: data.description,
-                    startTime: new Date(
-                        `${data.startDate}T${data.startTime.split(".")[0]}`
-                    ).toISOString(),
+                    // Manter horário exato sem conversão de timezone
+                    startTime: `${data.startDate}T${data.startTime.split(".")[0]}:00.000Z`,
                     duration: convertNumberToTimeSpan(data.duration * 60),
                     blockSubmissions: convertNumberToTimeSpan(
                         data.stopAnswering * 60
@@ -301,6 +306,15 @@ const useCreateCompetition = () => {
                         activeCompetition.endInscriptions!.toISOString(),
                     maxMembers: activeCompetition.maxMembers!,
                 };
+
+                console.group("🔍 DEBUG - Criar Competição");
+                console.log("📅 Dados do Formulário:");
+                console.log(`   Data: ${data.startDate}`);
+                console.log(`   Hora: ${data.startTime}`);
+                console.log("\n📤 Enviando para Backend:");
+                console.log(`   startTime: ${payload.startTime}`);
+                console.log("\n⚠️  IMPORTANTE: Horário mantido sem conversão de timezone");
+                console.groupEnd();
 
                 await updateTemplateCompetition(payload);
 

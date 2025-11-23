@@ -75,7 +75,7 @@ class GroupService {
      * @param abortSignal - Signal to abort the request if needed.
      * @returns A promise that resolves to the server response containing the paginated groups.
      */
-    static async GetGroups(
+    static async GetGroupsWithSignal(
         page: number,
         pageSize: number,
         search: string,
@@ -196,6 +196,32 @@ class GroupService {
             `/api/group/${groupId}`,
             {
                 method: "DELETE",
+            }
+        );
+
+        return response.data;
+    }
+
+    /**
+     * Retrieves the total count of groups for statistics.
+     * Fetches only the first page with minimal data to get totalCount.
+     *
+     * @returns A promise that resolves to the server response with group statistics.
+     */
+    static async getGroups(
+        page: number = 1,
+        pageSize: number = 1,
+        search?: string
+    ): Promise<ServerSideResponse<GetGroupsResponse>> {
+        const response = await apiRequest<ServerSideResponse<GetGroupsResponse>>(
+            `/api/group`,
+            {
+                method: "GET",
+                params: {
+                    page,
+                    pageSize,
+                    ...(search && { search }),
+                },
             }
         );
 

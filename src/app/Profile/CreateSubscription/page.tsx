@@ -51,13 +51,9 @@ const CreateCompetitionSubscription: React.FC = () => {
     const formatDateTime = (date: string, time: string) => {
         if (!date || !time) return "Incompleto";
         try {
-            return new Date(`${date}T${time}:00`).toLocaleString("pt-BR", {
-                day: "2-digit",
-                month: "2-digit",
-                year: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-            });
+            // Formatar sem conversão de timezone
+            const [year, month, day] = date.split('-');
+            return `${day}/${month}/${year}, ${time}`;
         } catch (e) {
             return "Data inválida";
         }

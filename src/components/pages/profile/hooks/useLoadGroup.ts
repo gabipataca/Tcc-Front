@@ -31,7 +31,7 @@ const useLoadGroups = () => {
             try {
                 const controller = new AbortController();
                 setControllerSignal(controller);
-                const res = await GroupService.GetGroups(
+                const res = await GroupService.GetGroupsWithSignal(
                     currentPage,
                     itemsPerPage,
                     term,
