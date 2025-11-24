@@ -58,12 +58,20 @@ const DepartmentModal: React.FC<DepartmentModalProps> = ({ open, onClose }) => {
                     groupId: user!.groupId,
                 });
 
-                if (res.status == 200) {
-                    setUser((prev) => ({
-                        ...prev!,
-                        department: data.department,
-                        email: data.email,
-                    }));
+                if (res.status == 200 && res.data) {
+                    const updatedUser = res.data;
+                    
+                    setUser((prev) => {
+                        if (!prev) return null;
+                        return {
+                            ...prev,
+                            department: updatedUser.department ?? prev.department,
+                            email: updatedUser.email,
+                            name: updatedUser.name,
+                            joinYear: updatedUser.joinYear ?? prev.joinYear,
+                        };
+                    });
+                    
                     enqueueSnackbar("Informações atualizadas com sucesso!", {
                         variant: "success",
                         autoHideDuration: 5000,
@@ -97,7 +105,9 @@ const DepartmentModal: React.FC<DepartmentModalProps> = ({ open, onClose }) => {
     );
 
     const onError: SubmitErrorHandler<z.infer<typeof schema>> = useCallback(
-        (errors) => {},
+        () => {
+            // Log errors if needed
+        },
         []
     );
 
