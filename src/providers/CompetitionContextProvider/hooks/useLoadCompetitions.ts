@@ -161,7 +161,9 @@ export const useLoadCompetitions = () => {
                                 maxMembers: null,
                                 exercises: [],
                                 groups: [],
-                                competitionRankings: []
+                                competitionRankings: [],
+                                logs: [],
+                                questions: [],
                             } satisfies Competition)
                             : comp
                     )

@@ -2,7 +2,7 @@
 
 import type React from "react";
 import { FC, useState, useMemo } from "react";
-import { Users, UserCheck, Package, ChevronLeft, Eye } from "lucide-react";
+import { Users, UserCheck, Package, ChevronLeft, Eye, Archive } from "lucide-react";
 import { ButtonAdm } from "@/components/_ui/ButtonAdm";
 import {
     Tabs,
@@ -21,6 +21,7 @@ import { CompetitionStatusBar } from "@/components/pages/Competition/Competition
 import { useRouter } from "next/navigation";
 import { useStatistics } from "@/hooks/useStatistics";
 import { StatsCardSkeleton } from "@/components/_ui/Skeleton";
+import Button from "@/components/_ui/Button";
 
 const TeacherDashboard: FC = () => {
     const { activeMenu, toggleMenu } = useProfileMenu();
@@ -34,6 +35,10 @@ const TeacherDashboard: FC = () => {
 
     const handleMonitorCompetition = () => {
         router.push("/Competition");
+    };
+
+    const handleViewArchive = () => {
+        router.push("/Competition/Archive");
     };
 
     const stats = useMemo(() => [
@@ -98,17 +103,31 @@ const TeacherDashboard: FC = () => {
                     <div className="flex items-center gap-3">
                         {/* Botão Monitorar Competição - aparece apenas se houver competição ativa */}
                         {hasActiveCompetition && (
-                            <ButtonAdm
+                            <Button
                                 type="button"
-                                variant="default"
+                                variant="primary"
+                                rounded
                                 size="default"
                                 onClick={handleMonitorCompetition}
                                 className="bg-green-600 hover:bg-green-700 text-white font-semibold"
                             >
                                 <Eye className="w-4 h-4 mr-2" />
                                 Monitorar Competição
-                            </ButtonAdm>
+                            </Button>
                         )}
+
+                        <Button
+                            type="button"
+                            variant="primary"
+                            rounded
+                            size="default"
+                            onClick={handleViewArchive}
+                            
+                            className="bg-purple-600 hover:bg-purple-700 text-white font-semibold"
+                        >
+                            <Archive className="w-4 h-4 mr-2" />
+                            Competições Finalizadas
+                        </Button>
 
                         <ButtonAdm
                             type="button"

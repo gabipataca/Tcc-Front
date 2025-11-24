@@ -5,6 +5,7 @@ import { RoleClaimKey } from "./constants/Auth";
 
 const protectedRoutes = [
     { path: "/admin", roles: ["Admin"] },
+    { path: "/Competition/Archive", roles: ["Admin", "Teacher"] },
     { path: "/Competition", roles: ["Admin", "Teacher", "Student"] },
     { path: "/Profile", roles: ["Admin", "Teacher", "Student"] },
 ];

@@ -78,6 +78,8 @@ const useCompetitionContext = () => {
                         exercises: [],
                         groups: [],
                         competitionRankings: [],
+                        logs: [],
+                        questions: [],
                     });
 
                     enqueueSnackbar(

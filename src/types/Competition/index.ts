@@ -1,7 +1,8 @@
 import { Exercise } from "../Exercise";
 import { Group } from "../Group";
+import { Log } from "../Log";
+import { Question } from "../Question";
 import { CompetitionRankingResponse } from "../SignalR";
-
 
 /**
  * Status of the competition.
@@ -112,6 +113,16 @@ export interface Competition {
      * List of competition rankings.
      */
     competitionRankings: CompetitionRankingResponse[];
+
+    /**
+     * Logs related to the competition.
+     */
+    logs: Log[];
+
+    /**
+     * List of questions associated with the competition.
+     */
+    questions: Question[];
 }
 
 /**

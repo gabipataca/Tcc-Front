@@ -154,9 +154,49 @@ class CompetitionService {
      *
      * @returns A promise that resolves to the server response containing the list of champion team records.
      */
-    static async getChampionTeams(): Promise<ServerSideResponse<ChampionTeamResponse[]>> {
-        const response = await apiRequest<ServerSideResponse<ChampionTeamResponse[]>>(
-            `/api/competition/champions`,
+    static async getChampionTeams(): Promise<
+        ServerSideResponse<ChampionTeamResponse[]>
+    > {
+        const response = await apiRequest<
+            ServerSideResponse<ChampionTeamResponse[]>
+        >(`/api/competition/champions`, {
+            method: "GET",
+        });
+
+        return response.data;
+    }
+
+    /**
+     * Retrieves all finished competitions with their full data.
+     *
+     * @returns A promise that resolves to the server response containing an array of finished competitions.
+     * @remarks Only accessible by Admin/Teacher roles.
+     */
+    static async getFinishedCompetitions(): Promise<
+        ServerSideResponse<Competition[]>
+    > {
+        const response = await apiRequest<ServerSideResponse<Competition[]>>(
+            `/api/competition/finished`,
+            {
+                method: "GET",
+            }
+        );
+
+        return response.data;
+    }
+
+    /**
+     * Retrieves a specific competition by its ID, including all related entities.
+     *
+     * @param id - The unique identifier of the competition to retrieve.
+     * @returns A promise that resolves to the server response containing the competition data with exercises, groups, rankings, questions, and logs.
+     * @remarks Works for both active and finished competitions. Only accessible by Admin/Teacher roles.
+     */
+    static async getCompetitionById(
+        id: number
+    ): Promise<ServerSideResponse<Competition>> {
+        const response = await apiRequest<ServerSideResponse<Competition>>(
+            `/api/competition/${id}`,
             {
                 method: "GET",
             }

@@ -1,7 +1,7 @@
 "use client";
 
 import { FC, useState } from "react";
-import { Edit, ChevronLeft, Eye } from "lucide-react";
+import { Edit, ChevronLeft, Eye, Archive } from "lucide-react";
 import {
     Tabs,
     TabsContent,
@@ -41,6 +41,10 @@ const AdminDashboard: FC = () => {
         router.push("/Competition");
     };
 
+    const handleViewArchive = () => {
+        router.push("/Competition/Archive");
+    };
+
     return (
         <div className="flex-1">
             {/* Competition Status Bar - aparece quando há competição ativa */}
@@ -78,6 +82,19 @@ const AdminDashboard: FC = () => {
                                 Monitorar Competição
                             </Button>
                         )}
+
+                        <Button
+                            type="button"
+                            variant="primary"
+                            size="default"
+                            onClick={handleViewArchive}
+                            rounded
+                            className="bg-purple-600 hover:bg-purple-700 text-white font-semibold"
+                        >
+                            <Archive className="w-4 h-4 mr-2" />
+                            Competições Finalizadas
+                        </Button>
+
                         <TokenDisplay token={token} className="min-w-0 max-w-xs" />
                         <Button
                             onClick={toggleShowAccessCodeDialog}

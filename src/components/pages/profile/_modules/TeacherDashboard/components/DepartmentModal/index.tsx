@@ -60,18 +60,19 @@ const DepartmentModal: React.FC<DepartmentModalProps> = ({ open, onClose }) => {
 
                 if (res.status == 200 && res.data) {
                     const updatedUser = res.data;
-                    
+
                     setUser((prev) => {
                         if (!prev) return null;
                         return {
                             ...prev,
-                            department: updatedUser.department ?? prev.department,
+                            department:
+                                updatedUser.department ?? prev.department,
                             email: updatedUser.email,
                             name: updatedUser.name,
                             joinYear: updatedUser.joinYear ?? prev.joinYear,
                         };
                     });
-                    
+
                     enqueueSnackbar("Informações atualizadas com sucesso!", {
                         variant: "success",
                         autoHideDuration: 5000,
@@ -104,12 +105,10 @@ const DepartmentModal: React.FC<DepartmentModalProps> = ({ open, onClose }) => {
         [enqueueSnackbar, onClose, setUser, user]
     );
 
-    const onError: SubmitErrorHandler<z.infer<typeof schema>> = useCallback(
-        () => {
+    const onError: SubmitErrorHandler<z.infer<typeof schema>> =
+        useCallback(() => {
             // Log errors if needed
-        },
-        []
-    );
+        }, []);
 
     return (
         <Modal
@@ -119,7 +118,7 @@ const DepartmentModal: React.FC<DepartmentModalProps> = ({ open, onClose }) => {
             description="Altere seus dados"
             hasConfirmButton
             hasCancelButton
-			loading={isLoading}
+            loading={isLoading}
             confirmButtonContent="Salvar alterações"
             cancelButtonContent="Cancelar"
             onConfirm={handleSubmit(onConfirm, onError)}
@@ -138,7 +137,7 @@ const DepartmentModal: React.FC<DepartmentModalProps> = ({ open, onClose }) => {
                                 <Input
                                     type="text"
                                     className="mt-1"
-									disabled={isLoading}
+                                    disabled={isLoading}
                                     placeholder="Digite o nome do departamento"
                                     {...field}
                                 />
@@ -156,7 +155,7 @@ const DepartmentModal: React.FC<DepartmentModalProps> = ({ open, onClose }) => {
                                 <Input
                                     type="email"
                                     className="mt-1"
-									disabled={isLoading}
+                                    disabled={isLoading}
                                     placeholder="Digite o e-mail institucional"
                                     {...field}
                                 />

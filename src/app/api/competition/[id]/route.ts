@@ -1,8 +1,80 @@
 import { apiRequest } from "@/libs/apiClient";
 import { UpdateCompetitionRequest } from "@/types/Competition/Requests";
 import { UpdateCompetitionResponse } from "@/types/Competition/Responses";
+import { Competition } from "@/types/Competition";
 import { ServerSideResponse } from "@/types/Global";
 import { NextRequest, NextResponse } from "next/server";
+
+/**
+ * Handles GET requests to retrieve a specific competition by its ID.
+ *
+ * @param req - The incoming Next.js request object.
+ * @param context - Route context containing the competition ID parameter.
+ * @returns A JSON response containing the competition data with all related entities.
+ *
+ * @remarks
+ * **URL Parameter:**
+ * - `id`: The unique identifier of the competition to retrieve
+ *
+ * **Success Response (200):**
+ * ```json
+ * {
+ *   "status": 200,
+ *   "data": {
+ *     "id": number,
+ *     "name": "string",
+ *     "description": "string",
+ *     "status": "Finished" | "Ongoing" | ...,
+ *     "exercises": [...],     // All exercises with inputs/outputs
+ *     "groups": [...],        // All groups with users
+ *     "rankings": [...],      // Competition rankings
+ *     "questions": [...],     // Questions with answers
+ *     "logs": [...],          // Competition logs
+ *     ...competition details...
+ *   }
+ * }
+ * ```
+ *
+ * **Error Response (404):**
+ * ```json
+ * {
+ *   "message": "Competição com ID {id} não encontrada.",
+ *   "status": 404
+ * }
+ * ```
+ *
+ * **Error Response (500):**
+ * - Server error when fetching competition
+ */
+export async function GET(
+    req: NextRequest,
+    context: { params: Promise<{ id: string }> }
+) {
+    const id = parseInt((await context.params).id);
+
+    let res;
+    try {
+        res = await apiRequest<Competition>(
+            `/Competition/${id}`,
+            {
+                method: "GET",
+                cookies: req.cookies.toString(),
+            }
+        );
+    } catch {
+        return NextResponse.json(
+            { message: `Competição com ID ${id} não encontrada.`, status: 404 },
+            { status: 404 }
+        );
+    }
+    return NextResponse.json(
+        {
+            data: res.data,
+            status: res.status,
+        } satisfies ServerSideResponse<Competition>,
+        { status: res.status }
+    );
+}
 
 /**
  * Handles PUT requests to update an existing competition by its ID.
