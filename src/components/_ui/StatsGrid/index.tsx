@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import StatsCard from "../../pages/profile/components/StatsCard";
 import { useProfileMenuContext } from "@/components/pages/profile/contexts/ProfileMenuContext";
-import Loading from "../Loading";
+import { StatsCardSkeleton } from "../Skeleton";
 
 interface StatsGridProps {
     /**
@@ -75,9 +75,7 @@ const StatsGrid: FC<StatsGridProps> = ({
         return (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
                 {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="h-32 bg-white rounded-lg border border-[#e9edee] flex items-center justify-center">
-                        <Loading variant="spinner" size="sm" />
-                    </div>
+                    <StatsCardSkeleton key={i} />
                 ))}
             </div>
         );

@@ -20,7 +20,7 @@ import { useCompetitionStatus } from "@/contexts/CompetitionHubContext/hooks";
 import { CompetitionStatusBar } from "@/components/pages/Competition/CompetitionStatusBar";
 import { useRouter } from "next/navigation";
 import { useStatistics } from "@/hooks/useStatistics";
-import Loading from "@/components/_ui/Loading";
+import { StatsCardSkeleton } from "@/components/_ui/Skeleton";
 
 const TeacherDashboard: FC = () => {
     const { activeMenu, toggleMenu } = useProfileMenu();
@@ -125,9 +125,7 @@ const TeacherDashboard: FC = () => {
                 {isLoadingStats ? (
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {[1, 2, 3].map((i) => (
-                            <div key={i} className="h-32 bg-white rounded-lg border border-[#e9edee] flex items-center justify-center">
-                                <Loading variant="spinner" size="sm" />
-                            </div>
+                            <StatsCardSkeleton key={i} />
                         ))}
                     </div>
                 ) : (
