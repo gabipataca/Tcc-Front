@@ -157,5 +157,8 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ g
         );
     }
 
-    return NextResponse.json(res.data, { status: res.status });
+    return NextResponse.json(
+        { status: res.status, data: undefined } satisfies ServerSideResponse<void>,
+        { status: res.status }
+    );
 }

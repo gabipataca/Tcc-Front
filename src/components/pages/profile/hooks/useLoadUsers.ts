@@ -100,7 +100,7 @@ const useLoadUsers = (role: UserRole) => {
             // Remove da lista local apenas se a exclusão no backend foi bem-sucedida
             setUsers((prev) => prev.filter((user) => user.id !== id));
         },
-        [setUsers]
+        []
     );
 
     const updateUser = useCallback(

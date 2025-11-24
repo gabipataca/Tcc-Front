@@ -106,5 +106,10 @@ export async function DELETE(req: NextRequest, context: { params: Promise<{ user
             { status: statusCode }
         );
     }
-    return NextResponse.json(res.data, { status: res.status });
+    
+    // Para DELETE com void, retornamos um objeto com status seguindo o padrão ServerSideResponse
+    return NextResponse.json(
+        { status: res.status, data: undefined } satisfies ServerSideResponse<void>,
+        { status: res.status }
+    );
 }
