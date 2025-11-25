@@ -54,7 +54,7 @@ const CreateCompetitionSubscription: React.FC = () => {
             // Formatar sem conversão de timezone
             const [year, month, day] = date.split('-');
             return `${day}/${month}/${year}, ${time}`;
-        } catch (e) {
+        } catch {
             return "Data inválida";
         }
     };

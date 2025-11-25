@@ -67,9 +67,26 @@ export const useCompetitionForm = () => {
             if (hasDateErrors) return;
 
             try {
-                const startTimeISO = `${initialDate}T${initialDateTime}:00.000Z`;
-                const startInscriptionsISO = `${initialRegistration}T${initialRegistrationTime}:00.000Z`;
-                const endInscriptionsISO = `${endRegistration}T${endRegistrationTime}:00.000Z`;
+                // Criar Dates no horário local e converter para UTC
+                const startTimeLocal = new Date(`${initialDate}T${initialDateTime}:00`);
+                const startInscriptionsLocal = new Date(`${initialRegistration}T${initialRegistrationTime}:00`);
+                const endInscriptionsLocal = new Date(`${endRegistration}T${endRegistrationTime}:00`);
+
+                console.group("🔍 DEBUG - CreateSubscription");
+                console.log("📅 Input do usuário (LOCAL):");
+                console.log(`   startTime: ${initialDate} ${initialDateTime}`);
+                console.log(`   Date object: ${startTimeLocal.toString()}`);
+                console.log(`   Timezone offset: ${startTimeLocal.getTimezoneOffset()} minutos`);
+                console.log("\n📤 Enviando para backend (UTC):");
+                
+                const startTimeISO = startTimeLocal.toISOString();
+                const startInscriptionsISO = startInscriptionsLocal.toISOString();
+                const endInscriptionsISO = endInscriptionsLocal.toISOString();
+                
+                console.log(`   startTime: ${startTimeISO}`);
+                console.log(`   startInscriptions: ${startInscriptionsISO}`);
+                console.log(`   endInscriptions: ${endInscriptionsISO}`);
+                console.groupEnd();
 
                 const dataCompetition: CreateCompetitionRequest = {
                     name,
@@ -78,13 +95,13 @@ export const useCompetitionForm = () => {
                     startTime: startTimeISO,
                     startInscriptions: startInscriptionsISO,
                     endInscriptions: endInscriptionsISO,
-                    duration: "05:00:00",
-                    stopRanking: null,
+                    duration: "01:30:00",
+                    stopRanking: "01:20:00",
                     submissionPenalty: "00:20:00",
                     maxExercises: null,
                     maxSubmissionSize: 20,
                     exerciseIds: [],
-                    blockSubmissions: null,
+                    blockSubmissions: "01:25:00",
                 };
 
                 await createCompetition(dataCompetition);
