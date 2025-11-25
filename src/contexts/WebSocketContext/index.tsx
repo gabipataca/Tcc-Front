@@ -136,7 +136,13 @@ export const WebSocketContextProvider = ({
             return;
         }
 
-        // Debounce connection creation to allow UserContext to stabilize
+            // Debounce connection creation to allow UserContext to stabilize
+            // Keep a local reference (in the effect scope) to the connection instance we create
+            // so the cleanup can stop exactly that instance instead of an unrelated one.
+            // Also create an AbortController per effect run so we can signal early
+            // cancellation of any in-flight start operations.
+            let createdConnection: HubConnection | null = null;
+            const abortController = new AbortController();
         userChangeTimeoutRef.current = setTimeout(() => {
             // Validate backend URL is configured
             const backendUrl = process.env.NEXT_PUBLIC_API_URL_CUSTOM;
@@ -148,8 +154,16 @@ export const WebSocketContextProvider = ({
             console.log("🔄 Creating new WebSocket connection for user:", user.id);
             console.log("📍 Backend URL:", backendUrl);
             
+            // If this effect run was already aborted, don't proceed.
+            if (abortController.signal.aborted) return;
+
             connectionStateRef.current.isConnecting = true;
             connectionStateRef.current.currentUserId = user.id;
+
+            // Use HTTP transport to avoid SSL certificate issues in development
+            // SignalR will automatically fall back to WebSocket over HTTP
+
+            const isDevelopment = process.env.NEXT_PUBLIC_DEV === '1';
 
             const newConnection = new HubConnectionBuilder()
                 .withUrl(
@@ -159,7 +173,10 @@ export const WebSocketContextProvider = ({
                         accessTokenFactory() {
                             return user.token;
                         },
-                        transport: HttpTransportType.WebSockets,
+                        // Use ServerSentEvents as primary transport to avoid SSL issues
+                        // WebSockets over HTTPS requires valid SSL certificate
+                        transport: isDevelopment ? (HttpTransportType.ServerSentEvents | HttpTransportType.LongPolling) : HttpTransportType.WebSockets,
+                        skipNegotiation: false,
                     }
                 )
                 .withAutomaticReconnect({
@@ -175,6 +192,10 @@ export const WebSocketContextProvider = ({
             
             // Store connection instance immediately
             connectionStateRef.current.connectionInstance = newConnection;
+
+            // Keep a local reference for the cleanup closure to avoid stopping
+            // a different connection instance if a new one is created later.
+            createdConnection = newConnection;
 
             // Set up event handlers before starting connection
             newConnection.on("ReceiveConnectionId", (id: string) => {
@@ -215,6 +236,11 @@ export const WebSocketContextProvider = ({
             newConnection
                 .start()
                 .then(() => {
+                    // If the effect run was aborted after start resolved, stop and treat as cancelled
+                    if (abortController.signal.aborted) {
+                        console.log("🔄 Start finished but effect already aborted — stopping created connection");
+                        return newConnection.stop();
+                    }
                     console.log("✅ WebSocket connection established");
                     connectionStateRef.current.isConnecting = false;
                     connectionStateRef.current.isConnected = true;
@@ -235,14 +261,25 @@ export const WebSocketContextProvider = ({
                     connectionStateRef.current.connectionInstance = null;
                     
                     // Differentiate between error types
-                    const isNetworkError = error?.message?.includes("Failed to fetch") ||
-                                          error?.message?.includes("Failed to complete negotiation");
-                    const isCancellation = error?.message?.includes("Invocation canceled") ||
-                                          error?.message?.includes("underlying connection being closed");
+                    const msg = String(error?.message ?? error);
+
+                    const isNetworkError = msg.includes("Failed to fetch") ||
+                                          msg.includes("Failed to complete negotiation");
+
+                    // Treat an explicit stop during start as a cancellation. The signalr
+                    // client returns the message "Failed to start the HttpConnection before stop() was called.".
+                    // This happens when React unmounts/re-renders and we call stop() while start() is in-flight
+                    // (common in production under route changes or StrictMode in dev).
+                    // Consider it cancelled when our AbortController was triggered OR
+                    // when the client returns the known stop-vs-start message.
+                    const isCancellation = abortController.signal.aborted ||
+                                          msg.includes("Invocation canceled") ||
+                                          msg.includes("underlying connection being closed") ||
+                                          msg.includes("Failed to start the HttpConnection before stop() was called");
                     
                     if (isCancellation) {
                         // Expected in React.StrictMode (development only)
-                        console.log("🔄 WebSocket connection cancelled (likely React.StrictMode cleanup)");
+                        console.log("🔄 WebSocket connection cancelled (stop() called while start() was pending)");
                     } else if (isNetworkError) {
                         console.warn("⚠️ WebSocket connection failed - backend may be unavailable:", error?.message);
                     } else {
@@ -260,27 +297,54 @@ export const WebSocketContextProvider = ({
 
         // Cleanup function
         return () => {
+            // Signal cancellation to the effect run and any in-flight start operation.
+            try { abortController.abort(); } catch { /* ignore */ }
             // Clear debounce timeout on cleanup
             if (userChangeTimeoutRef.current) {
                 clearTimeout(userChangeTimeoutRef.current);
                 userChangeTimeoutRef.current = null;
             }
             
-            // Stop connection if it exists and is not already disconnected
-            const currentConnection = connectionStateRef.current.connectionInstance;
-            if (currentConnection != null) {
-                const state = currentConnection.state;
-                
+            // If we created a connection in this effect run, attempt to stop only that
+            // specific instance. This avoids races where another effect created a newer
+            // connection and we'd otherwise stop it here.
+                const conn = connectionStateRef.current.connectionInstance;
+            if (conn != null) {
+                // If a createdConnection exists in this closure, only stop it if it's
+                // still the active instance (avoids stopping newer instances created
+                // by later effect runs). If it's null, we'll fall back to the active
+                // connection from the ref.
+                const createdConnectionLocal = createdConnection;
+
+                // Which instance should we stop? Prefer stopping the created one when present
+                const instanceToStop = createdConnectionLocal ?? conn;
+
+                const state = instanceToStop.state;
+
                 // Only attempt to stop if not already disconnected
                 if (state !== HubConnectionState.Disconnected) {
                     console.log(`🧹 Cleanup: Stopping WebSocket (state: ${HubConnectionState[state]})`);
-                    currentConnection.stop().catch((err) => {
+                    instanceToStop.stop().catch((err) => {
                         console.error("Error during cleanup:", err);
+                    }).finally(() => {
+                        // If we stopped the currently active instance, clear refs
+                        if (connectionStateRef.current.connectionInstance === instanceToStop) {
+                            connectionStateRef.current = {
+                                isConnecting: false,
+                                isConnected: false,
+                                currentUserId: null,
+                                connectionInstance: null,
+                            };
+                            setWebSocketConnection(null);
+                            setConnectionId(null);
+                        }
                     });
                 }
             }
         };
-    }, [user, location]);
+        
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user]);
 
     return (
         <WebSocketContext.Provider
