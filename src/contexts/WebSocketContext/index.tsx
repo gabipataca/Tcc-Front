@@ -190,8 +190,8 @@ export const WebSocketContextProvider = ({
                 })
                 .build();
             
-            // Store connection instance immediately
-            connectionStateRef.current.connectionInstance = newConnection;
+            // Do NOT store the connection instance as the active instance yet.
+            // We only mark a connection as active after start() resolves successfully.
 
             // Keep a local reference for the cleanup closure to avoid stopping
             // a different connection instance if a new one is created later.
@@ -243,6 +243,11 @@ export const WebSocketContextProvider = ({
                 .start()
                 .then(() => {
                     startFinished = true;
+                    // Only set the connection instance as the active one after a successful start
+                    // and only if this effect run hasn't been aborted in the meantime.
+                    if (!abortController.signal.aborted) {
+                        connectionStateRef.current.connectionInstance = newConnection;
+                    }
                     // If the effect run was aborted after start resolved, stop and treat as cancelled
                     if (abortController.signal.aborted) {
                         console.log("🔄 Start finished but effect already aborted — stopping created connection");
@@ -253,7 +258,14 @@ export const WebSocketContextProvider = ({
                     connectionStateRef.current.isConnected = true;
                     
                     // Set state after successful connection
-                    setWebSocketConnection(newConnection);
+                    // Only update the public state if this connection is the active one
+                    if (connectionStateRef.current.connectionInstance === newConnection) {
+                        setWebSocketConnection(newConnection);
+                    } else {
+                        // If another connection has been marked active, stop this one to avoid duplicates
+                        console.log("⚠️ Start succeeded but another connection became active — stopping this instance");
+                        return newConnection.stop();
+                    }
                     
                     // Request connection ID after successful connection
                     return newConnection.invoke("GetConnectionId");
