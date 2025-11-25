@@ -232,10 +232,17 @@ export const WebSocketContextProvider = ({
                 }
             });
 
-            // Start the connection
+                // Track whether start() completed successfully for this effect run.
+                // This helps distinguish an actual "start" cancellation (start rejected
+                // because stop/abort was called while it was pending) from a normal
+                // stop after the connection had already established.
+                let startFinished = false;
+
+                // Start the connection
             newConnection
                 .start()
                 .then(() => {
+                    startFinished = true;
                     // If the effect run was aborted after start resolved, stop and treat as cancelled
                     if (abortController.signal.aborted) {
                         console.log("🔄 Start finished but effect already aborted — stopping created connection");
@@ -270,9 +277,11 @@ export const WebSocketContextProvider = ({
                     // client returns the message "Failed to start the HttpConnection before stop() was called.".
                     // This happens when React unmounts/re-renders and we call stop() while start() is in-flight
                     // (common in production under route changes or StrictMode in dev).
-                    // Consider it cancelled when our AbortController was triggered OR
-                    // when the client returns the known stop-vs-start message.
-                    const isCancellation = abortController.signal.aborted ||
+                    // Consider it cancelled when our AbortController was triggered AND
+                    // the start did not finish, OR when the client returns the known
+                    // stop-vs-start message. If startFinished is true, a later stop()
+                    // was intentional and should not be treated as a start-cancellation.
+                    const isCancellation = ((!startFinished) && abortController.signal.aborted) ||
                                           msg.includes("Invocation canceled") ||
                                           msg.includes("underlying connection being closed") ||
                                           msg.includes("Failed to start the HttpConnection before stop() was called");
