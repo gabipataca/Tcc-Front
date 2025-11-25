@@ -129,9 +129,9 @@ export const useLoadCompetitions = () => {
                                     )
                                     : null,
                                 duration: response.data?.duration
-                                    ? convertTimeSpanToNumber(
+                                    ? Math.floor(convertTimeSpanToNumber(
                                         response.data!.duration
-                                    )
+                                    ) / 60)
                                     : null,
                                 startInscriptions: response.data
                                     ?.startInscriptions
@@ -148,9 +148,9 @@ export const useLoadCompetitions = () => {
                                 maxExercises: response.data!.maxExercises,
                                 maxSubmissionSize: response.data!.maxSubmissionSize,
                                 submissionPenalty: response.data?.submissionPenalty
-                                    ? convertTimeSpanToNumber(
+                                    ? Math.floor(convertTimeSpanToNumber(
                                         response.data!.submissionPenalty
-                                    )
+                                    ) / 60)
                                     : 0,
                                 stopRanking: response.data?.stopRanking
                                     ? new Date(
