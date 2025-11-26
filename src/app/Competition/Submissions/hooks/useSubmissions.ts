@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import type { CompetitionSubmissionData } from "@/types/SignalR";
+import { useCompetitionHub } from "@/contexts/CompetitionHubContext";
 
 type ErrorType =
     | "Compilation Error"
@@ -58,16 +59,31 @@ const wrongColumns: readonly Column[] = [
 ];
 
 const useSubmissions = (currentTable: "correct" | "wrong") => {
-    const [submissions, setSubmissions] = useState<CompetitionSubmissionData[]>(
-        []
-    );
-    const [isConnected] = useState(true);
+    const [submissions, setSubmissions] = useState<CompetitionSubmissionData[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const { requestSubmissions, isConnected } = useCompetitionHub();
 
-    // Mock data for demonstration
+    // Fetch submissions from the backend via SignalR
     useEffect(() => {
-        const mockSubmissions: CompetitionSubmissionData[] = [];
-        setSubmissions(mockSubmissions);
-    }, [isConnected]);
+        const fetchSubmissions = async () => {
+            if (!isConnected) {
+                setIsLoading(false);
+                return;
+            }
+
+            setIsLoading(true);
+            try {
+                const data = await requestSubmissions();
+                setSubmissions(data);
+            } catch (error) {
+                console.error("Error fetching submissions:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchSubmissions();
+    }, [isConnected, requestSubmissions]);
 
     const getErrorType = (judgeResponse: number): ErrorType => {
         const errorMap: Record<number, ErrorType> = {
@@ -123,6 +139,7 @@ const useSubmissions = (currentTable: "correct" | "wrong") => {
         rows,
         displayedColumns,
         title,
+        isLoading,
     };
 };
 
