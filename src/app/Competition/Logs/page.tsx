@@ -11,9 +11,10 @@ import TablePagination from "@mui/material/TablePagination"
 import TableRow from "@mui/material/TableRow"
 import Typography from "@mui/material/Typography"
 import useLogs from "./hooks/useLogs"
+import { TableSkeleton } from "@/components/_ui/Skeleton/TableSkeleton"
 
 const AdminTeamPage: React.FC = () => {
-  const { page, rowsPerPage, handleChangePage, handleChangeRowsPerPage, rows, columns } = useLogs()
+  const { page, rowsPerPage, handleChangePage, handleChangeRowsPerPage, rows, columns, isLoading } = useLogs()
 
   return (
     <>
@@ -32,6 +33,9 @@ const AdminTeamPage: React.FC = () => {
         Informações das Equipes e Últimas Atividades
       </Typography>
 
+      {isLoading ? (
+        <TableSkeleton columns={columns.length} rows={5} />
+      ) : (
       <Paper
         sx={{
           width: "100%",
@@ -157,6 +161,7 @@ const AdminTeamPage: React.FC = () => {
           }}
         />
       </Paper>
+      )}
     </>
   )
 }

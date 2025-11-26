@@ -77,15 +77,23 @@ const useLogs = () => {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [logs, setLogs] = useState<LogResponse[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const { requestLogs, isConnected, ongoingCompetition } =
         useCompetitionHub();
 
     // Load logs when connected and competition is available
     useEffect(() => {
         if (isConnected && ongoingCompetition) {
-            requestLogs().then((fetchedLogs) => {
-                setLogs(fetchedLogs);
-            });
+            setIsLoading(true);
+            requestLogs()
+                .then((fetchedLogs) => {
+                    setLogs(fetchedLogs);
+                })
+                .finally(() => {
+                    setIsLoading(false);
+                });
+        } else if (!isConnected) {
+            setIsLoading(false);
         }
     }, [isConnected, ongoingCompetition, requestLogs]);
 
@@ -194,6 +202,7 @@ const useLogs = () => {
         handleChangeRowsPerPage,
         rows,
         columns,
+        isLoading,
     };
 };
 

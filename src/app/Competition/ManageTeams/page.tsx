@@ -18,6 +18,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle"
 import BlockIcon from "@mui/icons-material/Block"
 import DeleteIcon from "@mui/icons-material/Delete"
 import useManageTeams from "./hooks/useManageTeams"
+import { TableSkeleton } from "@/components/_ui/Skeleton/TableSkeleton"
 
 const ManageTeamsPage: React.FC = () => {
   const {
@@ -29,6 +30,7 @@ const ManageTeamsPage: React.FC = () => {
     handleChangeRowsPerPage,
     handleToggleStatus,
     handleDeleteTeam,
+    isLoading,
   } = useManageTeams()
 
   return (
@@ -49,6 +51,9 @@ const ManageTeamsPage: React.FC = () => {
         Gerenciamento de Equipes
       </Typography>
 
+      {isLoading ? (
+        <TableSkeleton columns={columns.length} rows={5} />
+      ) : (
       <Paper
         sx={{
           width: "100%",
@@ -255,6 +260,7 @@ const ManageTeamsPage: React.FC = () => {
           }}
         />
       </Paper>
+      )}
     </>
   )
 }

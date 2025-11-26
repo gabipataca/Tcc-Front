@@ -11,15 +11,8 @@ import { useRanking } from "@/contexts/CompetitionHubContext/hooks/useRanking";
 import { useCompetitionHub } from "@/contexts/CompetitionHubContext";
 import { convertTimeSpanToNumber } from "@/libs/utils";
 import { useRouter } from "next/navigation";
-
-interface GroupRankingData {
-    group: string;
-    exercisesAccepteds: string[];
-    times: { [key: string]: string };
-    total: string;
-    totalCount: number;
-    totalScore: number;
-}
+import { useUser } from "@/contexts/UserContext";
+import { RankingTableSkeleton } from "@/components/_ui/Skeleton/TableSkeleton";
 
 const colors = [
     "#979797",
@@ -41,6 +34,8 @@ const colors = [
 
 const RankingPage: React.FC = () => {
     const [open, setOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const { user } = useUser();
     const { liveRanking } = useRanking();
     const { requestRanking, ongoingCompetition, isConnected } =
         useCompetitionHub();
@@ -50,7 +45,10 @@ const RankingPage: React.FC = () => {
     useEffect(() => {
         if (isConnected) {
             console.log("🔄 Competition page mounted, requesting ranking");
-            requestRanking();
+            setIsLoading(true);
+            requestRanking().finally(() => {
+                setIsLoading(false);
+            });
         }
     }, [isConnected, requestRanking]);
 
@@ -92,9 +90,10 @@ const RankingPage: React.FC = () => {
                 // Format: "attempts/time" (e.g., "2/64" means 2 attempts, 64 minutes)
                 // Only count attempts for accepted exercises - penalty is applied per accepted problem
                 if (attempt.accepted) {
-                    const penaltyMinutes = convertTimeSpanToNumber(
-                        String(ongoingCompetition.submissionPenalty)
-                    ) / 60;
+                    const penaltyMinutes =
+                        convertTimeSpanToNumber(
+                            String(ongoingCompetition.submissionPenalty)
+                        ) / 60;
                     times[exerciseLetter] = `${attempt.attempts}/${Math.round(
                         attempt.attempts * penaltyMinutes
                     )}`;
@@ -130,16 +129,21 @@ const RankingPage: React.FC = () => {
 
     return (
         <div className="relative flex flex-col items-center p-8 bg-gray-100 min-h-screen">
-            {/* Botão que abre o modal */}
-            <div className="flex justify-end mb-4 mt-4 w-full max-w-7xl">
-                <Button
-                    className="bg-[#4F85A6] text-white px-6 py-2 rounded-md font-bold hover:bg-[#3B6A82] transition"
-                    onClick={() => setOpen(true)}
-                >
-                    Enviar Exercícios
-                </Button>
-            </div>
+            {user?.role !== "Admin" && (
+                <div className="flex justify-end mb-4 mt-4 w-full max-w-7xl">
+                    <Button
+                        className="bg-[#4F85A6] text-white px-6 py-2 rounded-md font-bold hover:bg-[#3B6A82] transition"
+                        onClick={() => setOpen(true)}
+                    >
+                        Enviar Exercícios
+                    </Button>
+                </div>
+            )}
 
+            {isLoading ? (
+                <RankingTableSkeleton rows={5} />
+            ) : (
+            <>
             {/* Cabeçalho da Tabela */}
             <div className="w-full max-w-7xl">
                 <div className="flex bg-[#4F85A6] text-white text-lg font-bold text-center rounded-t-2xl p-4">
@@ -209,6 +213,8 @@ const RankingPage: React.FC = () => {
                     ))}
                 </div>
             </div>
+            </>
+            )}
 
             {/* Modal com o componente separado */}
             <Modal open={open} onClose={() => setOpen(false)}>

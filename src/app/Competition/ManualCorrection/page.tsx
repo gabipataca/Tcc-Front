@@ -18,6 +18,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import TextField from "@mui/material/TextField";
 import { Download, Check, X } from 'lucide-react';
 import useManualCorrection from "./hooks/useManualCorrection";
+import { TableSkeleton } from "@/components/_ui/Skeleton/TableSkeleton";
 
 export default function ManualCorrection() {
   const {
@@ -36,6 +37,7 @@ export default function ManualCorrection() {
     handleOpenRejectDialog,
     handleCloseRejectDialog,
     handleConfirmReject,
+    isLoading,
   } = useManualCorrection();
 
   const handleChangePage = (_: unknown, newPage: number) => {
@@ -92,6 +94,9 @@ export default function ManualCorrection() {
         Revise e avalie manualmente as submissões dos exercícios das equipes
       </Typography>
 
+      {isLoading ? (
+        <TableSkeleton columns={6} rows={5} />
+      ) : (
       <Paper
         sx={{
           width: "100%",
@@ -354,6 +359,7 @@ export default function ManualCorrection() {
           }}
         />
       </Paper>
+      )}
 
       <Dialog
         open={selectedSubmission !== null}
