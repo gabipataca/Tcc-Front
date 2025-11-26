@@ -44,6 +44,7 @@ const StatsGrid: FC<StatsGridProps> = ({
             description: "Exercícios disponíveis",
             icon: Package,
             action: () => toggleMenu("Exercise"),
+            isClickable: true,
         },
         {
             id: "create_marathon_registration",
@@ -52,6 +53,7 @@ const StatsGrid: FC<StatsGridProps> = ({
             description: "Abrir inscrições para maratona",
             icon: ClipboardPlus,
             action: () => toggleMenu("CreateSubscription"),
+            isClickable: true,
         },
         {
             id: "create_marathon",
@@ -60,6 +62,7 @@ const StatsGrid: FC<StatsGridProps> = ({
             description: "Configurar uma nova maratona",
             icon: Trophy,
             action: () => toggleMenu("CreateCompetition"),
+            isClickable: true,
         },
         {
             id: "statistics",
@@ -68,12 +71,13 @@ const StatsGrid: FC<StatsGridProps> = ({
             description: "Não acessam há 30 dias",
             icon: UserX,
             action: () => {},
+            isClickable: false,
         },
     ]), [toggleMenu, totalExercises, inactiveUsers]);
 
     if (isLoading) {
         return (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                 {[1, 2, 3, 4].map((i) => (
                     <StatsCardSkeleton key={i} />
                 ))}
@@ -82,22 +86,40 @@ const StatsGrid: FC<StatsGridProps> = ({
     }
 
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-            {stats.map((stat) => (
-                <div
-                    key={stat.id}
-                    onClick={stat.action}
-                    className="cursor-pointer transition-transform duration-200 hover:scale-105"
-                >
-                    <StatsCard
-                        title={stat.title}
-                        value={stat.value}
-                        description={stat.description}
-                        icon={stat.icon}
-                        className="h-full" 
-                    />
-                </div>
-            ))}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            {stats.map((stat) => {
+                const isClickable = stat.isClickable !== false && stat.action;
+                return (
+                    <div
+                        key={stat.id}
+                        onClick={isClickable ? stat.action : undefined}
+                        className={`
+                            transition-all duration-200 
+                            ${isClickable 
+                                ? 'cursor-pointer hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]' 
+                                : 'cursor-default'
+                            }
+                        `}
+                        role={isClickable ? 'button' : undefined}
+                        tabIndex={isClickable ? 0 : undefined}
+                        onKeyDown={(e) => {
+                            if (isClickable && (e.key === 'Enter' || e.key === ' ')) {
+                                e.preventDefault();
+                                stat.action?.();
+                            }
+                        }}
+                        aria-label={isClickable ? `${stat.title}: ${stat.description}` : undefined}
+                    >
+                        <StatsCard
+                            title={stat.title}
+                            value={stat.value}
+                            description={stat.description}
+                            icon={stat.icon}
+                            className={`h-full ${isClickable ? 'ring-transparent hover:ring-2 hover:ring-[#4F85A6]/30' : ''}`} 
+                        />
+                    </div>
+                );
+            })}
         </div>
     );
 };

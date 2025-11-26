@@ -9,6 +9,7 @@ import { useCompetitionHub } from "@/contexts/CompetitionHubContext"
 import { useRanking } from "@/contexts/CompetitionHubContext/hooks/useRanking"
 import { useUser } from "@/contexts/UserContext"
 import { toBase64 } from "@/libs/utils"
+import { useSnackbar } from "notistack"
 
 // Exercícios e linguagens
 const languages = ["C", "C++", "C#", "Go", "Java", "JavaScript", "PHP", "Python"]
@@ -52,6 +53,7 @@ const useSendExercise = () => {
   const { user } = useUser();
   const { sendExerciseAttempt, ongoingCompetition } = useCompetitionHub();
   const { hasGroupSolvedExercise } = useRanking();
+  const { enqueueSnackbar } = useSnackbar();
 
   // A => Char Code 65
   const exercisesInCompetition = useMemo(() => {
@@ -126,18 +128,18 @@ const useSendExercise = () => {
 
   const handleSubmitAnalysis = useCallback(async () => {
     if (!file) {
-      alert("Por favor, anexe um arquivo antes de enviar.")
+      enqueueSnackbar("Por favor, anexe um arquivo antes de enviar.", { variant: "warning" })
       return
     }
 
     if (!user?.group?.id || !ongoingCompetition?.id) {
-      alert("Erro: Dados do usuário ou competição não encontrados.")
+      enqueueSnackbar("Erro: Dados do usuário ou competição não encontrados.", { variant: "error" })
       return
     }
 
     // Check if exercise is already accepted (frontend validation)
     if (acceptedExercises.has(selectedExercise)) {
-      alert("Este exercício já foi aceito pelo seu grupo. Não é possível enviar novamente.")
+      enqueueSnackbar("Este exercício já foi aceito pelo seu grupo. Não é possível enviar novamente.", { variant: "warning" })
       return
     }
 
@@ -170,17 +172,17 @@ const useSendExercise = () => {
       })
 
       // User will be notified automatically by the CompetitionHubContext
-      alert(`📤 Submissão enviada! Aguarde o resultado do judge...`)
+      enqueueSnackbar("📤 Submissão enviada! Aguarde o resultado do judge...", { variant: "info" })
 
       setAttachedFileName(null)
       setFile(null)
     } catch (error) {
       console.error("[analiseJugde] Erro ao submeter exercício:", error)
-      alert("Ocorreu um erro ao enviar a análise. Tente novamente.")
+      enqueueSnackbar("Ocorreu um erro ao enviar a análise. Tente novamente.", { variant: "error" })
     } finally {
       setIsSubmitting(false)
     }
-  }, [file, user?.group?.id, ongoingCompetition?.id, exercisesInCompetition, selectedExercise, selectedLanguage, sendExerciseAttempt, acceptedExercises])
+  }, [file, user?.group?.id, ongoingCompetition?.id, exercisesInCompetition, selectedExercise, selectedLanguage, sendExerciseAttempt, acceptedExercises, enqueueSnackbar])
 
   return {
     selectedExercise,

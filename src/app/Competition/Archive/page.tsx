@@ -105,9 +105,37 @@ const ArchivePage: React.FC = () => {
             </Box>
 
             {competitions.length === 0 ? (
-                <Typography variant="h6" color="textSecondary">
-                    Nenhuma competição finalizada encontrada.
-                </Typography>
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        py: 8,
+                        textAlign: "center",
+                    }}
+                >
+                    <Box
+                        sx={{
+                            width: 80,
+                            height: 80,
+                            borderRadius: "50%",
+                            backgroundColor: "#e9edee",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            mb: 3,
+                        }}
+                    >
+                        <Archive size={40} color="#4F85A6" />
+                    </Box>
+                    <Typography variant="h6" sx={{ color: "#3f3c40", mb: 1 }}>
+                        Nenhuma competição finalizada
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: "#4F85A6", maxWidth: 400 }}>
+                        As competições finalizadas aparecerão aqui para consulta de resultados e histórico.
+                    </Typography>
+                </Box>
             ) : (
                 <Grid container spacing={3}>
                     {competitions.map((competition) => (

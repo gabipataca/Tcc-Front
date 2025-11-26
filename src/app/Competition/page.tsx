@@ -13,6 +13,7 @@ import { convertTimeSpanToNumber } from "@/libs/utils";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/contexts/UserContext";
 import { RankingTableSkeleton } from "@/components/_ui/Skeleton/TableSkeleton";
+import EmptyState from "@/components/_ui/EmptyState";
 
 const colors = [
     "#979797",
@@ -142,6 +143,14 @@ const RankingPage: React.FC = () => {
 
             {isLoading ? (
                 <RankingTableSkeleton rows={5} />
+            ) : data.length === 0 ? (
+                <div className="w-full max-w-7xl bg-white rounded-xl shadow-md">
+                    <EmptyState
+                        title="Nenhum dado de ranking disponível"
+                        description="Aguarde os participantes enviarem suas soluções para visualizar o ranking."
+                        variant="noData"
+                    />
+                </div>
             ) : (
             <>
             {/* Cabeçalho da Tabela */}

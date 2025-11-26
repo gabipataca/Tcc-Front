@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+import { useState } from "react"
 import {
   Box,
   Typography,
@@ -19,6 +20,12 @@ import BlockIcon from "@mui/icons-material/Block"
 import DeleteIcon from "@mui/icons-material/Delete"
 import useManageTeams from "./hooks/useManageTeams"
 import { TableSkeleton } from "@/components/_ui/Skeleton/TableSkeleton"
+import { ConfirmDialog } from "@/components/_ui/ConfirmDialog"
+
+interface TeamToDelete {
+  id: number
+  teamName: string
+}
 
 const ManageTeamsPage: React.FC = () => {
   const {
@@ -33,8 +40,38 @@ const ManageTeamsPage: React.FC = () => {
     isLoading,
   } = useManageTeams()
 
+  const [teamToDelete, setTeamToDelete] = useState<TeamToDelete | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
+
+  const handleDeleteClick = (team: TeamToDelete) => {
+    setTeamToDelete(team)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!teamToDelete) return
+    setIsDeleting(true)
+    try {
+      await handleDeleteTeam(teamToDelete.id)
+    } finally {
+      setIsDeleting(false)
+      setTeamToDelete(null)
+    }
+  }
+
   return (
     <>
+      <ConfirmDialog
+        isOpen={!!teamToDelete}
+        onClose={() => setTeamToDelete(null)}
+        title="Excluir Equipe"
+        description={`Tem certeza que deseja excluir a equipe "${teamToDelete?.teamName}"?`}
+        confirmText="Excluir"
+        cancelText="Cancelar"
+        variant="destructive"
+        onConfirm={handleConfirmDelete}
+        isLoading={isDeleting}
+      />
+
       <Typography
         variant="h5"
         component="div"
@@ -200,7 +237,7 @@ const ManageTeamsPage: React.FC = () => {
                               <Button
                                 variant="outlined"
                                 color="error"
-                                onClick={() => handleDeleteTeam(team.id)}
+                                onClick={() => handleDeleteClick({ id: team.id, teamName: team.teamName })}
                                 startIcon={<DeleteIcon />}
                                 size="small"
                                 sx={{
