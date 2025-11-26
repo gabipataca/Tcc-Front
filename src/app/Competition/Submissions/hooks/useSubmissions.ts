@@ -3,14 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import type { CompetitionSubmissionData } from "@/types/SignalR";
 import { useCompetitionHub } from "@/contexts/CompetitionHubContext";
-
-type ErrorType =
-    | "Compilation Error"
-    | "Runtime Error"
-    | "Resources Exceeded"
-    | "Time-limit Exceeded"
-    | "Presentation Error"
-    | "Wrong Answer";
+import { JudgeResponseEnum, getJudgeResponseMessage } from "@/types/Exercise";
 
 interface Column {
     id: string;
@@ -31,7 +24,7 @@ interface WrongTeamData {
     time: string;
     exerciseDescription: string;
     teamName: string;
-    errorType: ErrorType;
+    errorType: string;
 }
 
 const correctColumns: readonly Column[] = [
@@ -85,18 +78,6 @@ const useSubmissions = (currentTable: "correct" | "wrong") => {
         fetchSubmissions();
     }, [isConnected, requestSubmissions]);
 
-    const getErrorType = (judgeResponse: number): ErrorType => {
-        const errorMap: Record<number, ErrorType> = {
-            1: "Wrong Answer",
-            2: "Time-limit Exceeded",
-            3: "Resources Exceeded",
-            4: "Runtime Error",
-            5: "Compilation Error",
-            6: "Presentation Error",
-        };
-        return errorMap[judgeResponse] || "Runtime Error";
-    };
-
     const rows = useMemo(() => {
         if (currentTable === "correct") {
             return submissions
@@ -120,7 +101,7 @@ const useSubmissions = (currentTable: "correct" | "wrong") => {
                         s.exerciseName || "exercício"
                     }`,
                     teamName: s.group?.name || "Grupo desconhecido",
-                    errorType: getErrorType(s.judgeResponse),
+                    errorType: getJudgeResponseMessage(s.judgeResponse as JudgeResponseEnum),
                 }));
         }
     }, [currentTable, submissions]);

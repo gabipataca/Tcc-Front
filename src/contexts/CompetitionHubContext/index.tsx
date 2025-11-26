@@ -25,7 +25,7 @@ import {
     UnblockGroupSubmissionRequest,
     UpdateCompetitionSettingsRequest,
 } from "@/types/SignalR/Requests";
-import { JudgeResponseEnum } from "@/types/Exercise";
+import { JudgeResponseEnum, getJudgeResponseMessage } from "@/types/Exercise";
 
 /**
  * Context type for Competition Hub functionality.
@@ -214,10 +214,11 @@ export const CompetitionHubProvider: React.FC<{ children: React.ReactNode }> = (
                     return [...prev, submission];
                 });
 
-                const statusText = submission.judgeResponse == JudgeResponseEnum.Accepted ? "aceita" : "rejeitada";
-                enqueueSnackbar(`Submissão ${statusText}!`, {
-                    variant: submission.judgeResponse == JudgeResponseEnum.Accepted ? "success" : "error",
-                    autoHideDuration: 3000,
+                const isAccepted = submission.judgeResponse === JudgeResponseEnum.Accepted;
+                const judgeMessage = getJudgeResponseMessage(submission.judgeResponse);
+                enqueueSnackbar(`Submissão: ${judgeMessage}`, {
+                    variant: isAccepted ? "success" : "error",
+                    autoHideDuration: 4000,
                     anchorOrigin: { vertical: "bottom", horizontal: "right" },
                 });
             }
