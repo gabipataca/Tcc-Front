@@ -4,6 +4,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import CompetitionService from "@/services/CompetitionService";
 import { Competition } from "@/types/Competition";
+import { getLogActionDescription } from "@/types/Log";
 import {
     Box,
     Typography,
@@ -13,9 +14,17 @@ import {
     Card,
     CardContent,
     Chip,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    TablePagination,
+    Paper,
 } from "@mui/material";
 import Button from "@/components/_ui/Button";
-import { ArrowLeft, Trophy, Users, Calendar, FileText } from "lucide-react";
+import { ArrowLeft, Trophy, Users, Calendar, FileText, Clock, Globe } from "lucide-react";
 import Balao from "@/components/_ui/Balao";
 import { StyledRankingCellContainer } from "@/components/pages/ranking/styles";
 import { convertTimeSpanToNumber } from "@/libs/utils";
@@ -471,44 +480,195 @@ const ArchiveDetailsPage: React.FC = () => {
 
             <TabPanel value={activeTab} index={4}>
                 {/* Logs Tab */}
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                    {competition.logs && competition.logs.length > 0 ? (
-                        competition.logs.map((log, index) => (
-                            <Card key={`${log.id}-${index}`}>
-                                <CardContent>
-                                    <Box
-                                        sx={{
-                                            display: "flex",
-                                            justifyContent: "space-between",
-                                        }}
-                                    >
-                                        <Typography variant="body2">
-                                            {log.actionType}
-                                        </Typography>
-                                        <Typography
-                                            variant="caption"
-                                            color="textSecondary"
-                                        >
-                                            {formatDate(log.actionTime)}
-                                        </Typography>
-                                    </Box>
-                                    {log.ipAddress && (
-                                        <Typography
-                                            variant="caption"
-                                            color="textSecondary"
-                                        >
-                                            IP: {log.ipAddress}
-                                        </Typography>
-                                    )}
-                                </CardContent>
-                            </Card>
-                        ))
-                    ) : (
-                        <Typography>Nenhum log encontrado.</Typography>
-                    )}
-                </Box>
+                <LogsTab logs={competition.logs || []} formatDate={formatDate} />
             </TabPanel>
         </Box>
+    );
+};
+
+/**
+ * Logs Tab Component with table display and pagination.
+ */
+interface LogsTabProps {
+    logs: Array<{
+        id: number;
+        actionType: number | string;
+        actionDescription?: string;
+        actionTime: string;
+        ipAddress: string;
+        userId?: string | null;
+        userName?: string | null;
+        groupId?: number | null;
+        groupName?: string | null;
+    }>;
+    formatDate: (date?: string | null) => string;
+}
+
+const LogsTab: React.FC<LogsTabProps> = ({ logs, formatDate }) => {
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+
+    const handleChangePage = (_event: unknown, newPage: number) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+
+    // Transform logs to display format
+    const displayLogs = useMemo(() => {
+        return logs.map((log) => {
+            const actionTypeNum = typeof log.actionType === 'number' ? log.actionType : 0;
+            return {
+                id: log.id,
+                actionTime: formatDate(log.actionTime),
+                groupName: log.groupName || "N/A",
+                userName: log.userName || "N/A",
+                action: log.actionDescription || getLogActionDescription(actionTypeNum, log.userName, log.groupName),
+                ipAddress: log.ipAddress || "N/A",
+            };
+        });
+    }, [logs, formatDate]);
+
+    if (logs.length === 0) {
+        return (
+            <Paper
+                sx={{
+                    p: 4,
+                    textAlign: "center",
+                    borderRadius: "12px",
+                    boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
+                }}
+            >
+                <Typography variant="body1" color="textSecondary">
+                    Nenhum log encontrado para esta competição.
+                </Typography>
+            </Paper>
+        );
+    }
+
+    return (
+        <Paper
+            sx={{
+                width: "100%",
+                overflow: "hidden",
+                borderRadius: "12px",
+                boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
+            }}
+        >
+            <TableContainer sx={{ maxHeight: 600 }}>
+                <Table stickyHeader aria-label="logs table">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell
+                                align="center"
+                                sx={{
+                                    backgroundColor: "#4F85A6",
+                                    color: "#fff",
+                                    fontWeight: 600,
+                                    minWidth: 170,
+                                }}
+                            >
+                                <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1 }}>
+                                    <Clock size={16} />
+                                    Data/Hora
+                                </Box>
+                            </TableCell>
+                            <TableCell
+                                align="center"
+                                sx={{
+                                    backgroundColor: "#4F85A6",
+                                    color: "#fff",
+                                    fontWeight: 600,
+                                    minWidth: 130,
+                                }}
+                            >
+                                <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1 }}>
+                                    <Users size={16} />
+                                    Equipe
+                                </Box>
+                            </TableCell>
+                            <TableCell
+                                align="center"
+                                sx={{
+                                    backgroundColor: "#4F85A6",
+                                    color: "#fff",
+                                    fontWeight: 600,
+                                    minWidth: 130,
+                                }}
+                            >
+                                Usuário
+                            </TableCell>
+                            <TableCell
+                                align="left"
+                                sx={{
+                                    backgroundColor: "#4F85A6",
+                                    color: "#fff",
+                                    fontWeight: 600,
+                                    minWidth: 300,
+                                }}
+                            >
+                                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                                    <FileText size={16} />
+                                    Ação
+                                </Box>
+                            </TableCell>
+                            <TableCell
+                                align="center"
+                                sx={{
+                                    backgroundColor: "#4F85A6",
+                                    color: "#fff",
+                                    fontWeight: 600,
+                                    minWidth: 130,
+                                }}
+                            >
+                                <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1 }}>
+                                    <Globe size={16} />
+                                    IP
+                                </Box>
+                            </TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {displayLogs
+                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            .map((log) => (
+                                <TableRow
+                                    key={log.id}
+                                    hover
+                                    sx={{
+                                        "&:hover": {
+                                            backgroundColor: "rgba(79, 133, 166, 0.08)",
+                                        },
+                                    }}
+                                >
+                                    <TableCell align="center">{log.actionTime}</TableCell>
+                                    <TableCell align="center">{log.groupName}</TableCell>
+                                    <TableCell align="center">{log.userName}</TableCell>
+                                    <TableCell align="left">{log.action}</TableCell>
+                                    <TableCell align="center">{log.ipAddress}</TableCell>
+                                </TableRow>
+                            ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+            <TablePagination
+                rowsPerPageOptions={[10, 25, 50, 100]}
+                component="div"
+                count={displayLogs.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+                labelRowsPerPage="Logs por página:"
+                labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ${count}`}
+                sx={{
+                    borderTop: "1px solid rgba(0, 0, 0, 0.06)",
+                }}
+            />
+        </Paper>
     );
 };
 

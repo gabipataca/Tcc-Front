@@ -10,9 +10,14 @@ export interface LogResponse {
     id: number;
 
     /**
-     * The type of action that was logged.
+     * The type of action that was logged (numeric enum value).
      */
-    actionType: string;
+    actionType: number;
+
+    /**
+     * Human-readable description of the action.
+     */
+    actionDescription?: string;
 
     /**
      * The timestamp when the action occurred (ISO date string).
@@ -25,21 +30,29 @@ export interface LogResponse {
     ipAddress: string;
 
     /**
-     * The RA (academic registration number) of the user who performed the action.
+     * The ID of the user who performed the action.
      */
-    userId: string;
+    userId?: string | null;
+
+    /**
+     * The name of the user who performed the action.
+     */
+    userName?: string | null;
 
     /**
      * The ID of the group associated with the action.
-     * @remarks Optional - only present for group-related actions.
      */
-    groupId?: number;
+    groupId?: number | null;
+
+    /**
+     * The name of the group associated with the action.
+     */
+    groupName?: string | null;
 
     /**
      * The ID of the competition associated with the action.
-     * @remarks Optional - only present for competition-related actions.
      */
-    competitionId?: number;
+    competitionId?: number | null;
 }
 
 /**

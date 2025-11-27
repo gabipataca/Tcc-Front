@@ -13,7 +13,13 @@ import Typography from "@mui/material/Typography"
 import useLogs from "./hooks/useLogs"
 import { TableSkeleton } from "@/components/_ui/Skeleton/TableSkeleton"
 
-const AdminTeamPage: React.FC = () => {
+/**
+ * Competition Logs Page Component
+ * 
+ * Displays all individual log entries for the active competition.
+ * Shows action time, team name, user name, action description, and IP address.
+ */
+const CompetitionLogsPage: React.FC = () => {
   const { page, rowsPerPage, handleChangePage, handleChangeRowsPerPage, rows, columns, isLoading } = useLogs()
 
   return (
@@ -30,11 +36,24 @@ const AdminTeamPage: React.FC = () => {
           letterSpacing: "-0.5px",
         }}
       >
-        Informações das Equipes e Últimas Atividades
+        Logs da Competição
       </Typography>
 
       {isLoading ? (
         <TableSkeleton columns={columns.length} rows={5} />
+      ) : rows.length === 0 ? (
+        <Paper
+          sx={{
+            p: 4,
+            textAlign: "center",
+            borderRadius: "12px",
+            boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
+          }}
+        >
+          <Typography variant="body1" color="textSecondary">
+            Nenhum log encontrado para esta competição.
+          </Typography>
+        </Paper>
       ) : (
       <Paper
         sx={{
@@ -64,7 +83,7 @@ const AdminTeamPage: React.FC = () => {
             },
           }}
         >
-          <Table stickyHeader aria-label="sticky table">
+          <Table stickyHeader aria-label="logs table">
             <TableHead>
               <TableRow>
                 {columns.map((column) => (
@@ -99,7 +118,7 @@ const AdminTeamPage: React.FC = () => {
                     hover
                     role="checkbox"
                     tabIndex={-1}
-                    key={row.ip}
+                    key={row.id}
                     sx={{
                       transition: "all 0.2s ease",
                       "&:hover": {
@@ -135,13 +154,15 @@ const AdminTeamPage: React.FC = () => {
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[10, 25, 100]}
+          rowsPerPageOptions={[10, 25, 50, 100]}
           component="div"
           count={rows.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
+          labelRowsPerPage="Logs por página:"
+          labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ${count}`}
           sx={{
             borderTop: "1px solid rgba(0, 0, 0, 0.06)",
             "& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows": {
@@ -166,4 +187,4 @@ const AdminTeamPage: React.FC = () => {
   )
 }
 
-export default AdminTeamPage
+export default CompetitionLogsPage
