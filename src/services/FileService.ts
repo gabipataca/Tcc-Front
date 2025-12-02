@@ -56,7 +56,7 @@ class FileService {
      * const filename = parseFilenameFromContentDisposition(contentDisposition) ?? "download";
      * triggerBrowserDownload(url, filename);
      */
-    static async downloadFile(fileId: number): Promise<{
+    static async downloadFile(fileId: number, token: string): Promise<{
         blob: Blob;
         contentDisposition: string;
     }> {
@@ -65,6 +65,7 @@ class FileService {
             {
                 method: "GET",
                 responseType: "blob",
+                cookies: `CompetitionAuthToken=${token}`
             }
         );
 
