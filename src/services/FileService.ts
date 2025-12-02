@@ -65,7 +65,9 @@ class FileService {
             {
                 method: "GET",
                 responseType: "blob",
-                cookies: `CompetitionAuthToken=${token}`
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
             }
         );
 
