@@ -100,16 +100,19 @@ const ExerciseManagement: React.FC = () => {
     try {
       const file = await FileService.downloadFile(fileId, user?.token || "");
       
-	  downloadBlobFile(fileId, file.blob, file.contentDisposition);
-    } catch (error) {
-	  console.error("Erro ao baixar o arquivo PDF:", error);
-	  enqueueSnackbar("Nenhum PDF disponível para este exercício", {
+      downloadBlobFile(fileId, file.blob, file.contentDisposition);
+    } catch (error: any) {
+      console.error("Erro ao baixar o arquivo PDF:", error);
+      
+      const errorMessage = error?.response?.data?.Message || 
+                          error?.message || 
+                          "Erro ao baixar o arquivo PDF";
+      
+      enqueueSnackbar(errorMessage, {
         variant: "error",
         anchorOrigin: { vertical: "bottom", horizontal: "right" }
-      })
-	}
-    
-
+      });
+    }
   }
 
   return (
