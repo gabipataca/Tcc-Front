@@ -66,7 +66,8 @@ class FileService {
                 method: "GET",
                 responseType: "blob",
                 headers: {
-                    Authorization: `Bearer ${token}`
+                    Authorization: `Bearer ${token}`,
+                    Accept: "*/*"
                 }
             }
         );
